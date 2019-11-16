@@ -1,6 +1,6 @@
 // 封装axios
 import axios from 'axios'
-import { MessageBox, Message,Loading  } from 'element-ui'
+import { MessageBox, Message, Loading } from 'element-ui'
 import store from '@/store'
 import { getToken } from '@/utils/auth'
 
@@ -10,7 +10,7 @@ var isLoading = true;// 是否开启遮罩有关
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
   // withCredentials: true, // send cookies when cross-domain requests
-  timeout: 5000 // request timeout
+  timeout: 50000 // request timeout
 })
 
 // request interceptor
@@ -57,32 +57,34 @@ service.interceptors.response.use(
   response => {
     endLoading();
 
+    debugger;
     const res = response.data
 
-    // if the custom code is not 20000, it is judged as an error.
-    if (res.code !== 20000) {
-      Message({
-        message: res.message || 'Error',
-        type: 'error',
-        duration: 5 * 1000
-      })
-
-      // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
-      if (res.code === 50008 || res.code === 50012 || res.code === 50014) {
-        // to re-login
-        MessageBox.confirm('You have been logged out, you can cancel to stay on this page, or log in again', 'Confirm logout', {
-          confirmButtonText: 'Re-Login',
-          cancelButtonText: 'Cancel',
-          type: 'warning'
-        }).then(() => {
-          store.dispatch('user/resetToken').then(() => {
-            location.reload()
-          })
+     // if the custom code is not 20000, it is judged as an error.
+    if (res.code==20000) {
+      return res;
+    } else {//其他的都是错误请求  ，可以在 try catch获取
+        Message({
+          message: res.msg || 'Error',
+          type: 'error',
+          duration: 5 * 1000
         })
-      }
-      return Promise.reject(new Error(res.message || 'Error'))
-    } else {
-      return res
+
+        //以后替换
+        // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
+        if (res.code === 50008 || res.code === 50012 || res.code === 50014) {
+          // to re-login
+          MessageBox.confirm('You have been logged out, you can cancel to stay on this page, or log in again', 'Confirm logout', {
+            confirmButtonText: 'Re-Login',
+            cancelButtonText: 'Cancel',
+            type: 'warning'
+          }).then(() => {
+            store.dispatch('user/resetToken').then(() => {
+              location.reload()
+            })
+          })
+        }
+        return Promise.reject(new Error(res.message || 'Error'))
     }
 
   },
@@ -103,21 +105,21 @@ service.interceptors.response.use(
 let loadingC;
 function startLoading() {    // 使用Element loading-start 方法
 
-    if (isLoading) {
-        loadingC = Loading.service({
-            lock: true,
-            text: '拼命加载中...',
-            background: 'rgba(255,255,255,0)',
-        })
-    }
+  if (isLoading) {
+    loadingC = Loading.service({
+      lock: true,
+      text: '拼命加载中...',
+      background: 'rgba(255,255,255,0)',
+    })
+  }
 
 }
 
 function endLoading() {    // 使用Element loading-close 方法
 
-    if (isLoading) {
-        loadingC.close()
-    }
+  if (isLoading) {
+    loadingC.close()
+  }
 }
 // 遮罩 end
 

@@ -13,7 +13,7 @@ const name = defaultSettings.title || 'K.Vue' // page title
 // For example, Mac: sudo npm run
 // You can change the port by the following methods:
 // port = 9528 npm run dev OR npm run dev --port = 9528
-const port = process.env.port || process.env.npm_config_port || 9528 // dev port
+const port = process.env.port || process.env.npm_config_port || 8888 // dev port
 
 // All configuration item explanations can be find in https://cli.vuejs.org/config/
 module.exports = {
@@ -30,23 +30,56 @@ module.exports = {
   lintOnSave: process.env.NODE_ENV === 'development',
   productionSourceMap: false,
   devServer: {
-    port: port,
-    open: true,
+    // port: 8888,
+    // open: true,
+    // overlay: {
+    //   warnings: false,
+    //   errors: true
+    // },
+    // proxy: {
+    //   // change xxx-api/login => mock/login
+    //   // detail: https://cli.vuejs.org/config/#devserver-proxy
+    //   [process.env.VUE_APP_BASE_API]: {
+    //     target: `http://127.0.0.1:${port}`,
+    //     changeOrigin: true,
+    //     pathRewrite: {
+    //       ['^' + process.env.VUE_APP_BASE_API]: ''
+    //     }
+    //   }
+    // },
+    open: true, //配置自动启动浏览器
+    host: "127.0.0.1",
+    port: 8889, // 当前vue项目 端口号
+    https: false,
+    hotOnly: false, // https:{type:Boolean}
     overlay: {
       warnings: false,
       errors: true
     },
+    // proxy: null, // 设置代理
+    // proxy: 'http://123.206.33.109:8081',          // 配置跨域处理,只有一个代理
     proxy: {
-      // change xxx-api/login => mock/login
-      // detail: https://cli.vuejs.org/config/#devserver-proxy
-      [process.env.VUE_APP_BASE_API]: {
-        target: `http://127.0.0.1:${port}/mock`,
+      // 配置多个代理
+      "/api": {
+        target: "http://localhost:8888",//这里改成你自己的后端api端口地址，记得每次修改，都需要重新build
+        //target: "http://localhost:58427",
+        //target: "http://api.douban.com",
+        ws: true,
         changeOrigin: true,
         pathRewrite: {
-          ['^' + process.env.VUE_APP_BASE_API]: ''
+          // 路径重写，
+          "^/apb": "" // 替换target中的请求地址
         }
-      }
+      },
+      // [process.env.VUE_APP_BASE_API]: {
+      //   target: "http://localhost:8888",
+      //   changeOrigin: true,
+      //   pathRewrite: {
+      //     ['^' + process.env.VUE_APP_BASE_API]: ''
+      //   }
+      // }
     },
+    before: app => { },
     after: require('./mock/mock-server.js')
   },
   configureWebpack: {
@@ -92,7 +125,7 @@ module.exports = {
       .end()
 
     config
-    // https://webpack.js.org/configuration/devtool/#development
+      // https://webpack.js.org/configuration/devtool/#development
       .when(process.env.NODE_ENV === 'development',
         config => config.devtool('cheap-source-map')
       )
@@ -104,7 +137,7 @@ module.exports = {
             .plugin('ScriptExtHtmlWebpackPlugin')
             .after('html')
             .use('script-ext-html-webpack-plugin', [{
-            // `runtime` must same as runtimeChunk name. default is `runtime`
+              // `runtime` must same as runtimeChunk name. default is `runtime`
               inline: /runtime\..*\.js$/
             }])
             .end()
