@@ -51,7 +51,7 @@ export const constantRoutes = [
       path: 'dashboard',
       name: 'Dashboard',
       component: () => import('@/views/dashboard/index'),
-      meta: { title: 'Dashboard', icon: 'dashboard' }
+      meta: { title: '首页', icon: 'dashboard' }
     }]
   },
 
@@ -161,6 +161,31 @@ export const constantRoutes = [
       }
     ]
   },
+
+
+  //系统路由
+  {
+    path: '/system',
+    component: Layout,
+    redirect: '/system/sysMenu',
+    name: 'System',
+    meta: { title: '系统管理', icon: 'example' },
+    children: [
+      {
+        path: 'sysMenu',
+        name: 'SysMenu',
+        component: () => import('@/views/system/sysMenu'),
+        meta: { title: '菜单管理', icon: 'table' }
+      },
+      {
+        path: 'sysUser',
+        name: 'SysUser',
+        component: () => import('@/views/system/sysUser'),
+        meta: { title: '人员管理', icon: 'tree' }
+      }
+    ]
+  },
+
 
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }

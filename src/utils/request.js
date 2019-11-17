@@ -24,12 +24,14 @@ service.interceptors.request.use(
       console.log('post拦截：' + config.data);
     }
 
+    debugger
     // 判断是否有token ,有则加token 到头中
     if (store.getters.token) {
       // let each request carry token
       // ['X-Token'] is a custom headers key
       // please modify it according to the actual situation
-      config.headers['X-Token'] = getToken()
+      //config.headers['X-Token'] = getToken()
+      config.headers['Bearer'] = getToken()
     }
     return config
   },

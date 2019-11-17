@@ -132,15 +132,23 @@ export default {
           // }).catch(() => {
           //   //this.loading = false
           // })
-          var data = {
-            username: that.loginForm.username,
-            password: that.loginForm.password
-          };
 
-          login(data).then(res => {
-            debugger;
-            var i = res;
-          });
+          // var data = {
+          //   username: that.loginForm.username,
+          //   password: that.loginForm.password
+          // };
+          // login(data).then(res => {
+          //   debugger;
+          //   var i = res;
+          // });
+
+          this.loading = true
+          this.$store.dispatch('sysUser/login', this.loginForm).then(() => {
+             this.$router.push({ path: this.redirect || '/' })
+             this.loading = false
+           }).catch(() => {
+             this.loading = false
+           })
         } else {
           console.log("error submit!!");
           return false;

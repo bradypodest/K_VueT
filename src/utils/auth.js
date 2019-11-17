@@ -1,3 +1,8 @@
+/*
+  tokne  存放、删除与cookies有关（认证相关信息）
+*/
+
+
 import Cookies from 'js-cookie'
 
 const TokenKey = 'K_VUE_token'
