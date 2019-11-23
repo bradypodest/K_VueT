@@ -24,3 +24,27 @@ export const getPageData=(data)=>{
         data: data
       })
 }
+
+export const delOne=(ID)=>{
+  return request({
+    url:'/SysMenu/Delete',  
+    method:'get',
+    params:{id:ID}
+  })
+}
+
+export const getOneByID=(ID)=>{
+  return request({
+    url:'/SysMenu/GetOneByID',  
+    method:'get',
+    params:{id:ID}
+  })
+}
+
+export const updateOne=(data)=>{
+  return request({
+    url: '/SysMenu/Update',
+    method: 'post',
+    data: data
+  })
+}

@@ -17,7 +17,9 @@
     </el-col>
 
     <!--列表-->
-    <el-table stripe border
+    <el-table
+      stripe
+      border
       :data="tableData"
       highlight-current-row
       v-loading="listLoading"
@@ -95,31 +97,31 @@
         >
           <el-row type="flex" justify="center">
             <el-col :span="14">
-              <el-form-item label="菜单名称" prop="name">
-                <el-input v-model="dialogFormData.name" auto-complete="off"></el-input>
+              <el-form-item label="菜单名称" prop="Name">
+                <el-input v-model="dialogFormData.Name" auto-complete="off"></el-input>
               </el-form-item>
-              <el-form-item label="菜单连接地址" prop="url">
-                <el-input v-model="dialogFormData.url" auto-complete="off"></el-input>
+              <el-form-item label="菜单连接地址" prop="Url">
+                <el-input v-model="dialogFormData.Url" auto-complete="off"></el-input>
               </el-form-item>
-              <el-form-item label="菜单描述" prop="description">
-                <el-input v-model="dialogFormData.description" auto-complete="off"></el-input>
+              <el-form-item label="菜单描述" prop="Description">
+                <el-input v-model="dialogFormData.Description" auto-complete="off"></el-input>
               </el-form-item>
-              <el-form-item label="菜单图标" prop="icon">
-                <el-input v-model="dialogFormData.icon" auto-complete="off"></el-input>
+              <el-form-item label="菜单图标" prop="Icon">
+                <el-input v-model="dialogFormData.Icon" auto-complete="off"></el-input>
               </el-form-item>
-              <el-form-item label="菜单排序号" prop="orderNo">
-                <el-input v-model="dialogFormData.orderNo" auto-complete="off"></el-input>
+              <el-form-item label="菜单排序号" prop="OrderNo">
+                <el-input v-model="dialogFormData.OrderNo" auto-complete="off"></el-input>
               </el-form-item>
 
-              <el-form-item label="是否显示" prop="isShow">
-                <el-select v-model="dialogFormData.isShow" placeholder="请选择状态" style="width:100%">
+              <el-form-item label="是否显示" prop="IsShow">
+                <el-select v-model="dialogFormData.IsShow" placeholder="请选择状态" style="width:100%">
                   <el-option label="是" :value="true"></el-option>
                   <el-option label="否" :value="false"></el-option>
                 </el-select>
               </el-form-item>
 
-              <el-form-item label="父节点" prop="parentId">
-                <el-input v-model="dialogFormData.parentId" auto-complete="off"></el-input>
+              <el-form-item label="父节点" prop="ParentId">
+                <el-input v-model="dialogFormData.ParentId" auto-complete="off"></el-input>
                 <!-- 以后更改 -->
               </el-form-item>
             </el-col>
@@ -143,7 +145,7 @@
 //import { validUsername } from "@/utils/validate";
 import util from "@/utils/date";
 
-import { addOne, getPageData } from "@/api/system/sys-menu";
+import { addOne, getPageData, delOne, getOneByID ,updateOne} from "@/api/system/sys-menu";
 
 export default {
   //组件
@@ -194,18 +196,18 @@ export default {
       },
       //弹出层中form数据
       dialogFormData: {
-        iD: "",
-        parentId: "",
-        name: "",
-        url: "",
-        description: "",
-        icon: "",
-        orderNo: "",
-        isShow: true
+        ID: "",
+        ParentId: "",
+        Name: "",
+        Url: "",
+        Description: "",
+        Icon: "",
+        OrderNo: "",
+        IsShow: true
       },
       //弹出层中form表达验证规则
       dialogFormDataRules: {
-        name: [{ required: true, message: "请输入菜单名称", trigger: "blur" }]
+        Name: [{ required: true, message: "请输入菜单名称", trigger: "blur" }]
       },
       //弹出层提交按钮是否加载
       dialogFormSubLoading: false
@@ -244,8 +246,7 @@ export default {
               message: "查询数据成功!"
             });
             that.tableData = res.data.data;
-            that.paginations.total=res.data.dataCount
-
+            that.paginations.total = res.data.dataCount;
           }
         })
         .catch();
@@ -305,7 +306,7 @@ export default {
             width: "100",
             align: "center",
             isShow: true,
-            isTime:true
+            isTime: true
           },
           {
             prop: "Modifier",
@@ -350,32 +351,70 @@ export default {
       //初始化add时 ，对弹出层表单设置数据
       this.dialogFormData = {
         //iD:'',
-        parentId: "",
-        name: "",
-        url: "",
-        description: "",
-        icon: "",
-        orderNo: "",
-        isShow: true
+        ParentId: "",
+        Name: "",
+        Url: "",
+        Description: "",
+        Icon: "",
+        OrderNo: "",
+        IsShow: true
       };
     },
     //打开 编辑 弹出层
     handleEdit(index, row) {
+      var that = this;
       console.log("点击编辑");
 
       //清空表内内容
-      this.$refs.dialogform & this.$refs.dialogform.resetFields();
+      this.$nextTick(() => {
+        this.$refs.dialogform & this.$refs.dialogform.resetFields();
+      });
 
-      (this.dialogForm.dialogFormTitle = "编辑" + "0000000000000" + "菜单"),
+      (this.dialogForm.dialogFormTitle = "编辑[" + row.Name + "]菜单"),
         (this.dialogForm.dialogFormVisible = true),
         (this.dialogForm.dialogFormType = "edit"); //当前打开弹出层类型：是新增(add)，还是编辑(edit)
 
       //获取数据
+      getOneByID(row.ID)
+        .then(res => {
+          if (res.success) {
+            that.$message({
+              type: "success",
+              message: "获取成功!"
+            });
+
+            that.dialogFormData = res.data;
+          }
+        })
+        .catch();
     },
     //删除
     handleDel(index, row) {
+      var that = this;
       console.log("删除" + index);
       console.log(row);
+      debugger;
+
+      that
+        .$confirm("此操作将删除该[" + row.Name + "]菜单, 是否继续?", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        })
+        .then(() => {
+          delOne(row.ID)
+            .then(res => {
+              if (res.success) {
+                that.$message({
+                  type: "success",
+                  message: "删除成功!"
+                });
+
+                that.getTableData();
+              }
+            })
+            .catch();
+        });
     },
 
     ///弹出层相关  --start
@@ -411,12 +450,26 @@ export default {
                   message: "保存成功!"
                 });
 
+                that.getTableData();
                 that.closeDialog();
               }
             })
             .catch();
         } else {
-          debugger;
+          //编辑保存 --api 访问
+          updateOne(data)
+            .then(res => {
+              if (res.success) {
+                that.$message({
+                  type: "success",
+                  message: "保存成功!"
+                });
+
+                that.getTableData();
+                that.closeDialog();
+              }
+            })
+            .catch();
         }
       });
     },
