@@ -48,3 +48,11 @@ export const updateOne=(data)=>{
     data: data
   })
 }
+
+export const getMenuTree=(parentId)=>{
+  return request({
+    url: '/SysMenu/GetMenuTree',
+    method: 'get',
+    params: {parentId:parentId}
+  })
+}

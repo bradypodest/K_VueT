@@ -120,9 +120,16 @@
                 </el-select>
               </el-form-item>
 
-              <el-form-item label="父节点" prop="ParentId">
-                <el-input v-model="dialogFormData.ParentId" auto-complete="off"></el-input>
-                <!-- 以后更改 -->
+              <!-- <el-form-item label="父节点" prop="ParentId">
+                <el-input v-model="dialogFormData.ParentId" auto-complete="off"></el-input> -->
+              <el-form-item label="父节点" prop="PidArr">  
+                <el-cascader style="width: 100%" v-model="dialogFormData.PidArr"
+                            :options="menusTree"
+                            :props="propsRules"
+                            filterable
+                            change-on-select
+                    ></el-cascader>
+
               </el-form-item>
             </el-col>
           </el-row>
@@ -144,8 +151,9 @@
 <script>
 //import { validUsername } from "@/utils/validate";
 import util from "@/utils/date";
+import {getNodeById} from "@/utils/util"
 
-import { addOne, getPageData, delOne, getOneByID ,updateOne} from "@/api/system/sys-menu";
+import { addOne, getPageData, delOne, getOneByID ,updateOne,getMenuTree} from "@/api/system/sys-menu";
 
 export default {
   //组件
@@ -187,6 +195,13 @@ export default {
         layout: "total, sizes, prev, pager, next, jumper"
       },
 
+      menusTree:"",//权限树
+      propsRules:{
+        value:'ID',
+        label:'Name',
+        children:"Children"
+      },
+
       ///弹出层相关  start
       //弹出层
       dialogForm: {
@@ -198,6 +213,8 @@ export default {
       dialogFormData: {
         ID: "",
         ParentId: "",
+        PidArr:[],//父集合，用于级联
+
         Name: "",
         Url: "",
         Description: "",
@@ -222,6 +239,8 @@ export default {
       this.getTableOptions(); //获取列
 
       this.getTableData(); //获取表数据
+
+      this.getMenuTreeData();//获取菜单数
 
       //获取一些参数，如下拉的什么
     },
@@ -250,6 +269,22 @@ export default {
           }
         })
         .catch();
+    
+      // //菜单树
+      // getMenuTree().then(res=>{
+      //   debugger
+      //   console.log(res.data);
+      //   that.menusTree=[res.data];
+      // }).catch();
+    
+    },
+    getMenuTreeData(){
+      var that=this;
+      getMenuTree().then(res=>{
+          var s=res.data;
+          console.log(res);
+          that.menusTree=[res.data];
+        }).catch();
     },
     //获取表格列属性  ：tableOptions
     getTableOptions() {
@@ -384,9 +419,19 @@ export default {
             });
 
             that.dialogFormData = res.data;
+
+            var currentNode="";
+            debugger;
+            getNodeById(that.menusTree,row.ID,(node, parents, children)=>{
+              return (currentNode=node);
+            })
+debugger;
+            that.dialogFormData.PidArr= currentNode.ParentArray
           }
         })
         .catch();
+
+        
     },
     //删除
     handleDel(index, row) {
@@ -436,6 +481,7 @@ export default {
         //that.dialogFormSubLoading = true;
 
         var data = that.dialogFormData;
+        data.ParentId=that.dialogFormData.PidArr.pop();
 
         //判断是新增还是编辑
         if (that.dialogForm.dialogFormType == "add") {
