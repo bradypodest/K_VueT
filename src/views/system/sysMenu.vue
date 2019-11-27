@@ -195,10 +195,10 @@ export default {
       // //菜单树
       getMenuTree().then(res=>{
         console.log(res.data);
-        console.log(res.data.children);
+        console.log(res.data.Children);
         debugger;
         that.menusTree=[res.data];        
-        that.tableData = res.data.children;
+        that.tableData = res.data.Children;
       }).catch();
     },
     //转化时间
