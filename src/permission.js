@@ -43,6 +43,12 @@ router.beforeEach(async(to, from, next) => {
           NProgress.done()
         }
       }
+
+      //获取路由设置
+      //const sys_menus_router=store.getters.
+
+      //获取权限设置
+
     }
   } else {
     /* has no token*/
