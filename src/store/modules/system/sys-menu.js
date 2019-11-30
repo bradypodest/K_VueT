@@ -16,14 +16,33 @@ export function filterRouterTwo(state,route){
     var routeItem=null;
     if (route.IsShow) {
         if (route.ParentArray.length == 1) {//默认对应的父亲节点就只有一个
+            debugger
+            if(route.PathUrl && (route.Children==null ) ){
+               
+                routeItem = {
+                    path: route.Url,
+                    component: Layout,
+                    children: [
+                        {
+                            path: 'index',
+                            name:route.MenuId,
+                            component: _import(`${route.PathUrl}`),
+                            meta:{ title: route.Name, icon: route.Icon }
+                        }
+                    ]
+                };
 
-            routeItem = {
-                path: route.Url,
-                name: route.MenuId,
-                component: Layout,
-                meta: { title: route.Name, icon: route.Icon },
-                children: []
-            };
+            }else{
+
+                routeItem = {
+                    path: route.Url,
+                    name: route.MenuId,
+                    component: Layout,
+                    meta: { title: route.Name, icon: route.Icon },
+                    children: []
+                };
+            }
+            
         }
         else {
             routeItem= {
