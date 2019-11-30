@@ -45,6 +45,12 @@
       <el-table-column prop="CreateTime" label="创建时间" width="140" align="center" :formatter="formatCreateTime" ></el-table-column>
       <el-table-column prop="Modifier" label="修改者" width="100" align="center"></el-table-column>
       <el-table-column prop="ModifyTime" label="修改时间" width="140" align="center"></el-table-column>
+       <el-table-column label="操作" width="150" align="center">
+        <template scope="scope">
+          <el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+          <el-button type="danger" size="small" @click="handleDel(scope.$index, scope.row)">删除</el-button>
+        </template>
+      </el-table-column>
     </el-table>
 
     <!--编辑、新增界面 start-->
@@ -65,6 +71,9 @@
         >
           <el-row type="flex" justify="center">
             <el-col :span="14">
+              <el-form-item label="菜单Id" prop="MenuId">
+                <el-input v-model="dialogFormData.MenuId" auto-complete="off"></el-input>
+              </el-form-item>
               <el-form-item label="菜单名称" prop="Name">
                 <el-input v-model="dialogFormData.Name" auto-complete="off"></el-input>
               </el-form-item>
@@ -91,10 +100,10 @@
                 </el-select>
               </el-form-item>
 
-              <el-form-item label="父节点" prop="PidArr">
+              <el-form-item label="父节点" prop="ParentArray">
                 <el-cascader
                   style="width: 100%"
-                  v-model="dialogFormData.PidArr"
+                  v-model="dialogFormData.ParentArray"
                   :options="menusTree"
                   :props="propsRules"
                   filterable
@@ -164,8 +173,9 @@ export default {
       dialogFormData: {
         ID: "",
         ParentId: "",
-        PidArr: [], //父集合，用于级联
+        ParentArray:[], //父集合，用于级联
 
+        MenuId:'',
         Name: "",
         Url: "",
         PathUrl:"",
@@ -176,6 +186,7 @@ export default {
       },
       //弹出层中form表达验证规则
       dialogFormRules: {
+        MenuId: [{ required: true, message: "请输入菜单Id", trigger: "blur" }],
         Name: [{ required: true, message: "请输入菜单名称", trigger: "blur" }]
       },
       ///弹出层相关  end
@@ -196,7 +207,6 @@ export default {
       getMenuTree().then(res=>{
         console.log(res.data);
         console.log(res.data.Children);
-        debugger;
         that.menusTree=[res.data];        
         that.tableData = res.data.Children;
       }).catch();
@@ -225,6 +235,9 @@ export default {
         //iD:'',
         ParentId: "",
         PidArr: [], //父集合，用于级联
+        ParentArray:[],
+
+        MenuId:'',
         Name: "",
         Url: "",
         PathUrl:"",
@@ -258,13 +271,7 @@ export default {
             });
 
             that.dialogFormData = res.data;
-
-            // var currentNode = "";
-            // getNodeById(that.menusTree, row.ID, (node, parents, children) => {
-            //   return (currentNode = node);
-            // });
-            // debugger;
-            // that.dialogFormData.PidArr = currentNode.ParentArray;
+            that.dialogFormData.ParentArray=row.ParentArray;
           }
         })
         .catch();
@@ -315,7 +322,8 @@ export default {
         }
 
         var data = that.dialogFormData;
-        data.ParentId = that.dialogFormData.PidArr.pop();
+        debugger
+        data.ParentId = that.dialogFormData.ParentArray.pop();
 
         //判断是新增还是编辑
         if (that.dialogForm.dialogFormType == "add") {

@@ -10,7 +10,7 @@ NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
 const whiteList = ['/login'] // no redirect whitelist//白名单，就是不需要登陆的
 
-router.beforeEach(async(to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   // start progress bar
   NProgress.start()
 
@@ -34,7 +34,18 @@ router.beforeEach(async(to, from, next) => {
         try {
           // get user info
           await store.dispatch('sysUser/getInfo')
-          next()
+
+          //获取路由设置
+          const accessRoutes = await store.dispatch('sysMenu/getUserMenu', hasToken)
+
+          debugger
+          console.log(accessRoutes);
+          router.addRoutes(accessRoutes);//动态添加路由
+
+          //获取权限设置
+
+          next({ ...to, replace: true });
+
         } catch (error) {
           // remove token and go to login page to re-login
           await store.dispatch('sysUser/resetToken')
@@ -42,13 +53,8 @@ router.beforeEach(async(to, from, next) => {
           next(`/login?redirect=${to.path}`)
           NProgress.done()
         }
+
       }
-
-      //获取路由设置
-      //const sys_menus_router=store.getters.
-
-      //获取权限设置
-
     }
   } else {
     /* has no token*/
@@ -68,3 +74,10 @@ router.afterEach(() => {
   // finish progress bar
   NProgress.done()
 })
+
+
+
+
+
+
+

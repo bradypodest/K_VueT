@@ -33,16 +33,17 @@ import Layout from '@/layout'
 export const constantRoutes = [
   {
     path: '/login',
+    name: 'login',
     component: () => import('@/views/login/index'),
     hidden: true
   },
 
   {
     path: '/404',
+    nameL: 'Error404',
     component: () => import('@/views/404'),
     hidden: true
   },
-
   {
     path: '/',
     component: Layout,
@@ -54,7 +55,6 @@ export const constantRoutes = [
       meta: { title: '首页', icon: 'dashboard' }
     }]
   },
-
   {
     path: '/example',
     component: Layout,
@@ -123,14 +123,14 @@ export const constantRoutes = [
                 path: 'menu1-2-1',
                 component: () => import('@/views/nested/menu1/menu1-2/menu1-2-1'),
                 name: 'Menu1-2-1',
-                
+
                 meta: { title: 'Menu1-2-1' }
               },
               {
                 path: 'menu1-2-2',
                 component: () => import('@/views/nested/menu1/menu1-2/menu1-2-2'),
                 name: 'Menu1-2-2',
-               
+
                 meta: { title: 'Menu1-2-2' }
               }
             ]
@@ -162,37 +162,36 @@ export const constantRoutes = [
     ]
   },
 
-
   //系统路由
-  {
-    path: '/system',
-    component: Layout,
-    //redirect: '/system/sysMenu',
-    name: 'System',
-    meta: { title: '系统管理', icon: 'example' },
-    children: [
-      {
-        path: 'sysMenu',
-        name: 'SysMenu',
-        component: () => import('@/views/system/sysMenu'),
-        meta: { title: '菜单管理', icon: 'table' }
-      },
-      {
-        path: 'sysUser',
-        name: 'SysUser',
-        component: () => import('@/views/system/sysUser'),
-        meta: { title: '人员管理', icon: 'tree' }
-      }
-    ]
-  },
+  // {
+  //   path: '/system',
+  //   component: Layout,
+  //   //redirect: '/system/sysMenu',
+  //   name: 'System',
+  //   meta: { title: '系统管理', icon: 'example' },
+  //   children: [
+  //     {
+  //       path: 'sysMenu',
+  //       name: 'SysMenu',
+  //       component: () => import('@/views/system/sysMenu'),
+  //       meta: { title: '菜单管理', icon: 'table' }
+  //     },
+  //     {
+  //       path: 'sysUser',
+  //       name: 'SysUser',
+  //       component: () => import('@/views/system/sysUser'),
+  //       meta: { title: '人员管理', icon: 'tree' }
+  //     }
+  //   ]
+  // },
 
 
   // 404 page must be placed at the end !!!
-  { path: '*', redirect: '/404', hidden: true }
+  //{ path: '*', redirect: '/404', hidden: true }
 ]
 
 const createRouter = () => new Router({
-  // mode: 'history', // require service support
+  mode: 'history', // require service support
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRoutes
 })

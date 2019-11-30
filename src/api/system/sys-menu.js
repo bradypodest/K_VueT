@@ -56,3 +56,11 @@ export const getMenuTree=(parentId)=>{
     params: {parentId:parentId}
   })
 }
+
+export const getUserMenuTree=(token)=>{
+  return request({
+    url: '/SysMenu/GetUserMenuTree',
+    method: 'get',
+    params: { token }
+  })
+}
