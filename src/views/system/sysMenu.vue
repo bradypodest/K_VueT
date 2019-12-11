@@ -141,6 +141,7 @@ import {
 } from "@/api/system/sys-menu";
 
 export default {
+  name:"SysMenu",
   //组件
   components: {},
   //数据

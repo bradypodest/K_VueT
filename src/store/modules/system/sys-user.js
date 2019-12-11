@@ -67,11 +67,12 @@ const actions = {
   },
 
   // user logout
-  logout({ commit, state }) {
+  logout({ commit, state, dispatch }) {
     commit('SET_TOKEN', '')
     removeToken()
     resetRouter()
 
+    dispatch('tagsView/delAllViews', null, { root: true })
     // return new Promise((resolve, reject) => {
     //   logout(state.token).then(() => {
     //     commit('SET_TOKEN', '')

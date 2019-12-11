@@ -9,5 +9,8 @@ const getters = {
   name: state => state.sysUser.name,
 
   sys_menu_routers:state=>state.sysMenu.sys_menu_routers,
+
+  visitedViews: state => state.tagsView.visitedViews,
+  cachedViews: state => state.tagsView.cachedViews,
 }
 export default getters

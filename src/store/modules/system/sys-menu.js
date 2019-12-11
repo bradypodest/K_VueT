@@ -106,7 +106,8 @@ const mutations = {
     SET_ROUTES: (state, tree) => {
         state.tree = tree;
         const Routers = groupAddRouter(state);
-        debugger;
+        console.log("现在路由：");
+        console.log(Routers);
         state.routes = Routers;
     }
 }

@@ -204,6 +204,7 @@ import {
 } from "@/api/system/sys-user";
 
 export default {
+  name:"SysUser",
   //组件
   components: {},
   //数据
