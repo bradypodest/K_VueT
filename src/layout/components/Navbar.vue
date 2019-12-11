@@ -5,6 +5,14 @@
     <breadcrumb class="breadcrumb-container" />
 
     <div class="right-menu">
+
+      <!-- 按钮组 start @author:Karl @date:2019-12-11 17:25:30-->
+      <template>
+        <screenfull id="screenfull" class="right-menu-item hover-effect last-menu-item" />
+      </template>
+
+      <!-- 按钮组 end @author:Karl @date:2019-12-11 17:25:54-->
+
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
           <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
@@ -36,10 +44,14 @@ import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
 
+import Screenfull from '@/components/Screenfull'
+
 export default {
   components: {
     Breadcrumb,
-    Hamburger
+    Hamburger,
+
+    Screenfull,
   },
   computed: {
     ...mapGetters([
@@ -100,7 +112,7 @@ export default {
 
     .right-menu-item {
       display: inline-block;
-      padding: 0 8px;
+      padding: 0 10px;
       height: 100%;
       font-size: 18px;
       color: #5a5e66;
@@ -114,6 +126,10 @@ export default {
           background: rgba(0, 0, 0, .025)
         }
       }
+    }
+
+    .last-menu-item{
+      margin-right: 18px;
     }
 
     .avatar-container {
