@@ -8,6 +8,9 @@
 
       <!-- 按钮组 start @author:Karl @date:2019-12-11 17:25:30-->
       <template>
+
+        <lang-select class="right-menu-item hover-effect" />
+
         <screenfull id="screenfull" class="right-menu-item hover-effect last-menu-item" />
       </template>
 
@@ -45,6 +48,7 @@ import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
 
 import Screenfull from '@/components/Screenfull'
+import LangSelect from '@/components/LangSelect'
 
 export default {
   components: {
@@ -52,6 +56,7 @@ export default {
     Hamburger,
 
     Screenfull,
+    LangSelect,
   },
   computed: {
     ...mapGetters([
