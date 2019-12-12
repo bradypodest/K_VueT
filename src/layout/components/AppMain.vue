@@ -1,9 +1,11 @@
 <template>
   <section class="app-main">
     <transition name="fade-transform" mode="out-in">
-      <keep-alive :include="cachedViews">
+<!-- 为了开发关闭这行代码keep-alive 代码-->
+      <!-- <keep-alive :include="cachedViews">
         <router-view :key="key" />
-      </keep-alive>
+      </keep-alive> -->
+        <router-view :key="key" />
     </transition>
   </section>
 </template>

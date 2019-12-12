@@ -17,13 +17,23 @@
     <el-table
       :data="tableData"
       row-key="ID"
-      
       :tree-props="{children: 'Children', hasChildren: 'hasChildren'}"
       border
       style="width: 100%;box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)"
-      >
+    >
       <el-table-column type="index" width="80" label="序号"></el-table-column>
-      <el-table-column prop="Name" label="菜单名称" width="100" align="center"></el-table-column>
+      <el-table-column prop="Name" label="菜单名称" width="130" align="center"></el-table-column>
+      <el-table-column label="操作" width="280" align="center">
+        <template scope="scope">
+          <el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+          <el-button type="danger" size="small" @click="handleDel(scope.$index, scope.row)">删除</el-button>
+          <el-button
+            size="small"
+            @click="handlePowerEdit(scope.$index, scope.row)"
+            v-if="scope.row.Children ==null || scope.row.Children.length==0"
+          >编辑页面权限</el-button>
+        </template>
+      </el-table-column>
       <el-table-column prop="Url" label="菜单链接地址" width="140" align="center"></el-table-column>
       <el-table-column prop="PathUrl" label="菜单页面地址" width="140" align="center"></el-table-column>
       <el-table-column prop="Description" label="描述" align="center" min-width="180"></el-table-column>
@@ -42,15 +52,15 @@
       </el-table-column>
 
       <el-table-column prop="Creator" label="创建者" width="100" align="center"></el-table-column>
-      <el-table-column prop="CreateTime" label="创建时间" width="140" align="center" :formatter="formatCreateTime" ></el-table-column>
+      <el-table-column
+        prop="CreateTime"
+        label="创建时间"
+        width="140"
+        align="center"
+        :formatter="formatCreateTime"
+      ></el-table-column>
       <el-table-column prop="Modifier" label="修改者" width="100" align="center"></el-table-column>
       <el-table-column prop="ModifyTime" label="修改时间" width="140" align="center"></el-table-column>
-       <el-table-column label="操作" width="150" align="center">
-        <template scope="scope">
-          <el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-          <el-button type="danger" size="small" @click="handleDel(scope.$index, scope.row)">删除</el-button>
-        </template>
-      </el-table-column>
     </el-table>
 
     <!--编辑、新增界面 start-->
@@ -115,21 +125,120 @@
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click.native="dialogForm.dialogFormVisible=false">取消</el-button>
-          <el-button
-            type="primary"
-            @click.native="dialogFormSubmit"
-          >提交</el-button>
+          <el-button type="primary" @click.native="dialogFormSubmit">提交</el-button>
         </div>
       </el-dialog>
     </div>
     <!--编辑、新增界面 end-->
+
+    <!-- 编辑页面权限 start @author:Karl @date:2019-12-12 14:20:53-->
+    <div class="dialog">
+      <el-dialog
+        :title="dialogPowerForm.dialogTitle"
+        :visible.sync="dialogPowerForm.dialogVisible"
+        :close-on-click-modal="false"
+        width="80%"
+      >
+        <el-row type="flex" justify="space-around">
+          <el-col :span="8">
+            <div class="power-Group">
+              <div>
+                <el-button type @click="newRow">新增一行</el-button>
+                <el-button type @click="delRow">删除</el-button>
+              </div>
+              <el-table
+                :data="powerGroupData"
+                border
+                @cell-click="beginEdit"
+                @cell-mouse-leave="endEdit"
+                :row-class-name="initIndex"
+                ref="powerGroupTable"
+              >
+                <el-table-column label="权限组ID" prop="ID" align="center"></el-table-column>
+                <el-table-column label="权限组名称" prop="Name" align="center">
+                  <template slot-scope="scope">
+                    <div v-if="edit.rowIndex==scope.$index">
+                      <el-input v-model="scope.row.Name" placeholder="请输入"></el-input>
+                    </div>
+                    <div v-else>{{scope.row.Name}}</div>
+                  </template>
+                </el-table-column>
+                <el-table-column label="排序" prop="OrderNo" align="center">
+                  <template slot-scope="scope">
+                    <div v-if="edit.rowIndex==scope.$index">
+                      <el-input v-model="scope.row.OrderNo" placeholder="请输入"></el-input>
+                    </div>
+                    <div v-else>{{scope.row.OrderNo}}</div>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </div>
+          </el-col>
+          <el-col :span="14">
+            <div>
+              <el-button type @click="newRow('powers')">新增一行</el-button>
+              <el-button type @click="delRow">删除</el-button>
+              <span class="current-power-group-span">当前权限组：{{currentPowerGroup.Name}}</span>
+            </div>
+            <div class="powers">
+              <el-table
+                :data="powersData"
+                border
+                @cell-click="beginPowersEdit"
+                @cell-mouse-leave="endPowersEdit"
+                :row-class-name="initIndex"
+                ref="powersTable"
+              >
+                <el-table-column label="权限ID" prop="ID" align="center"></el-table-column>
+                <el-table-column label="权限名称" prop="Name" align="center">
+                  <template slot-scope="scope">
+                    <div v-if="editPowers.rowIndex==scope.$index">
+                      <el-input v-model="scope.row.Name" placeholder="请输入"></el-input>
+                    </div>
+                    <div v-else>{{scope.row.Name}}</div>
+                  </template>
+                </el-table-column>
+                <el-table-column label="权限api" prop="ApiUrl" align="center">
+                  <template slot-scope="scope">
+                    <div v-if="editPowers.rowIndex==scope.$index">
+                      <el-input v-model="scope.row.ApiUrl" placeholder="请输入"></el-input>
+                    </div>
+                    <div v-else>{{scope.row.ApiUrl}}</div>
+                  </template>
+                </el-table-column>
+                <el-table-column label="是否公开api" prop="IsOpen" align="center">
+                  <template slot-scope="scope">
+                    <div v-if="editPowers.rowIndex==scope.$index">
+                      <el-switch
+                        style="display: block"
+                        v-model="scope.row.IsOpen"
+                        active-color="#13ce66"
+                        inactive-color="#ff4949"
+                        active-text="是"
+                        inactive-text="否"
+                      ></el-switch>
+                    </div>
+                    <div v-else>{{scope.row.IsOpen==true?'是':'否'}}</div>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </div>
+          </el-col>
+        </el-row>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click.native="dialogForm.dialogFormVisible=false">取消</el-button>
+          <el-button type="primary" @click.native="dialogFormSubmit">提交</el-button>
+        </div>
+      </el-dialog>
+    </div>
+    <!-- 编辑页面权限 end @author:Karl @date:2019-12-12 14:21:24-->
   </div>
 </template>
 
 <script>
 //import { validUsername } from "@/utils/validate";
 import util from "@/utils/date";
-import { getNodeById } from "@/utils/util";
+import { getNodeById, getGuidGenerator } from "@/utils/util";
 
 import {
   addOne,
@@ -141,15 +250,14 @@ import {
 } from "@/api/system/sys-menu";
 
 export default {
-  name:"SysMenu",
+  name: "SysMenu",
   //组件
   components: {},
   //数据
   data() {
     return {
       //查询条件
-      filters: {
-      },
+      filters: {},
       //列表数据
       tableData: [],
       //是否出现加载图标（现阶段使用axios封装的）
@@ -174,12 +282,12 @@ export default {
       dialogFormData: {
         ID: "",
         ParentId: "",
-        ParentArray:[], //父集合，用于级联
+        ParentArray: [], //父集合，用于级联
 
-        MenuId:'',
+        MenuId: "",
         Name: "",
         Url: "",
-        PathUrl:"",
+        PathUrl: "",
         Description: "",
         Icon: "",
         OrderNo: "",
@@ -191,6 +299,34 @@ export default {
         Name: [{ required: true, message: "请输入菜单名称", trigger: "blur" }]
       },
       ///弹出层相关  end
+
+      ///权限弹出层 start
+      dialogPowerForm: {
+        dialogTitle: "页面权限编辑",
+        dialogVisible: false
+      },
+      powerGroupData: [
+        {
+          ID: "",
+          Name: "",
+          OrderNo: ""
+        }
+      ],
+      edit: { columnIndex: -1, rowIndex: -1 }, //当前双击编辑的行与列
+      currentPowerGroup:{},//当前显示详情权限的权限组
+
+      powersData: [
+        // {
+        //   ID:"",
+        //   Name: "",
+        //   ApiUrl: "",
+        //   IsOpen: ""
+        // }
+      ],
+
+      editPowers: { columnIndex: -1, rowIndex: -1 } //当前双击编辑的行与列
+
+      ///权限弹出层 end
     };
   },
 
@@ -205,12 +341,14 @@ export default {
       var that = this;
 
       // //菜单树
-      getMenuTree().then(res=>{
-        console.log(res.data);
-        console.log(res.data.Children);
-        that.menusTree=[res.data];        
-        that.tableData = res.data.Children;
-      }).catch();
+      getMenuTree()
+        .then(res => {
+          console.log(res.data);
+          console.log(res.data.Children);
+          that.menusTree = [res.data];
+          that.tableData = res.data.Children;
+        })
+        .catch();
     },
     //转化时间
     formatCreateTime: function(row, column) {
@@ -236,12 +374,12 @@ export default {
         //iD:'',
         ParentId: "",
         PidArr: [], //父集合，用于级联
-        ParentArray:[],
+        ParentArray: [],
 
-        MenuId:'',
+        MenuId: "",
         Name: "",
         Url: "",
-        PathUrl:"",
+        PathUrl: "",
         Description: "",
         Icon: "",
         OrderNo: "",
@@ -250,6 +388,7 @@ export default {
     },
     //打开 编辑 弹出层
     handleEdit(index, row) {
+      debugger;
       var that = this;
       console.log("点击编辑");
 
@@ -272,7 +411,7 @@ export default {
             });
 
             that.dialogFormData = res.data;
-            that.dialogFormData.ParentArray=row.ParentArray;
+            that.dialogFormData.ParentArray = row.ParentArray;
           }
         })
         .catch();
@@ -323,7 +462,7 @@ export default {
         }
 
         var data = that.dialogFormData;
-        debugger
+        debugger;
         data.ParentId = that.dialogFormData.ParentArray.pop();
 
         //判断是新增还是编辑
@@ -367,6 +506,74 @@ export default {
       this.dialogForm.dialogFormVisible = false;
     },
     ///弹出层相关 --end
+
+    ///权限弹出层 start
+    ///给每个行加一个数据
+    initIndex(obj) {
+      // if (this.index) {
+      obj.row.elementIdex = obj.rowIndex;
+      // }
+      return "";
+    },
+    handlePowerEdit(index, row) {
+      this.dialogPowerForm.dialogVisible = true;
+
+      //查询数据
+      this.initPowerGroupData(row.ID);
+    },
+    initPowerGroupData(ID){
+      
+    },
+
+    beginEdit(row, column, cell, event) {
+      if (row.hasOwnProperty("elementIdex")) {
+        if (this.edit.rowIndex == row.elementIdex) {
+          return;
+        }
+      }
+
+      this.currentPowerGroup=row;
+      this.edit.rowIndex = row.elementIdex;
+    },
+    endEdit(row, column, cell, event) {
+      //if (!this.enableEdit) return;
+      this.edit.rowIndex = -1;
+    },
+
+    beginPowersEdit(row, column, cell, event) {
+      if (row.hasOwnProperty("elementIdex")) {
+        if (this.edit.rowIndex == row.elementIdex) {
+          return;
+        }
+      }
+
+      this.editPowers.rowIndex = row.elementIdex;
+    },
+    endPowersEdit(row, column, cell, event) {
+      //if (!this.enableEdit) return;
+      this.editPowers.rowIndex = -1;
+    },
+
+    //新增一行
+    newRow(value) {
+      if (value == "powers") {
+        this.powersData.push({
+          ID:getGuidGenerator(),
+          Name: "",
+          ApiUrl: "",
+          IsOpen: false,
+        });
+      } else {
+        this.powerGroupData.push({
+          ID: getGuidGenerator(),
+          Name: "",
+          OrderNo: ""
+        });
+      }
+    },
+    delRow() {}
+
+    ///权限弹出层 end
   },
   //页面挂载之后执行方法
   mounted() {
@@ -378,3 +585,17 @@ export default {
   watch: {}
 };
 </script>
+<style scoped lang="scss">
+.current-power-group-span{
+  margin-left: 20px;
+  color: red;}
+
+.power-Group{
+
+  ::v-deep.el-dialog__body .current-power-group-span{
+  margin-left: 20px;
+  color: red;}
+
+}
+
+</style>
