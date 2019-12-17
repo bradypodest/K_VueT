@@ -12,3 +12,11 @@ export const getMenuPowerGroups=(menuId)=>{
         params:{menuId:menuId}
       })
 }
+
+export const updateMenuPowerGroups=(data)=>{
+  return request({
+    url: apiF+'/UpdateMenuPowerGroups',
+    method: 'post',
+    data: data
+  });
+}
