@@ -147,15 +147,15 @@
                 <el-button type @click="delRow">删除</el-button>
               </div>
               <el-table
-                :data="powerGroupData"
+                :data="getPowerGroupData"
                 border
                 @cell-click="beginEdit"
                 @cell-mouse-leave="endEdit"
                 :row-class-name="initIndex"
                 ref="powerGroupTable"
               >
-                <el-table-column label="权限组ID" prop="ID" align="center"></el-table-column>
-                <el-table-column label="权限组名称" prop="Name" align="center">
+                <el-table-column label="权限组ID" prop="SysPowerGroup.ID" align="center"></el-table-column>
+                <el-table-column label="权限组名称" prop="SysPowerGroup.Name" align="center">
                   <template slot-scope="scope">
                     <div v-if="edit.rowIndex==scope.$index">
                       <el-input v-model="scope.row.Name" placeholder="请输入"></el-input>
@@ -163,7 +163,7 @@
                     <div v-else>{{scope.row.Name}}</div>
                   </template>
                 </el-table-column>
-                <el-table-column label="排序" prop="OrderNo" align="center">
+                <el-table-column label="排序" prop="SysPowerGroup.OrderNo" align="center">
                   <template slot-scope="scope">
                     <div v-if="edit.rowIndex==scope.$index">
                       <el-input v-model="scope.row.OrderNo" placeholder="请输入"></el-input>
@@ -249,6 +249,8 @@ import {
   getMenuTree
 } from "@/api/system/sys-menu";
 
+import { getMenuPowerGroups } from "@/api/system/sys-menu-power-group";
+
 export default {
   name: "SysMenu",
   //组件
@@ -301,10 +303,34 @@ export default {
       ///弹出层相关  end
 
       ///权限弹出层 start
+      currentMenuID: "", //当前菜单ID
       dialogPowerForm: {
         dialogTitle: "页面权限编辑",
         dialogVisible: false
       },
+      getPowerGroupData: [
+        {
+          //获取的情况
+          ID: "",
+          SysMenuID: "",
+          SysPowerGroupID: "",
+          SysMenu: {},
+          SysPowerGroup: {
+            ID: "",
+            Name: "",
+            OrderNo: ""
+          },
+          SysPowers: [
+            {
+              ID: "",
+              SysPowerGroupID: "",
+              Name: "",
+              ApiUrl: "",
+              IsOpen: ""
+            }
+          ]
+        }
+      ],
       powerGroupData: [
         {
           ID: "",
@@ -313,7 +339,7 @@ export default {
         }
       ],
       edit: { columnIndex: -1, rowIndex: -1 }, //当前双击编辑的行与列
-      currentPowerGroup:{},//当前显示详情权限的权限组
+      currentPowerGroup: {}, //当前显示详情权限的权限组
 
       powersData: [
         // {
@@ -517,14 +543,35 @@ export default {
     },
     handlePowerEdit(index, row) {
       this.dialogPowerForm.dialogVisible = true;
-
-      //查询数据
-      this.initPowerGroupData(row.ID);
+      (this.currentMenuID = row.ID), //当前菜单ID
+        //查询数据
+        this.initPowerGroupData(row.ID);
     },
-    initPowerGroupData(ID){
-      
-    },
+    //查询菜单对应的权限组
+    initPowerGroupData(ID) {
+      var that = this;
 
+      getMenuPowerGroups(ID)
+        .then(res => {
+          console.log(res);
+          if (res.data && res.data.length > 0) {
+            that.getPowerGroupData = res.data;
+
+            var powerGroups = [];
+            // res.data.forEach(item => {
+            //   powerGroups.push({
+            //     SysPowerGroup:
+            //   });
+            // });
+            //that.powerGroupData=res.data.filter(item=>item.SysPowerGroup);
+            //that.
+          } else {
+            //that.powerGroupData=[]
+            that.getPowerGroupData = [];
+          }
+        })
+        .catch();
+    },
     beginEdit(row, column, cell, event) {
       if (row.hasOwnProperty("elementIdex")) {
         if (this.edit.rowIndex == row.elementIdex) {
@@ -532,7 +579,7 @@ export default {
         }
       }
 
-      this.currentPowerGroup=row;
+      this.currentPowerGroup = row;
       this.edit.rowIndex = row.elementIdex;
     },
     endEdit(row, column, cell, event) {
@@ -558,16 +605,38 @@ export default {
     newRow(value) {
       if (value == "powers") {
         this.powersData.push({
-          ID:getGuidGenerator(),
-          Name: "",
-          ApiUrl: "",
-          IsOpen: false,
-        });
-      } else {
-        this.powerGroupData.push({
           ID: getGuidGenerator(),
           Name: "",
-          OrderNo: ""
+          ApiUrl: "",
+          IsOpen: false
+        });
+      } else {
+        // this.powerGroupData.push({
+        //   ID: getGuidGenerator(),
+        //   Name: "",
+        //   OrderNo: ""
+        // });
+        var sysPowerGroupID = getGuidGenerator();
+
+        this.getPowerGroupData.push({
+          ID: "", //可不要
+          SysMenuID: this.currentMenuID,
+          SysPowerGroupID: sysPowerGroupID, //可不要
+          SysMenu: {}, //可不要
+          SysPowerGroup: {
+            ID: sysPowerGroupID,
+            Name: "",
+            OrderNo: ""
+          },
+          SysPowers: [
+            {
+              ID: getGuidGenerator(),
+              SysPowerGroupID: sysPowerGroupID,
+              Name: "",
+              ApiUrl: "",
+              IsOpen: ""
+            }
+          ]
         });
       }
     },
@@ -586,16 +655,15 @@ export default {
 };
 </script>
 <style scoped lang="scss">
-.current-power-group-span{
+.current-power-group-span {
   margin-left: 20px;
-  color: red;}
-
-.power-Group{
-
-  ::v-deep.el-dialog__body .current-power-group-span{
-  margin-left: 20px;
-  color: red;}
-
+  color: red;
 }
 
+.power-Group {
+  ::v-deep.el-dialog__body .current-power-group-span {
+    margin-left: 20px;
+    color: red;
+  }
+}
 </style>
