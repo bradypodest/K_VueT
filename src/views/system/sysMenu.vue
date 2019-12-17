@@ -144,10 +144,10 @@
             <div class="power-Group">
               <div>
                 <el-button type @click="newRow">新增一行</el-button>
-                <el-button type @click="delRow">删除</el-button>
+                <!-- <el-button type @click="delRow">删除</el-button> -->
               </div>
               <el-table
-                :data="getPowerGroupData"
+                :data="getPowerGroupData.filter(item=>item.Status==1)"
                 border
                 @cell-click="beginEdit"
                 @cell-mouse-leave="endEdit"
@@ -155,6 +155,15 @@
                 ref="powerGroupTable"
               >
                 <el-table-column label="权限组ID" prop="SysPowerGroup.ID" align="center"></el-table-column>
+                <el-table-column label="操作" width="100" align="center">
+                  <template scope="scope">
+                    <el-button
+                      type="danger"
+                      size="small"
+                      @click.stop="delRow(scope.$index, scope.row)"
+                    >删除</el-button>
+                  </template>
+                </el-table-column>
                 <el-table-column label="权限组名称" align="center">
                   <template slot-scope="scope">
                     <div v-if="edit.rowIndex==scope.$index">
@@ -163,9 +172,8 @@
                     <div v-else>{{scope.row.SysPowerGroup.Name}}</div>
                     <!-- {{scope.row}} -->
                   </template>
-
                 </el-table-column>
-                <el-table-column label="排序"  align="center">
+                <el-table-column label="排序" align="center">
                   <template slot-scope="scope">
                     <div v-if="edit.rowIndex==scope.$index">
                       <el-input v-model="scope.row.SysPowerGroup.OrderNo" placeholder="请输入"></el-input>
@@ -179,14 +187,14 @@
           <el-col :span="14">
             <div>
               <el-button type @click="newRow('powers')">新增一行</el-button>
-              <el-button type @click="delRow">删除</el-button>
+              <!-- <el-button type @click="delRow">删除</el-button> -->
               <span
                 class="current-power-group-span"
               >当前权限组：{{currentPowerGroup.SysPowerGroup!=null?currentPowerGroup.SysPowerGroup.Name:""}}</span>
             </div>
             <div class="powers">
               <el-table
-                :data="currentPowerGroup.SysPowerGroup!=null? getPowerGroupData.filter(item=>item.SysPowerGroupID==currentPowerGroup.SysPowerGroup.ID)[0].SysPowers:[]"
+                :data="currentPowerGroup.SysPowerGroup!=null? getPowerGroupData.filter(item=>item.SysPowerGroupID==currentPowerGroup.SysPowerGroup.ID)[0].SysPowers.filter(item=>item.Status==1):[]"
                 border
                 @cell-click="beginPowersEdit"
                 @cell-mouse-leave="endPowersEdit"
@@ -194,6 +202,15 @@
                 ref="powersTable"
               >
                 <el-table-column label="权限ID" prop="ID" align="center"></el-table-column>
+                <el-table-column label="操作" width="100" align="center">
+                  <template scope="scope">
+                    <el-button
+                      type="danger"
+                      size="small"
+                      @click="delRow(scope.$index, scope.row,'powers')"
+                    >删除</el-button>
+                  </template>
+                </el-table-column>
                 <el-table-column label="权限名称" prop="Name" align="center">
                   <template slot-scope="scope">
                     <div v-if="editPowers.rowIndex==scope.$index">
@@ -253,7 +270,10 @@ import {
   getMenuTree
 } from "@/api/system/sys-menu";
 
-import { getMenuPowerGroups,updateMenuPowerGroups } from "@/api/system/sys-menu-power-group";
+import {
+  getMenuPowerGroups,
+  updateMenuPowerGroups
+} from "@/api/system/sys-menu-power-group";
 
 export default {
   name: "SysMenu",
@@ -548,9 +568,9 @@ export default {
     handlePowerEdit(index, row) {
       this.dialogPowerForm.dialogVisible = true;
       this.currentMenuID = row.ID; //当前菜单ID
-      this.currentPowerGroup=[];
-        //查询数据
-        this.initPowerGroupData(row.ID);
+      this.currentPowerGroup = {};
+      //查询数据
+      this.initPowerGroupData(row.ID);
     },
     //查询菜单对应的权限组
     initPowerGroupData(ID) {
@@ -561,9 +581,9 @@ export default {
           console.log(res);
           if (res.data && res.data.length > 0) {
             that.getPowerGroupData = res.data;
-            console.log(res.data[0])
+            console.log(res.data[0]);
             //debugger;
-            that.currentPowerGroup=res.data[0];
+            that.currentPowerGroup = res.data[0];
           } else {
             //that.powerGroupData=[]
             that.getPowerGroupData = [];
@@ -629,7 +649,8 @@ export default {
               SysPowerGroupID: that.currentPowerGroup.SysPowerGroup.ID,
               Name: "",
               ApiUrl: "",
-              IsOpen: false
+              IsOpen: false,
+              Status: 1
             });
         }
       } else {
@@ -645,10 +666,12 @@ export default {
           SysMenuID: that.currentMenuID,
           SysPowerGroupID: sysPowerGroupID, //可不要
           //SysMenu: {}, //可不要
+          Status: 1,
           SysPowerGroup: {
             ID: sysPowerGroupID,
             Name: "",
-            OrderNo: ""
+            OrderNo: "",
+            Status: 1
           },
           SysPowers: [
             {
@@ -656,58 +679,97 @@ export default {
               SysPowerGroupID: sysPowerGroupID,
               Name: "",
               ApiUrl: "",
-              IsOpen: false
+              IsOpen: false,
+              Status: 1
             }
           ]
         });
       }
     },
-    delRow() {},
+    delRow(index, row, value) {
+      var that = this;
+
+      if (value == "powers") {
+        //遍历
+        that.getPowerGroupData.filter(item=>item.SysPowerGroupID==that.currentPowerGroup.SysPowerGroup.ID)[0].SysPowers.forEach(item => {
+          if (row.ID == item.ID) {
+            item.Status = 2;
+          }
+        });
+
+      } else {
+        //遍历
+        //var copyGetPowerGroupData=that.getPowerGroupData.concat();
+        that.getPowerGroupData.forEach(item => {
+          if (row.SysPowerGroup.ID == item.SysPowerGroup.ID) {
+            item.Status = 2;
+          }
+        });
+
+        //如果删除的是与右边当前权限组一致的，则将currentPowerGroup 顶到最上面一个
+        if (row.SysPowerGroup.ID == that.currentPowerGroup.SysPowerGroup.ID) {
+          var filterPowerGroupData = that.getPowerGroupData.filter(
+            item => item.Status == 1
+          );
+          if (filterPowerGroupData.length > 0) {
+            that.currentPowerGroup = that.getPowerGroupData.filter(
+              item => item.Status == 1
+            )[0];
+          } else {
+            that.currentPowerGroup = {};
+          }
+        }
+      }
+    },
 
     //更新权限提交数据
     dialogPowerFormSubmit() {
       var that = this;
 
       //验证 循环判断数据是否完善
-      var result=true;
-      var resultMsg="";
+      var result = true;
+      var resultMsg = "";
 
-      if(that.getPowerGroupData.length==0){
-        result=false;
-        resultMsg="提交数据为空"
+      if (that.getPowerGroupData.length == 0) {
+        result = false;
+        resultMsg = "提交数据为空";
       }
 
       that.getPowerGroupData.forEach(item => {
-        if(!item.SysMenuID){
-          resultMsg="数据中不包含菜单ID";
+        if (!item.SysMenuID) {
+          resultMsg = "数据中不包含菜单ID";
           return false;
         }
-        if(!item.SysPowerGroup||!item.SysPowerGroup.ID ){
-          resultMsg="数据中不包含权限组数据";
+        if (!item.SysPowerGroup || !item.SysPowerGroup.ID) {
+          resultMsg = "数据中不包含权限组数据";
           return false;
         }
-        if(!item.SysPowers||!item.SysPowers.ID ){
-          resultMsg="数据中不包含权限组对应权限数据";
+        if (!item.SysPowers || !item.SysPowers.ID) {
+          resultMsg = "数据中不包含权限组对应权限数据";
           return false;
         }
       });
-      if(!result){
+      if (!result) {
         that.$message({
-            type: "error",
-            message: resultMsg
-          });
+          type: "error",
+          message: resultMsg
+        });
 
-          return false;
+        return false;
       }
+debugger;
+      //筛选数据
+      var data =this.getPowerGroupData.filter(item=>item.SysPowerGroup.Name&&item.SysPowerGroup.OrderNo);
 
+      //筛选power 数据
+
+debugger;
       //提交数据
-      updateMenuPowerGroups(this.getPowerGroupData).then(res=>{
-        debugger
-      }).catch();
-
-      
-      
-      
+      updateMenuPowerGroups(data)
+        .then(res => {
+          debugger;
+        })
+        .catch();
     }
 
     ///权限弹出层 end
