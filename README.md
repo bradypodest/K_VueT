@@ -1,80 +1,52 @@
-# vue-admin-template
+# K_VueT
 
-English | [简体中文](./README-zh.md)
+ 简体中文 | [English](./README-zh.md)
 
-> A minimal vue admin template with Element UI & axios & iconfont & permission control & lint
+> 一个简单使用Element UI & axios & iconfont & permission control 的vue 后台管理，需要配合后端项目K.CoreT使用
+> 本项目是基于 vue-admin-template 项目进行二次开发
 
-**Live demo:** http://panjiachen.github.io/vue-admin-template
+## 功能介绍
+|                    功能                 |       描述                                             |     完成情况 |
+| :-------------------------------------: | :----------------------------------------------------: | :----------: |
+|                  基础界面               |     克隆于vue-admin-template,界面样式一致                |    OK        |
+|                  jwt登录                |     采用K.VueT项目jwt登录接口获取token                   |     OK       |
+|            动态路由（支持三级路由）       |     可根据项目动态分配项目链接                           |     OK       |
+|                页面图标库               |     项目中可使用的图标展示页面                            |     OK       |
+|              页面全屏按钮                |    同chrome的F11效果一致,浏览器无边框                    |     OK       |
+|          项目国际化（见另一分支项目）     |     可选择项目语言                                       |  OK（主分支无）|
+|          项目全局配置                    |    可配置项目的部分颜色,是否有标签栏,是否隐藏项目logo      |   OK          |
+|            页面标签页                   |     标签页具有关闭其他页，关闭当前页,刷新页面功能           |   OK          |
+|           QQ,微信登录                   |     使用QQ，微信快速登录                                  |   NO         |
+|           页面菜单配置                  |      可配置菜单页面                                       |   OK          |
+|           项目权限                      |     项目可根据用户具有的权限显示对应页面,使用指定的功能      |  Ongoing      |
+|           用户管理（包含用户权限）        |    用户                                                 |   Ongoing     |
+|           角色管理 （与权限相关）         |    角色                                                 |   Ongoing     |
+|           其它功能（待定）               |                                                         |    NO         |
 
 
-**The current version is `v4.0+` build on `vue-cli`. If you want to use the old version , you can switch branch to [tag/3.11.0](https://github.com/PanJiaChen/vue-admin-template/tree/tag/3.11.0), it does not rely on `vue-cli`**
+
 
 ## Build Setup
 
-
 ```bash
-# clone the project
-git clone https://github.com/PanJiaChen/vue-admin-template.git
+# 克隆项目
+git clone git@github.com:bradypodest/K_VueT.git
 
-# enter the project directory
-cd vue-admin-template
+# 进入项目文件夹
+cd K_VueT
 
-# install dependency
-npm install
+# 安装依赖  （建议使用cnpm install  或者 npm install --registry=https://registry.npm.taobao.org）
+npm install 
 
-# develop
+# 运行
 npm run dev
 ```
 
-This will automatically open http://localhost:9528
+浏览器访问 http://localhost:8889
 
-## Build
+## 示例图
 
-```bash
-# build for test environment
-npm run build:stage
-
-# build for production environment
-npm run build:prod
-```
-
-## Advanced
-
-```bash
-# preview the release environment effect
-npm run preview
-
-# preview the release environment effect + static resource analysis
-npm run preview -- --report
-
-# code format check
-npm run lint
-
-# code format check and auto fix
-npm run lint -- --fix
-```
-
-Refer to [Documentation](https://panjiachen.github.io/vue-element-admin-site/guide/essentials/deploy.html) for more information
-
-## Demo
-
-![demo](https://github.com/PanJiaChen/PanJiaChen.github.io/blob/master/images/demo.gif)
-
-## Extra
-
-If you want router permission && generate menu by user roles , you can use this branch [permission-control](https://github.com/PanJiaChen/vue-admin-template/tree/permission-control)
-
-For `typescript` version, you can use [vue-typescript-admin-template](https://github.com/Armour/vue-typescript-admin-template) (Credits: [@Armour](https://github.com/Armour))
-
-## Related Project
-
-- [vue-element-admin](https://github.com/PanJiaChen/vue-element-admin)
-
-- [electron-vue-admin](https://github.com/PanJiaChen/electron-vue-admin)
-
-- [vue-typescript-admin-template](https://github.com/Armour/vue-typescript-admin-template)
-
-- [awesome-project](https://github.com/PanJiaChen/vue-element-admin/issues/2312)
+![示例图](https://github.com/PanJiaChen/PanJiaChen.github.io/blob/master/images/demo.gif)
 
 ## Browsers support
 
@@ -86,6 +58,4 @@ Modern browsers and Internet Explorer 10+.
 
 ## License
 
-[MIT](https://github.com/PanJiaChen/vue-admin-template/blob/master/LICENSE) license.
-
-Copyright (c) 2017-present PanJiaChen
+Copyright (c) 2019-present bradypodest
