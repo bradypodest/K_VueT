@@ -247,7 +247,7 @@
           </el-col>
         </el-row>
         <div slot="footer" class="dialog-footer">
-          <el-button @click.native="dialogPowerForm.dialogFormVisible=false">取消</el-button>
+          <el-button @click.native="dialogPowerForm.dialogVisible = false">取消</el-button>
           <el-button type="primary" @click.native="dialogPowerFormSubmit">提交</el-button>
         </div>
       </el-dialog>
@@ -554,6 +554,7 @@ export default {
     //关闭弹出层
     closeDialog() {
       this.dialogForm.dialogFormVisible = false;
+      this.dialogPowerForm.dialogVisible = false;
     },
     ///弹出层相关 --end
 
@@ -691,12 +692,16 @@ export default {
 
       if (value == "powers") {
         //遍历
-        that.getPowerGroupData.filter(item=>item.SysPowerGroupID==that.currentPowerGroup.SysPowerGroup.ID)[0].SysPowers.forEach(item => {
-          if (row.ID == item.ID) {
-            item.Status = 2;
-          }
-        });
-
+        that.getPowerGroupData
+          .filter(
+            item =>
+              item.SysPowerGroupID == that.currentPowerGroup.SysPowerGroup.ID
+          )[0]
+          .SysPowers.forEach(item => {
+            if (row.ID == item.ID) {
+              item.Status = 2;
+            }
+          });
       } else {
         //遍历
         //var copyGetPowerGroupData=that.getPowerGroupData.concat();
@@ -726,16 +731,28 @@ export default {
     dialogPowerFormSubmit() {
       var that = this;
 
+      //筛选出已经被删除的数据
+      var datapg = that.getPowerGroupData.filter(item => item.Status != 2);
+
+      var filterDataPg = [];
+      for (let index = 0; index < datapg.length; index++) {
+        const pg = datapg[index];
+
+        pg.SysPowers = pg.SysPowers.filter(item => item.Status != 2);
+
+        filterDataPg.push(pg);
+      }
+
       //验证 循环判断数据是否完善
       var result = true;
       var resultMsg = "";
 
-      if (that.getPowerGroupData.length == 0) {
+      if (filterDataPg.length == 0) {
         result = false;
         resultMsg = "提交数据为空";
       }
 
-      that.getPowerGroupData.forEach(item => {
+      filterDataPg.forEach(item => {
         if (!item.SysMenuID) {
           resultMsg = "数据中不包含菜单ID";
           return false;
@@ -757,17 +774,77 @@ export default {
 
         return false;
       }
-debugger;
-      //筛选数据
-      var data =this.getPowerGroupData.filter(item=>item.SysPowerGroup.Name&&item.SysPowerGroup.OrderNo);
+      debugger;
 
-      //筛选power 数据
+      //提交数据中存在  权限组中的无名称无排序号的项  和 权限中无权限名称无权限api项 则提示
+      var isGo = true;
+      var msg = "";
+      //that.getPowerGroupData.forEach(item => {
+      f: for (let i = 0; i < filterDataPg.length; i++) {
+        const item = filterDataPg[i];
 
-debugger;
+        if (!(item.SysPowerGroup.Name && item.SysPowerGroup.OrderNo)) {
+          isGo = false;
+          msg += "提交权限组中必须输入权限组名称，排序!";
+          break f;
+        }
+
+        if (item.SysPowers.length >= 1) {
+          for (let index = 0; index < item.SysPowers.length; index++) {
+            const sysPower = item.SysPowers[index];
+
+            if (!(sysPower.Name && sysPower.ApiUrl)) {
+              isGo = false;
+              msg += "提交权限组中权限必须输入权限名称，权限api!";
+              break f;
+            }
+          }
+        } else {
+          isGo = false;
+          msg += "提交权限组中必须具有具体权限";
+          break f;
+        }
+      }
+      //});
+
+      if (!isGo) {
+        that.$message({
+          type: "error",
+          message: msg
+        });
+
+        return false;
+      }
+
+      //筛选数据(不要权限组中的无名称无排序号的项)
+      //var data =that.getPowerGroupData.filter(item=>item.SysPowerGroup.Name&&item.SysPowerGroup.OrderNo);
+      // var data = that.getPowerGroupData.filter(
+      //   item =>
+      //     item.SysPowerGroup.Name &&
+      //     item.SysPowerGroup.OrderNo &&
+      //     (item.SysPowers.length > 1 ||
+      //       (item.SysPowers.length == 1 &&
+      //         item.SysPowers[0].Name &&
+      //         item.SysPowers[0].ApiUrl))
+      // );
+
+      //筛选power 数据 （不要权限中无权限名称无权限api项）
+      //var datap=data.filter(item=>);
+      //var datap=data.fore
+
+      debugger;
       //提交数据
-      updateMenuPowerGroups(data)
+      updateMenuPowerGroups(filterDataPg)
         .then(res => {
-          debugger;
+          if (res.success) {
+            that.$message({
+              type: "success",
+              message: "提交成功!"
+            });
+
+            //that.getTableData();
+            that.closeDialog();
+          }
         })
         .catch();
     }
