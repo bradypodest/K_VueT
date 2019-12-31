@@ -37,7 +37,7 @@ export const getOneByID=(ID)=>{
   return request({
     url:'/SysMenu/GetOneByID',  
     method:'get',
-    params:{id:ID}
+    params:{id:ID,RandomParameter:new Date().getTime()}
   })
 }
 

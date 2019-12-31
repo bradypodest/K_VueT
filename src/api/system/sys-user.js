@@ -76,7 +76,7 @@ export const getOneByID=(ID)=>{
 return request({
   url: apiUrl+'/GetOneByID',  
   method:'get',
-  params:{id:ID}
+  params:{id:ID,RandomParameter:new Date().getTime()}
 })
 }
 

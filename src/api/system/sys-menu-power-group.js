@@ -9,7 +9,7 @@ export const getMenuPowerGroups=(menuId)=>{
     return request({
         url:apiF+'/GetMenuPowerGroups',  
         method:'get',
-        params:{menuId:menuId}
+        params:{menuId:menuId,RandomParameter:new Date().getTime()}
       })
 }
 
