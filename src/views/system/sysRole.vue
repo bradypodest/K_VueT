@@ -101,10 +101,11 @@
           </template>
         </el-table-column>-->
 
-        <el-table-column label="操作" width="150" align="center">
+        <el-table-column label="操作" width="250" align="center">
           <template scope="scope">
             <el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
             <el-button type="danger" size="small" @click="handleDel(scope.$index, scope.row)">删除</el-button>
+            <el-button size="small" @click="handleEditRolePower(scope.$index,scope.row)">设置权限</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -138,7 +139,7 @@
         <el-form
           :model="dialogFormData"
           label-width="110px"
-          :rules="dialogFormRules"
+          :rules="dialogFormDataRules"
           ref="dialogForm"
           label-position="right"
         >
@@ -156,6 +157,7 @@
                   :size="item.inp_size"
                   :placeholder="item.inp_holder"
                   v-model="dialogFormData[item.prop]"
+                  :disabled="item.isEditDisable==true&&dialogForm.dialogFormType=='edit'"
                 ></el-input>
                 <el-input
                   v-if="item.type == 'textarea'"
@@ -164,6 +166,7 @@
                   :size="item.inp_size"
                   :placeholder="item.inp_holder"
                   v-model="dialogFormData[item.prop]"
+                  :disabled="item.isEditDisable==true&&dialogForm.dialogFormType=='edit'"
                 ></el-input>
                 <el-select
                   v-if="item.type == 'select'"
@@ -172,6 +175,7 @@
                   v-model="dialogFormData[item.prop]"
                   style="width:100%"
                   clearable
+                  :disabled="item.isEditDisable==true&&dialogForm.dialogFormType=='edit'"
                 >
                   <!-- 常规的数组 如[{key:0,value:"全部"}] -->
                   <el-option
@@ -206,6 +210,8 @@
       </el-dialog>
     </div>
     <!--编辑、新增界面 end-->
+
+
   </div>
 </template>
 
@@ -354,6 +360,14 @@ export default {
             type: "text" //默认text
           },
           {
+            prop: "RoleID", // 列元素
+            label: "角色ID", // 列名称
+            width: "100", // 列宽度
+            align: "center", // 居中
+            isShow: true,
+            type: "text"
+          },
+          {
             prop: "Name", // 列元素
             label: "角色名称", // 列名称
             width: "100", // 列宽度
@@ -453,6 +467,17 @@ export default {
           //val: '', //值 (废弃)
           type: "text", //控件类型：text为input控件，select为下拉框,
           data: null, //如果为下拉框，下拉框的数据
+          prop: "RoleID", //标记
+          label: "角色ID", //label值
+          lb_width: "100px", //label长度
+          in_size: "small", //控件大小
+          inp_holder: "请输入角色ID", //提示信息
+          isEditDisable:true,//是否编辑时无法编辑
+        },
+        {
+          //val: '', //值 (废弃)
+          type: "text", //控件类型：text为input控件，select为下拉框,
+          data: null, //如果为下拉框，下拉框的数据
           prop: "Name", //标记
           label: "角色名称", //label值
           lb_width: "100px", //label长度
@@ -475,6 +500,7 @@ export default {
       var that = this;
 
       that.dialogFormDataRules = {
+        RoleID: [{ required: true, message: "请输入角色ID", trigger: "blur" }],
         Name: [{ required: true, message: "请输入角色名称", trigger: "blur" }]
         // UserPwd: [{ required: true, message: "请输入密码", trigger: "blur" }]
         // deptType: [
@@ -488,6 +514,7 @@ export default {
     setDialogFormData() {
       var that = this;
       that.dialogFormData = {
+        RoleID:"",
         Name: "",
         Description: ""
       };
@@ -545,7 +572,7 @@ export default {
 
       that
         .$confirm(
-          "此操作将删除该[" + row.UserName + "]用户, 是否继续?",
+          "此操作将删除该[" + row.Name + "]角色, 是否继续?",
           "提示",
           {
             confirmButtonText: "确定",
@@ -568,6 +595,21 @@ export default {
             .catch();
         });
     },
+    //设置角色对应权限
+    handleEditRolePower(index,row){
+      // var that = this;
+      // console.log("点击设置权限");
+
+      // //清空表内内容
+      // this.$nextTick(() => {
+      //   this.$refs.dialogForm & this.$refs.dialogForm.resetFields();
+      // });
+
+      //查询对应角色的权限
+
+
+    },
+
 
     ///弹出层相关  --start
     //弹出层form提交
