@@ -211,7 +211,65 @@
     </div>
     <!--编辑、新增界面 end-->
 
+    <!--编辑角色权限分配 start-->
+    <div class="dialog">
+      <el-dialog
+        :title="dialogPower.dialogTitle"
+        :visible.sync="dialogPower.dialogVisible"
+        :close-on-click-modal="false"
+        width="70%"
+      >
 
+        <el-row type="flex" class="row-bg" justify="space-around">
+            <el-col :span="22" >
+              <el-tree
+                @check-change="leftCheckChange"
+                :data="menusTree"
+                show-checkbox
+                node-key="ID"
+                default-expand-all
+                :expand-on-click-node="false"
+                
+                ref="powerTree"
+                :props="{children:'Children'}"
+              >
+                <!-- <div class="action-group" slot-scope="{ node, data }">
+                  <div class="action-text" :style="{width:((4-data.lv)*18+150)+'px'}">{{ data.text }}</div>
+                  <div class="action-item">
+                    <el-checkbox
+                      v-for="(item,index) in data.actions"
+                      :key="index"
+                      v-model="item.checked"
+                      @change="onChange"
+                    >{{item.text}}</el-checkbox>
+                  </div>
+                </div>-->
+
+                <span class="custom-tree-node" slot-scope="{ node, data }">
+                  <!-- <span style="width:200px"> {{ data.Name }}</span> -->
+                  <!-- node.level 表示层级 -->
+                   <span :style="{width:((4-node.level)*18+150)+'px'}"> {{ data.Name }}</span>
+                  <span>
+                    <!-- <el-checkbox-group v-model="roleMenuPowergs"> -->
+                      <el-checkbox
+                        v-for="pg in data.PowerGroups"
+                        :key="pg.ID"
+                        :label="pg.Name"
+                        v-model="pg.checked"
+                      ></el-checkbox>
+                    <!-- </el-checkbox-group> -->
+                  </span>
+                </span>
+              </el-tree>
+          </el-col>
+        </el-row>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click.native="dialogPower.dialogVisible=false">取消</el-button>
+          <el-button type="primary" @click.native="dialogPowerSubmit">提交</el-button>
+        </div>
+      </el-dialog>
+    </div>
+    <!--编辑角色权限分配 end -->
   </div>
 </template>
 
@@ -226,6 +284,14 @@ import {
   getOneByID,
   updateOne
 } from "@/api/system/sys-role";
+
+import {
+  getMenuTree
+} from "@/api/system/sys-menu";
+
+import {
+  updateRoleMenuPowerG
+} from "@/api/system/sys-role-menu-power-group";
 
 export default {
   name: "SysRole",
@@ -287,8 +353,18 @@ export default {
       //弹出层中form数据
       dialogFormData: {},
       //弹出层中form表达验证规则
-      dialogFormRules: {}
+      dialogFormDataRules:{},
       ///弹出层相关  end
+
+      ///角色权限弹出层  start
+      dialogPower: {
+        dialogTitle: "新增",
+        dialogVisible: false
+      },
+      menusTree:[],//菜单树
+      roleMenuPowergs:[],//对应角色已经选择的菜单权限组
+      role:null,//修改权限的对应角色
+      ///角色权限弹出层  end
     };
   },
 
@@ -302,7 +378,7 @@ export default {
       //获取到对应的弹出层  dialogFormOptions
       this.getDialogFormOptions();
       //获取到对应的弹出层  dialogFormDataRules
-      this.getDialogFormRules();
+      this.getDialogFormDataRules();
 
       this.getTableData(); //获取表数据
 
@@ -472,7 +548,7 @@ export default {
           lb_width: "100px", //label长度
           in_size: "small", //控件大小
           inp_holder: "请输入角色ID", //提示信息
-          isEditDisable:true,//是否编辑时无法编辑
+          isEditDisable: true //是否编辑时无法编辑
         },
         {
           //val: '', //值 (废弃)
@@ -496,7 +572,7 @@ export default {
       ];
     },
     //获取设置 弹出层编辑规则
-    getDialogFormRules() {
+    getDialogFormDataRules() {
       var that = this;
 
       that.dialogFormDataRules = {
@@ -514,7 +590,7 @@ export default {
     setDialogFormData() {
       var that = this;
       that.dialogFormData = {
-        RoleID:"",
+        RoleID: "",
         Name: "",
         Description: ""
       };
@@ -526,7 +602,7 @@ export default {
 
       //清空弹出层表内内容
       this.$nextTick(() => {
-        this.$refs.dialogForm & this.$refs.dialogForm.resetFields();
+        this.$refs.dialogForm && this.$refs.dialogForm.resetFields();
       });
       this.dialogForm.dialogFormTitle = "新增角色";
       this.dialogForm.dialogFormVisible = true;
@@ -543,7 +619,7 @@ export default {
 
       //清空表内内容
       this.$nextTick(() => {
-        this.$refs.dialogForm & this.$refs.dialogForm.resetFields();
+        this.$refs.dialogForm && this.$refs.dialogForm.resetFields();
       });
 
       (this.dialogForm.dialogFormTitle = "编辑[" + row.Name + "]角色"),
@@ -571,15 +647,11 @@ export default {
       console.log(row);
 
       that
-        .$confirm(
-          "此操作将删除该[" + row.Name + "]角色, 是否继续?",
-          "提示",
-          {
-            confirmButtonText: "确定",
-            cancelButtonText: "取消",
-            type: "warning"
-          }
-        )
+        .$confirm("此操作将删除该[" + row.Name + "]角色, 是否继续?", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        })
         .then(() => {
           delOne(row.ID)
             .then(res => {
@@ -596,19 +668,97 @@ export default {
         });
     },
     //设置角色对应权限
-    handleEditRolePower(index,row){
-      // var that = this;
-      // console.log("点击设置权限");
+    handleEditRolePower(index, row) {
+      var that = this;
+      console.log("点击设置权限");
 
-      // //清空表内内容
-      // this.$nextTick(() => {
-      //   this.$refs.dialogForm & this.$refs.dialogForm.resetFields();
-      // });
+      that.dialogPower.dialogVisible = true;
+      that.dialogPower.dialogTitle = "设置[" + row.RoleID + "]角色对应权限";
+      that.role=row;
+
+      //查询 菜单树（里面包含对应的权限组）
+      getMenuTree()
+        .then(res => {
+          that.menusTree = res.data.Children;
+        })
+        .catch();
 
       //查询对应角色的权限
-
+      
 
     },
+    //点击提交设置角色对应权限
+    dialogPowerSubmit(){
+      var that = this;
+
+      //验证是否勾选
+
+      //获取勾选的数据
+      //var rolePowerPro= that.$refs.powerTree.getCheckedNodes().concat(this.$refs.powerTree.getHalfCheckedNodes());
+      var rolePowerPro =that.$refs.powerTree.getCheckedNodes(false,true);
+      var rolePower=[];
+      rolePowerPro.forEach((m,i)=>{
+        if(m.PowerGroups.length>0){
+          m.PowerGroups.forEach((x,index)=>{
+            if(x.checked){
+              rolePower.push({
+                RoleID:that.role.ID,
+                MenuID:m.ID,
+                PowerGroupID:x.ID
+              });
+            }
+          });
+        }else{
+          rolePower.push({
+            RoleID:that.role.ID,
+            MenuID:m.ID,
+            PowerGroupID:""
+          });
+        }
+      });
+
+
+      debugger;
+      //保存设置
+      that
+        .$confirm("此操作将更新该[" + that.role.RoleID + "]角色, 是否继续?", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        })
+        .then(() => {
+          updateRoleMenuPowerG(rolePower)
+          .then(res=>{
+            if (res.success) {
+                that.$message({
+                  type: "success",
+                  message: "更新成功!"
+                });
+            }
+
+            //关闭弹窗
+            that.dialogPower.dialogVisible = false;
+                //that.getTableData();
+          }).catch();
+        });
+      if(rolePower.length>0){
+
+      }else{
+
+      }
+    },
+    //点击element tree控件的左边，对应的权限选择
+    leftCheckChange(node, selected) {
+      if(node.PowerGroups!=null&&node.PowerGroups.length>0)
+      {
+        debugger;
+        node.PowerGroups.forEach((x, index) => {
+            //x.checked = selected;
+          this.$set(x, "checked", selected);
+        });
+      }
+    },
+    
 
 
     ///弹出层相关  --start
@@ -704,3 +854,14 @@ export default {
   watch: {}
 };
 </script>
+
+<style>
+ .custom-tree-node {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    /* justify-content: space-between; */
+    font-size: 14px;
+    padding-right: 8px;
+  }
+</style>
