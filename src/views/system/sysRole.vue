@@ -738,6 +738,7 @@ export default {
 
             //关闭弹窗
             that.dialogPower.dialogVisible = false;
+            //that.dialogPower.dialogVisible = true;
                 //that.getTableData();
           }).catch();
         });
