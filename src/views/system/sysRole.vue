@@ -219,21 +219,19 @@
         :close-on-click-modal="false"
         width="70%"
       >
-
         <el-row type="flex" class="row-bg" justify="space-around">
-            <el-col :span="22" >
-              <el-tree
-                @check-change="leftCheckChange"
-                :data="menusTree"
-                show-checkbox
-                node-key="ID"
-                default-expand-all
-                :expand-on-click-node="false"
-                
-                ref="powerTree"
-                :props="{children:'Children'}"
-              >
-                <!-- <div class="action-group" slot-scope="{ node, data }">
+          <el-col :span="22">
+            <el-tree
+              @check="leftCheckChange"
+              :data="menusTree"
+              show-checkbox
+              node-key="ID"
+              default-expand-all
+              :expand-on-click-node="false"
+              ref="powerTree"
+              :props="{children:'Children'}"
+            >
+              <!-- <div class="action-group" slot-scope="{ node, data }">
                   <div class="action-text" :style="{width:((4-data.lv)*18+150)+'px'}">{{ data.text }}</div>
                   <div class="action-item">
                     <el-checkbox
@@ -243,24 +241,24 @@
                       @change="onChange"
                     >{{item.text}}</el-checkbox>
                   </div>
-                </div>-->
+              </div>-->
 
-                <span class="custom-tree-node" slot-scope="{ node, data }">
-                  <!-- <span style="width:200px"> {{ data.Name }}</span> -->
-                  <!-- node.level 表示层级 -->
-                   <span :style="{width:((4-node.level)*18+150)+'px'}"> {{ data.Name }}</span>
-                  <span>
-                    <!-- <el-checkbox-group v-model="roleMenuPowergs"> -->
-                      <el-checkbox
-                        v-for="pg in data.PowerGroups"
-                        :key="pg.ID"
-                        :label="pg.Name"
-                        v-model="pg.checked"
-                      ></el-checkbox>
-                    <!-- </el-checkbox-group> -->
-                  </span>
+              <span class="custom-tree-node" slot-scope="{ node, data }">
+                <!-- <span style="width:200px"> {{ data.Name }}</span> -->
+                <!-- node.level 表示层级 -->
+                <span :style="{width:((4-node.level)*18+150)+'px'}">{{ data.Name }}</span>
+                <span>
+                  <!-- <el-checkbox-group v-model="roleMenuPowergs"> -->
+                  <el-checkbox
+                    v-for="pg in data.PowerGroups"
+                    :key="pg.ID"
+                    :label="pg.Name"
+                    v-model="pg.checked"
+                  ></el-checkbox>
+                  <!-- </el-checkbox-group> -->
                 </span>
-              </el-tree>
+              </span>
+            </el-tree>
           </el-col>
         </el-row>
         <div slot="footer" class="dialog-footer">
@@ -285,11 +283,10 @@ import {
   updateOne
 } from "@/api/system/sys-role";
 
-import {
-  getMenuTree
-} from "@/api/system/sys-menu";
+import { getMenuTree } from "@/api/system/sys-menu";
 
 import {
+  getRoleMenuPowerG,
   updateRoleMenuPowerG
 } from "@/api/system/sys-role-menu-power-group";
 
@@ -353,7 +350,7 @@ export default {
       //弹出层中form数据
       dialogFormData: {},
       //弹出层中form表达验证规则
-      dialogFormDataRules:{},
+      dialogFormDataRules: {},
       ///弹出层相关  end
 
       ///角色权限弹出层  start
@@ -361,9 +358,11 @@ export default {
         dialogTitle: "新增",
         dialogVisible: false
       },
-      menusTree:[],//菜单树
-      roleMenuPowergs:[],//对应角色已经选择的菜单权限组
-      role:null,//修改权限的对应角色
+      menusTree: [], //菜单树
+      roleMenuPowergs: [], //对应角色已经选择的菜单权限组
+      role: null, //修改权限的对应角色
+
+      //isSelectData:false,//是否是查询数据，用于针对第一次查询菜单，勾选菜单时触发改变事件
       ///角色权限弹出层  end
     };
   },
@@ -674,92 +673,167 @@ export default {
 
       that.dialogPower.dialogVisible = true;
       that.dialogPower.dialogTitle = "设置[" + row.RoleID + "]角色对应权限";
-      that.role=row;
+      that.role = row;
 
       //查询 菜单树（里面包含对应的权限组）
       getMenuTree()
         .then(res => {
           that.menusTree = res.data.Children;
+          //遍历数据，对PowerGroups 
+          debugger
         })
         .catch();
 
-      //查询对应角色的权限
       
 
+
+      that.$nextTick(() => {
+        //this.$refs.powerTree && this.$refs.powerTree.resetFields();
+
+        that.$refs.powerTree && that.$refs.powerTree.setCheckedKeys([]); //清空
+        
+
+        //查询对应角色的权限
+        setTimeout(() => {//上面的that.$nextTick 在初始化时，node.isLeaf还是为null,只能加个延时
+          that.$refs.powerTree &&
+            getRoleMenuPowerG(that.role.ID).then(res => {
+              // var ss=res;
+              // debugger;
+
+              // var menuCheckedArr=[];
+              // res.data.forEach((x,index)=>{
+              //   menuCheckedArr.push(x.MenuID);
+              // });
+
+              // that.$refs.powerTree.setCheckedKeys(menuCheckedArr,true);
+
+              
+
+              //设置出菜单
+              var menuCheckedArr = [];
+              var nodeArr=[];
+              res.data.forEach((x, index) => {
+                var node = that.$refs.powerTree.getNode(x.MenuID);
+
+                if (node.isLeaf && menuCheckedArr.indexOf(x.MenuID) == -1) {
+                  menuCheckedArr.push(x.MenuID);//node.isLeaf 是为了处理半选中 状态
+                  nodeArr.push(node);
+                }
+              });
+
+              //设置出菜单
+              debugger
+              that.$refs.powerTree.setCheckedKeys(menuCheckedArr, true);
+
+              //需要勾选的权限组
+              var powerGroupCheckedArr = [];
+              res.data.forEach((x, index) => {
+                if (x.PowerGroupID) {
+                  powerGroupCheckedArr.push(x.PowerGroupID);
+                }
+              });
+
+              //设置权限
+              debugger
+              nodeArr.forEach((x,index)=>{
+                x.data.PowerGroups.forEach ((y,index)=>{
+                  if(powerGroupCheckedArr.indexOf(y.ID)>-1){
+                    this.$set(y, "checked", true);
+                  }else{
+                    this.$set(y, "checked", false);
+                  }
+                });
+              });
+
+              
+            });
+
+        }, 200);
+      });
     },
     //点击提交设置角色对应权限
-    dialogPowerSubmit(){
+    dialogPowerSubmit() {
       var that = this;
 
       //验证是否勾选
 
       //获取勾选的数据
       //var rolePowerPro= that.$refs.powerTree.getCheckedNodes().concat(this.$refs.powerTree.getHalfCheckedNodes());
-      var rolePowerPro =that.$refs.powerTree.getCheckedNodes(false,true);
-      var rolePower=[];
-      rolePowerPro.forEach((m,i)=>{
-        if(m.PowerGroups.length>0){
-          m.PowerGroups.forEach((x,index)=>{
-            if(x.checked){
+      var rolePowerPro = that.$refs.powerTree.getCheckedNodes(false, true);
+      var rolePower = [];
+      rolePowerPro.forEach((m, i) => {
+        if (m.PowerGroups.length > 0) {
+          m.PowerGroups.forEach((x, index) => {
+            if (x.checked) {
               rolePower.push({
-                RoleID:that.role.ID,
-                MenuID:m.ID,
-                PowerGroupID:x.ID
+                RoleID: that.role.ID,
+                MenuID: m.ID,
+                PowerGroupID: x.ID
               });
             }
           });
-        }else{
+        } else {
           rolePower.push({
-            RoleID:that.role.ID,
-            MenuID:m.ID,
-            PowerGroupID:""
+            RoleID: that.role.ID,
+            MenuID: m.ID,
+            PowerGroupID: ""
           });
         }
       });
 
-
       debugger;
       //保存设置
       that
-        .$confirm("此操作将更新该[" + that.role.RoleID + "]角色, 是否继续?", "提示", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
-        })
+        .$confirm(
+          "此操作将更新该[" + that.role.RoleID + "]角色, 是否继续?",
+          "提示",
+          {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning"
+          }
+        )
         .then(() => {
           updateRoleMenuPowerG(rolePower)
-          .then(res=>{
-            if (res.success) {
+            .then(res => {
+              if (res.success) {
                 that.$message({
                   type: "success",
                   message: "更新成功!"
                 });
-            }
+              }
 
-            //关闭弹窗
-            that.dialogPower.dialogVisible = false;
-            //that.dialogPower.dialogVisible = true;
-                //that.getTableData();
-          }).catch();
+              //关闭弹窗
+              that.dialogPower.dialogVisible = false;
+              //that.dialogPower.dialogVisible = true;
+              //that.getTableData();
+            })
+            .catch();
         });
-      if(rolePower.length>0){
-
-      }else{
-
+      if (rolePower.length > 0) {
+      } else {
       }
     },
-    //点击element tree控件的左边，对应的权限选择
-    leftCheckChange(node, selected) {
-      if(node.PowerGroups!=null&&node.PowerGroups.length>0)
-      {
-        debugger;
+    //点击element tree控件的左边，对应的权限选择  注：如果不是没有初始化选中项操作，则可以使用  check-change	节点选中状态发生变化时的回调 事件   ，无需自己手写回调函数
+    leftCheckChange(node, selectNode) {
+      this.checkChangeDo(node, selectNode);
+    },
+    checkChangeDo(node,selectNode){
+      var that=this;
+      if (node.PowerGroups != null && node.PowerGroups.length > 0 ) {
+        var checkedStatus= selectNode.checkedKeys.indexOf(node.ID)>-1;
         node.PowerGroups.forEach((x, index) => {
-            //x.checked = selected;
-          this.$set(x, "checked", selected);
+          //x.checked = selected;
+          that.$set(x, "checked", checkedStatus);
         });
       }
+      
+      if(node.Children!=null && node.Children.length>0){
+        node.Children.forEach((x,index)=>{
+            that.checkChangeDo(x,selectNode);
+        })
+      }
     },
-    
 
 
     ///弹出层相关  --start
@@ -857,12 +931,12 @@ export default {
 </script>
 
 <style>
- .custom-tree-node {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    /* justify-content: space-between; */
-    font-size: 14px;
-    padding-right: 8px;
-  }
+.custom-tree-node {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  /* justify-content: space-between; */
+  font-size: 14px;
+  padding-right: 8px;
+}
 </style>

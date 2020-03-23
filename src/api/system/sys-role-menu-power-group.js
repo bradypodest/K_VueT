@@ -5,11 +5,11 @@ var apiF="/SysRoleMenuPowerG";
 
 
 //获取角色-菜单-对应的权限组相关数据
-export const getRoleMenuPowerGroups=(menuId)=>{
+export const getRoleMenuPowerG=(roleId)=>{
     return request({
-        url:apiF+'/GetMenuPowerGroups',  
+        url:apiF+'/GetRoleMenuPowerG',  
         method:'get',
-        params:{menuId:menuId,RandomParameter:new Date().getTime()}
+        params:{roleId:roleId,RandomParameter:new Date().getTime()}
       })
 }
 
