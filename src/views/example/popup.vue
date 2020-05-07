@@ -3,21 +3,23 @@
 <!--  2020-04-30  -->
 
 <template>
-  <div>
-    <div>
-      <h3>上传excel文件</h3>
-      <upload-excel 
-          :uploadUrl="uploadExcelData.url"
-          @importExcelAfter="importAfter"
-          >
-      </upload-excel>
-      <!-- <h3>上传excel文件(有下载)</h3>
-      <upload-excel 
-          :uploadUrl="uploadExcelData.url"
-          :template="uploadExcelData.template"
-           @importExcelAfter="importAfter"
-          >
-      </upload-excel> -->
+  <div class="com">
+    <div class="d-group" style="  margin-top:30px;">
+      <div>
+        <h3>上传excel文件</h3>
+        <upload-excel 
+            :uploadUrl="uploadExcelData.url"
+            @importExcelAfter="importAfter"
+            >
+        </upload-excel>
+        <!-- <h3>上传excel文件(有下载)</h3>
+        <upload-excel 
+            :uploadUrl="uploadExcelData.url"
+            :template="uploadExcelData.template"
+            @importExcelAfter="importAfter"
+            >
+        </upload-excel> -->
+      </div>
     </div>
   </div>
 </template>
@@ -52,4 +54,23 @@ export default {
   },
 }
 </script>
+<style lang="less" scoped>
+.com > div {
+  margin-top: 30px;
+}
+
+.d-group {
+  display: inline-block;
+  width: 100%;
+  > div {
+    float: left;
+    width: 49%;
+  }
+  > div:first-child {
+    margin-right: 2%;
+    margin-left: 2%;
+  }
+}
+
+</style>
 

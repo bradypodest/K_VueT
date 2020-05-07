@@ -1,4 +1,5 @@
 <!-- 导入execl文件 -->
+import { delOne } from '@/api/system/sys-user';
 <!-- Karl-->
 <!-- 20200421-->
 <template>
@@ -16,7 +17,6 @@
         :on-success="uploadSuccess"
         :file-list="fileList"
         :auto-upload="false"
-        :show-file-list="false"
       >
         <el-button type="primary">选择文件</el-button>
         <el-button v-if="template.url" type="info" @click="downloadTemplate">下载模板</el-button>
@@ -30,12 +30,6 @@
       </el-upload>
       <slot></slot>
     </div>
-    <el-divider class="upload-divider">文件列表</el-divider>
-    <div class="file-info" v-if="fileList.length>0">
-      <span>文件名：{{fileList[0].name}}</span>
-      <span>大小{{(fileList[0].size / 1024).toFixed(2)}}KB</span>
-    </div>
-    <slot></slot>
   </div>
 </template>
 
@@ -197,6 +191,9 @@ export default {
   border: 1px dashed #2d8cf0;
   min-height: 250px;
   border-radius: 5px;
+  .alert {
+    margin-top: 43px;
+  }
   .button-group > * {
     float: left;
     margin-right: 10px;
@@ -204,19 +201,12 @@ export default {
   .file-info > span {
     margin-right: 20px;
   }
-  .upload-divider{
-
-    margin-top:80px;
-  }
 }
 
 .elupload 
 // {
 //   display: flex;
 // }
-/deep/ .el-upload {
-      margin-left: -12px;
-}
 /deep/ .el-list-enter-active,
 /deep/ .el-list-leave-active {
   transition: none;
