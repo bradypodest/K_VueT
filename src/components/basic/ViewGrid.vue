@@ -3,6 +3,11 @@
 <!-- 20200507-->
 <template>
   <div class="layout-container">
+    <!-- 导入url  start -->
+    <a :href="exportHref" ref="export"></a>
+    <!-- 导入url  end -->
+    
+    
   </div>
 </template>
 
@@ -49,7 +54,7 @@ var vueParam={
     }
   },
   //方法
-  methods:{
+  methods:{//其他方法放在ViewGridConfig文件夹下的methods.js 
     ///合并自定义组件   ：不是很懂
     mergeComponents() {
       if (this.extend.components) {
@@ -84,19 +89,22 @@ var vueParam={
     this.pagination.sortName = this.table.sortName || this.table.key;
 
     this.initBoxButtons(); //初始化弹出框与明细表格按钮  //dong?
+
+    //插口onInit
     this.onInit(); //初始化前，如果需要做其他处理在扩展方法中覆盖此方法
     //初始编辑框等数据
-    this.initBoxHeightWidth();
+    this.initBoxHeightWidth();//初始化弹出框的高度与宽度
 
-    this.initDicKeys(); //初始下框数据源
+    this.initDicKeys(); //初始下框数据源//初始化字典数据
 
+    //插口 onInited
     this.onInited(); //初始化后，如果需要做其他处理在扩展方法中覆盖此方法
-    this.splitButtons = this.getButtons();  //拆分按钮  //dong?
+    this.splitButtons = this.getButtons();  //拆分按钮  //生成ViewGrid界面的操作按钮及更多选项
   },
   beforeMount() {
-    
   },
   mounted() {
+    //插口 mounted
     this.mounted();
   },
   //生命周期钩子 activated：在使用了keep-alive后有actived钩子：触发顺序在mounted钩子后
@@ -114,16 +122,12 @@ var vueParam={
     this.mergeComponents();
   },
   beforeUpdate() {
-    
   },
   updated() {
-    
   },
   beforeDestroy() {
-    
   },
   destroyed() {
-    
   },
   /////生命周期钩子 end
 };
