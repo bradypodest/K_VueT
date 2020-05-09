@@ -29,6 +29,7 @@
           :title="kDialogData.title+'测试对话框'"
         >
           <div slot="content">
+            <upload-excel :uploadUrl="uploadExcelData.url" @importExcelAfter="importAfter"></upload-excel>
             <span>中间内容</span>
             <br>
             <br>

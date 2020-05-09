@@ -26,7 +26,7 @@
     </div>
     <div class="dialog-content" :style="{height:height+'px'}">
       <el-scrollbar style="height:100%;">
-        <div class="srcoll-content" :style="{padding:padding+'px'}">
+        <div class="srcoll-content" :style="{'padding-left':paddinglr+'px','padding-right':paddinglr+'px','padding-top':paddingtb+'px','padding-bottom':paddingtb+'px'}">
           
           <slot name="content"></slot>
           <slot></slot>
@@ -36,7 +36,7 @@
           <slot></slot> -->
     </div>
     <span slot="footer" class="dialog-footer">
-      <el-button size="small" type="info" @click="closeDialog">取 消</el-button>
+      <el-button size="" type="info" @click="closeDialog">取 消</el-button>
       <slot name="footer"></slot>
     </span>
   </el-dialog>
@@ -66,9 +66,13 @@ export default {
       type: Number,
       default: 200
     },
-    padding: {//中心内容边距
+    paddinglr: {//中心内容边距  左右
       type: Number,
       default: 16
+    },
+    paddingtb: {//中心内容边距  上下
+      type: Number,
+      default: 5
     },
   },
   data() {
@@ -123,6 +127,8 @@ export default {
   .srcoll-content {
     height: 100%;
     word-break: break-all;
+    // padding-top: 5px;
+    // padding-bottom: 5px;
     //  padding: 16px;
   }
   .el-scrollbar__wrap{overflow-x:hidden;}
