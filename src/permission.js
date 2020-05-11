@@ -1,3 +1,5 @@
+///进入路由判断 （其中判断token）
+
 import router from './router'
 import store from './store'
 import { Message } from 'element-ui'
@@ -32,10 +34,10 @@ router.beforeEach(async (to, from, next) => {
         next()
       } else {
         try {
-          // get user info
+          // get user info   用于 页面显示用户信息
           await store.dispatch('sysUser/getInfo')
 
-          //获取路由设置
+          //通过token来获取对应的路由设置 ：执行 store/modules中的方法
           const accessRoutes = await store.dispatch('sysMenu/getUserMenu', hasToken)
 
           debugger

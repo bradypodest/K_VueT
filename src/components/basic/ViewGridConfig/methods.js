@@ -111,7 +111,7 @@ let methods = {
       //定义下载模板的文件名
       this.upload.template.fileName = this.table.cnName;
       //定义下载模板的Url路径
-      this.upload.template.url = this.http.ipAddress + this.getUrl(this.const.DOWNLOADTEMPLATE, true);
+      this.upload.template.url = this.IPADDRESS + this.getUrl(this.const.DOWNLOADTEMPLATE, true);
     }
 
     // disabled
@@ -777,7 +777,7 @@ let methods = {
     formOptions.forEach(item => {
       item.forEach(d => {
         if (d.type == 'img' || d.type == 'excel' || d.type == 'file' || d.columnType == 'img') {
-          d.url = this.http.ipAddress + 'api' + this.table.url + "Upload";
+          d.url = this.IPADDRESS + 'api' + this.table.url + "Upload";
           this.uploadfiled.push(d.field);
         }
         if (!d.dataKey) return true;
