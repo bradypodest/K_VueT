@@ -12,12 +12,12 @@ const service = axios.create({
   // withCredentials: true, // send cookies when cross-domain requests
   timeout: 50000 // request timeout
 })
-let ipAddress=service.defaults.baseURL;
+//let ipAddress=service.defaults.baseURL;
 // request interceptor
 service.interceptors.request.use(
   config => {
     // do something before request is sent
-
+    
     startLoading();// 开启遮罩
     if (config.method === 'post') {
       //config.data =qs.stringify(config.data);
@@ -127,4 +127,6 @@ function endLoading() {    // 使用Element loading-close 方法
 }
 // 遮罩 end
 
-export default {service,ipAddress}
+//export default {service,ipAddress}
+export default service
+

@@ -91,8 +91,8 @@
                   <el-option
                     v-for="(kv,kvIndex) in getData(item)"
                     :key="kvIndex"
-                    :label="kv.key||''"
-                    :value="kv.value"
+                    :label="kv.value||''"
+                    :value="kv.key"
                   ></el-option>
                 </el-select>
               </div>

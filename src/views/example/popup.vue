@@ -17,7 +17,7 @@
         </upload-excel>-->
       </div>
     </div>
-<!-- 封装弹出框 -->
+    <!-- 封装弹出框 -->
     <div class="d-group" style="  margin-top:30px;">
       <div>
         <h3>打开对话框</h3>
@@ -53,7 +53,7 @@
           </div>
         </kv-dialog>
       </div>
-    </div>
+    </div>    
   </div>
 </template>
 

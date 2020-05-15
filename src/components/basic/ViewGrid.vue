@@ -59,6 +59,25 @@
       <gridBody ref="gridBody" @parentCall="parentCall"></gridBody>
       <!-- table 表格 start -->
       <div class="grid-container">
+        <k-table 
+          ref="table"
+          :single="single"
+          @loadBefore="loadTableBefore"
+          @loadAfter="loadTableAfter"
+          @rowChange="rowOnChange"
+
+          :tableData="[]"
+          :linkView="linkData"
+          :columns="columns"
+          :pagination="pagination"
+          :height="height"
+          :max-height="tableMaxHeight"
+          :pagination-hide="false"
+          :url="url"
+          :defaultLoadPage="load"
+          :summary="summary"
+         >
+        </k-table>
       </div>
       <!-- table 表格 end -->
 
@@ -71,6 +90,19 @@
 
 <script>
 var $viewGridVue, $this;
+const _const = {
+  EDIT: "update",
+  ADD: "Add",
+  VIEW: "view",
+  PAGE: "getPageData",
+  AUDIT: "audit",
+  DEL: "del",
+  EXPORT: "Export", //导出操作返回加密后的路径
+  DOWNLOAD: "DownLoadFile", //导出文件
+  DOWNLOADTEMPLATE: "DownLoadTemplate", //下载导入模板
+  IMPORT: "Import", //导入(导入表的Excel功能)
+  UPLOAD: "Upload" //上传文件
+};
 //扩展页面上的自定义组件：可以在表对应的.js中添加
 const comName = [
   "gridHeader",
@@ -107,8 +139,104 @@ var vueParam = {
   data() {
     return {
       _inited: false, //是否已经初始化
+      single: false, //表是否单选
+      const: _const, //增删改查导入导出等对应的action
+      boxInit: false, //新建或编辑的弹出框初化状态，默认不做初始化，点击新建或编辑才初始化弹出框
+      searchBoxShow: false, //高级查询(界面查询后的下拉框点击触发)
+      singleSearch: {}, //快速查询字段
+      exportHref: "",
+      currentAction: _const.ADD, //当新建或编辑时，记录当前的状态:如当前操作是新建
+      currentRow: {}, //当前编辑或查看数据的行
+      closable: false,
+      boxModel: false, //弹出新建、编辑框
+      width: 700, //弹出框查看表数据结构
+      labelWidth: 100, //高级查询的标签宽度
+      viewModel: false, //查看表结构的弹出框
+      viewColumns: [], //查看表结构的列数据
+      viewData: [], //查看表结构信息
+      maxBtnLength: 3, //界面按钮最多显示的个数，超过的数量都显示在更多中
+      buttons: [], //查询界面按钮  如需要其他操作按钮，可在表对应的.js中添加(如:Sys_User.js中buttons添加其他按钮)
+      splitButtons: [],
+      uploadfiled: [], //上传文件图片的字段
+      boxButtons: [], //弹出框按钮 如需要其他操作按钮，可在表对应的.js中添加
+      dicKeys: [], //当前界面所有的下拉框字典编号及数据源
+      hasKeyField: [], //有字典数据源的字段
+      keyValueType: { _dinit: false },
+      url: "", //界面表查询的数据源的url
+      hasDetail: false, //是否有从表(明细)表格数据
+      initActivated: false,
+      load: true, //是否默认加载表数据
       activatedLoad: false, //页面触发actived时是否刷新页面数据
-      single: false //表是否单选
+      summary: false, //查询界面table是否显示合计
+      //需要从远程绑定数据源的字典编号,如果字典数据源的查询结果较多，请在onInit中将字典编号添加进来
+      //只对自定sql有效
+      remoteKeys: [],
+      // detailUrl: "",
+      //弹出框从表(明细)对象
+      detailOptions: {
+        //从表配置
+        buttons: [], //弹出框从表表格操作按钮,目前有删除行，添加行，刷新操作，如需要其他操作按钮，可在表对应的.js中添加
+        cnName: "", //从表名称
+        key: "", //从表主键名
+        data: [], //数据源
+        columns: [], //从表列信息
+        edit: true, //明细是否可以编辑
+        single: false, //明细表是否单选
+        load: true,
+        delKeys: [], //当编辑时删除当前明细的行主键值
+        url: "", //从表加载数据的url
+        pagination: { total: 0, size: 100, sortName: "" }, //从表分页配置数据
+        height: 0, //默认从表高度
+        doubleEdit: true, //使用双击编辑
+        currentReadonly: false, //当前用户没有编辑或新建权限时，表单只读(可用于判断用户是否有编辑或新建权限)
+        //开启编辑时
+        beginEdit: (row, column, index) => {
+          return true;
+        },
+        //结束编辑前
+        endEditBefore: (row, column, index) => {
+          return true;
+        },
+        //结束编辑后
+        endEditAfter: (row, column, index) => {
+          return true;
+        }
+      },
+      auditParam: {
+        //审核对象
+        rows: 0, //当前选中审核的行数
+        model: false, //审核弹出框
+        status: -1, //审核结果
+        reason: "", //审核原因
+        //审核选项(可自行再添加)
+        data: [
+          { text: "通过", status: 1 },
+          { text: "拒绝", status: 2 }
+        ]
+      },
+      upload: {
+        //导入上传excel对象
+        excel: false, //导入的弹出框是否显示
+        url: "", //导入的路径,如果没有值，则不渲染导入功能
+        template: {
+          //下载模板对象
+          url: "", //下载模板路径
+          fileName: "" //模板下载的中文名
+        },
+        init: false //是否有导入权限，有才渲染导入组件
+      },
+      height: 0, //表高度
+      tableHeight: 0, //查询页面table的高度
+      tableMaxHeight: 0, //查询页面table的最大高度
+      pagination: { total: 0, size: 30, sortName: "" }, //从分页配置数据
+      boxOptions: {
+        saveClose: true,
+        labelWidth: 100,
+        height: 0,
+        width: 0,
+        summary: false //弹出框明细table是否显示合计
+      } //saveClose新建或编辑成功后是否关闭弹出框//弹出框的标签宽度labelWidth
+      
     };
   },
   //方法
@@ -205,4 +333,27 @@ vueParam.methods = Object.assign(
 );
 
 export default vueParam; //这里就是组件向外公布的
+import "@/assets/css/ViewContainer.less";
+import "@/assets/css/ViewGrid.less";
 </script>
+<style scoped>
+.btn-group >>> .ivu-select-dropdown {
+  padding: 0px !important;
+  right: 3px;
+}
+.btn-group >>> .ivu-select-dropdown .ivu-dropdown-menu {
+  min-width: 100px;
+  right: -2px;
+  position: absolute;
+  background: white;
+  width: 130px;
+  border-radius: 5px;
+  border: 1px solid #e7e5e5;
+}
+.vertical-center-modal >>> .srcoll-content {
+  padding: 0;
+}
+.view-model-content {
+  background: #eee;
+}
+</style>
