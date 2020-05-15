@@ -163,7 +163,7 @@
           </template>
         </el-table-column>
         <el-table-column
-          v-if="(!doubleEdit)&&column.edit"
+          v-if="(!doubleEdit)"
           :min-width="100"
           label="操作"
           fixed="right"
@@ -786,7 +786,7 @@ export default {
 debugger;
       var data = {
         pageIndex: this.paginations.page,
-        pageSize: this.paginations.size,
+        pageSize: this.paginations.size>0?this.paginations.size:30,
         order: "", //"CreateTime desc"
         wheres: ""
       };

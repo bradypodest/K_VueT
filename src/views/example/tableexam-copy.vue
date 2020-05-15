@@ -6,14 +6,18 @@
       <el-button type="info" ghost @click="del">删除行</el-button>
       <el-button type="info" ghost @click="getRows">获取选中的行</el-button>
     </div>
-    <kt-table
+    <k-table
       ref="table"
-      :columnsOptions="columns"
+      :loadKey="true"
+      :linkView="_linkView"
+      :columns="columns"
       :pagination="pagination"
       :height="300"
       :url="url"
-     
-    ></kt-table>
+      :index="true"
+      @loadBefore="loadTableBefore"
+      @loadAfter="loadTableAfter"
+    ></k-table>
   </div>
 </template>
 <script>
@@ -24,11 +28,11 @@
 //height表高度
 //url从后台加载的数据的url
 //index="true",设置为行有一个自动编号,如果要执行删除操作，必须设置此属性
-import KtTable from "@/components/basic/KtTable.vue";
+import KTable from "@/components/basic/KTable.vue";
 // import VolBox from "@/components/basic/VolBox.vue";
 export default {
   name: "TableExam",
-  components: { KtTable },
+  components: { KTable },
   methods: {
     _linkView(row, column) {
       this.text =
@@ -87,10 +91,9 @@ export default {
           field: "ID", //数据库表字段,必须和数据库一样，并且大小写一样
           title: "ID", //表头显示的名称
           type: "text", //数据类型   type类型(text,date,datetime,select,switch),status是否默认为编辑状态
-          
+          isKey: true, //是否为主键字段
           width: 80, //表格宽度
-          fixed:"true",
-          hidden:false,
+          hidden: true, //是否显示
           readonly: true, //是否只读(功能未启用)
           require: true, //是否必填(功能未启用)
           align: "left" //文字显示位置
@@ -100,8 +103,8 @@ export default {
           title: "角色ID",
           type: "text",
           width: 100,
-          hidden:false,
-          align: "center",
+          hidden: true, //是否显示
+          align: "left",
           sortable: true //是否排序(目前第一个字段为排序字段，其他字段排序开发中)
         },
         {
@@ -109,20 +112,15 @@ export default {
           title: "角色名称",
           type: "text",
           width: 100,
-          align: "left",
-          edit:{
-            type: "text", //text,date,datetime,select,switch
-            status: true, //status是否可以为编辑状态
-          }
+          align: "left"
         },
         {
           field: "Description",
           title: "描述",
-          type: "text",
+          type: "string",
           link: true, //设置link=true后此单元格可以点击获取当前行的数据进行其他操作
           //width: 120,
-          align: "left",
-          hidden:true
+          align: "left"
         },
         // {
         //   field: "UserTrueName",
@@ -147,18 +145,15 @@ export default {
         //   width: 120,
         //   align: "left"
         // },
-        {
-          field: "Enable",
-          title: "是否启用",
-          type: "tag",
-          bind: { key: "enable", data: [{key:0,value:"否"},{key:1,value:"是"}] }, //此处值为data空数据，自行从后台字典数据源加载
-          width: 80,
-          require: true,
-          edit:{
-            type:"switch",
-            
-          }
-        },
+        // {
+        //   field: "Enable",
+        //   title: "是否启用",
+        //   type: "byte",
+        //   bind: { key: "enable", data: [] }, //此处值为data空数据，自行从后台字典数据源加载
+        //   width: 80,
+        //   require: true,
+        //   align: "left"
+        // },
         // {
         //   field: "ReallyName",
         //   title: "真实姓名",
@@ -191,10 +186,6 @@ export default {
           title: "申请时间",
           type: "datetime",
           width: 150,
-          edit:{
-            type:"datetime",
-            status: true, //status是否可以为编辑状态
-          },
           readonly: true,
           align: "left",
           sortable: true
