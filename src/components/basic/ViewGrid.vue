@@ -59,7 +59,7 @@
       <gridBody ref="gridBody" @parentCall="parentCall"></gridBody>
       <!-- table 表格 start -->
       <div class="grid-container">
-        <k-table 
+        <kt-table 
           ref="table"
           :single="single"
           @loadBefore="loadTableBefore"
@@ -67,17 +67,18 @@
           @rowChange="rowOnChange"
 
           :tableData="[]"
-          :linkView="linkData"
-          :columns="columns"
+          :columnsOptions="columnsOptions"
           :pagination="pagination"
           :height="height"
-          :max-height="tableMaxHeight"
-          :pagination-hide="false"
+          :maxHeight="tableMaxHeight"
+          :paginationHide="false"
           :url="url"
           :defaultLoadPage="load"
+          :linkView="linkData"  
           :summary="summary"
          >
-        </k-table>
+         <!--  linkView  与 summary 未处理 -->
+        </kt-table>
       </div>
       <!-- table 表格 end -->
 

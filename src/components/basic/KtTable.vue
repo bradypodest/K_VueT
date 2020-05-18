@@ -12,6 +12,8 @@
        :max-height="realMaxHeight"
        :data="url?rowData:tableData"
        style="width: 100%;"
+
+       @selection-change="selectionChange"
        >
        <!-- 多选框 -->
        <el-table-column v-if="showCheckbox" type="selection" width="55" align="center"></el-table-column>
@@ -179,6 +181,11 @@ export default {
       type: Boolean,
       default: true
     },
+    single: {
+      type: Boolean, //是否单选
+      default: false
+    },
+
     //表字段参数
     columnsOptions:{
       type: Array,
@@ -243,6 +250,7 @@ export default {
         return { total: 0, size: 30, sortName: "" };
       }
     },
+    //是否一进页面就加载数据
     defaultLoadPage: {//传入了url，是否默认加载表格数据      
       type: Boolean,
       default: true
@@ -693,6 +701,21 @@ export default {
     //   }
     //   return value;
     // }
+
+    //选择行事件,只有单选才触发  每点击多选框时
+    selectionChange(selection) {
+      // console.log(selection);
+
+      if (this.single && selection.length == 1) {
+        this.$emit("rowChange", selection[0]); //调用父方法
+      }
+      if (this.single && selection.length > 1) {
+        this.$refs.table.toggleRowSelection(selection[0]);
+        //toggleRowSelection	用于多选表格，切换某一行的选中状态，
+        //   如果使用了第二个参数，则是设置这一行选中与否（selected 为 true 则选中）
+      }
+      // this.rowChange(selection[0]);
+    },
   },
   created(){
     this.realHeight = this.getHeight();
