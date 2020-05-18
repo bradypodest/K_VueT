@@ -1,5 +1,5 @@
 <template>
-  <div class="container" style="padding: 30px 100px;">
+  <div class="container" style="padding:  20px;;">
     <span>table组件从后台加载数据</span>
     <div style="margin-bottom:10px;">
       <el-button type="info" ghost @click="load">刷新表数据</el-button>

@@ -3,19 +3,18 @@
 <!-- 20200515-->
 
 <template>
-  <div>
+  <div style="box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)">
     <div class="kt-table">
       <el-table 
        ref="table"
        class="v-table"
        border
-       style="width: 100%"
        :max-height="realMaxHeight"
        :data="url?rowData:tableData"
-
+       style="width: 100%;"
        >
        <!-- 多选框 -->
-       <el-table-column v-if="showCheckbox" type="selection" width="55"></el-table-column>
+       <el-table-column v-if="showCheckbox" type="selection" width="55" align="center"></el-table-column>
        <el-table-column 
         v-for="(column,cindex) in filterColumns()"
         :key="cindex"
@@ -26,6 +25,7 @@
         :fixed="column.fixed"
         :header-align="column.align||'center'"
         :align="column.align||'center'"
+        :show-overflow-tooltip="true"
         >
        
        <template slot-scope="scope">
@@ -107,6 +107,7 @@
           </div>
           <el-tag v-else-if="column.type=='tag'"
             :color="getColor(scope.row,column)"
+            :disable-transitions=true
            >
            {{localFormatter(scope.row,column,true)}}
           </el-tag>
@@ -684,6 +685,14 @@ export default {
       //不使用最大高度
       return null;
     },
+
+    //  ellipsis(value) {
+    //   if (!value) return "";
+    //   if (value.length > 15) {
+    //     return value.slice(0, 15) + "...";
+    //   }
+    //   return value;
+    // }
   },
   created(){
     this.realHeight = this.getHeight();
@@ -710,8 +719,10 @@ export default {
   border-top: 0px;
 }
 .v-table >>> .el-table__header th {
-  padding: 1.5px !important;
+  /* padding: 1.5px !important;
 
+  background-color: #f8f8f9 !important;
+  font-size: 13px; */
   background-color: #f8f8f9 !important;
   font-size: 13px;
 }
@@ -720,8 +731,13 @@ export default {
   white-space: nowrap !important;
 }
 .v-table >>> .el-table__body td {
-  padding: 7px 0 !important;
+  padding: 2px 0 !important;
+  height: 48px;
 }
+/* .kt-table >>>  .el-tooltip__popper{max-width:20%;background:#f5f5f5 !important;
+    color: #303133 !important;}
+.kt-table >>>  .el-tooltip__popper.is-dark{background:#f5f5f5 !important;
+    color: #303133 !important;} */
 
 .v-table >>> .el-table__footer td {
   padding: 5px 0 !important;
