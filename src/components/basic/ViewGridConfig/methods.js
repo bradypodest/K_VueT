@@ -5,25 +5,25 @@ import serviceFilter from './serviceFilter.js'
 let methods = {
   //当添加扩展组件gridHeader/gridBody/gridFooter及明细modelHeader/modelBody/modelFooter时，
   //如果要获取父级Vue对象,请使用此方法进行回调
-  parentCall(fun) {
-    if (typeof fun != 'function') {
-      return console.log('扩展组件需要传入一个回调方法才能获取父级Vue对象')
-    }
-    fun(this);
-  },
-  getCurrentAction() {
-    if (this.currentReadonly) {
-      return '';
-    }
-    return "--" + (this.currentAction == this.const.ADD ? "新增" : "编辑");
-  },
-  quickSearchKeyPress($event) { //查询字段为input时，按回车查询
-    if ($event.keyCode == 13) {
-      if (this.searchFormFileds[this.singleSearch.field] != "") {
-        this.search();
-      }
-    }
-  },
+  // parentCall(fun) {
+  //   if (typeof fun != 'function') {
+  //     return console.log('扩展组件需要传入一个回调方法才能获取父级Vue对象')
+  //   }
+  //   fun(this);
+  // },
+  // getCurrentAction() {
+  //   if (this.currentReadonly) {
+  //     return '';
+  //   }
+  //   return "--" + (this.currentAction == this.const.ADD ? "新增" : "编辑");
+  // },
+  // quickSearchKeyPress($event) { //查询字段为input时，按回车查询
+  //   if ($event.keyCode == 13) {
+  //     if (this.searchFormFileds[this.singleSearch.field] != "") {
+  //       this.search();
+  //     }
+  //   }
+  // },
   getButtons() {//生成ViewGrid界面的操作按钮及更多选项
     let searchIndex = this.buttons.findIndex(x => { return x.value == 'Search'; });
     //添加高级查询
@@ -742,27 +742,32 @@ let methods = {
       this.refresh();
     });
   },
-  openViewColumns() {//查看表结构
-    if (this.viewColumns == 0) {
-      this.viewColumns.push(
+  opendataStruct() {//查看表结构
+    if (this.dataStructColumns == 0) {
+      this.dataStructColumns.push(
         ...[
-          { title: "名称", key: "title" },
-          { title: "字段", key: "field" },
-          { title: "类型", key: "type" },
-          { title: "是否显示", key: "hidden" },
-          { title: "绑定数据源", key: "bind" }
+          { title: "名称", field: "title",type:"text",align:"center" },
+          { title: "字段", field: "field",type:"text",align:"center" },
+          { title: "类型", field: "type",type:"text",align:"center" },
+          { title: "是否显示", field: "hidden",type:"text",align:"center",
+            edit:{
+                type:"switch",
+            } 
+          },
+          { title: "绑定数据源", field: "bind",type:"text",align:"center" }
         ]
       );
-      this.columns.forEach(x => {
-        this.viewData.push({
+      this.columnsOptions.forEach(x => {
+        this.dataStructData.push({
           title: x.title,
           field: x.field,
           type: x.type,
           hidden: x.hidden ? "否" : "是",
+          //hidden: x.hidden?"否":"是",
           bind: x.bind ? x.bind.dicNo : "--",
-          cellClassName: {
-            title: "table-info-cell-title"
-          }
+          // cellClassName: {
+          //   title: "table-info-cell-title"
+          // }
         });
       });
     }

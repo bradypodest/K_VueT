@@ -8,6 +8,20 @@
     <!-- 导入url  end -->
 
     <!-- 表 数据结构  start-->
+    <kv-dialog 
+      :isShow.sync="dataStructDialog"
+      :height="450" :width="dataStructWidth" 
+      :title="table.cnName+'数据结构'">
+      <div slot=content>
+        <kt-table 
+         :paginationHide=true         
+         :columnsOptions="dataStructColumns"
+         :tableData="dataStructData"
+         :showCheckbox=false         
+         >
+        </kt-table>
+      </div>
+    </kv-dialog>
     <!-- 表 数据结构  end-->
 
     <!-- 审核  start   能不能考虑下反审核-->
@@ -17,10 +31,12 @@
     <!-- 导入execl end-->
 
     <!-- 手动选择那些列显示 Start   还可以设置前几列固定 -->
+    <kv-Dialog >
+    </kv-Dialog>
+
     <!-- 手动选择那些列显示 end -->
 
     <!-- 新增，编辑 start -->
-    
     <!-- 新增，编辑 end -->
 
     <!-- 头部自定义组件 扩展点 start -->
@@ -45,7 +61,36 @@
         <!--快速查询字段 (一个字段))-->
         <div class="search-one"></div>
         <!-- 操作按钮 start -->
-        <div class="btn-group"></div>
+        <div class="btn-group">
+          <el-button
+            v-for="(btn,bIndex) in splitButtons"
+            :key="bIndex"
+            :type="btn.type"
+            :class="btn.class"
+            @click="onClick(btn.onClick)"
+          >
+            <!-- <Icon :type="btn.icon" /> -->
+            <i class="el-icon-edit"></i>
+            {{btn.name}}
+          </el-button>
+          <el-dropdown trigger="click" @on-click="changeDropdown" v-if="buttons.length> maxBtnLength">
+            <el-button type="info" ghost>
+              更多
+              <Icon type="ios-arrow-down"></Icon>
+            </el-button>
+            <el-dropdown-menu slot="list">
+              <el-dropdown-item
+                :name="item.name"
+                v-for="(item,dIndex) in buttons.slice(maxBtnLength,buttons.length)"
+                :key="dIndex"
+              >
+                <!-- <Icon :type="item.icon"></Icon> -->
+                <i class="el-icon-edit"></i>
+                {{item.name}}
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+        </div>
         <!-- 操作按钮 end -->
       </div>
       <!-- 主界面头 介绍 和 操作按钮 end-->
@@ -74,10 +119,10 @@
           :paginationHide="false"
           :url="url"
           :defaultLoadPage="load"
-          :linkView="linkData"  
-          :summary="summary"
+          
+          :summaryData="summaryData"
          >
-         <!--  linkView  与 summary 未处理 -->
+         <!--  :linkView="linkData"  未处理 -->
         </kt-table>
       </div>
       <!-- table 表格 end -->
@@ -135,11 +180,11 @@ var vueParam = {
     KTable: KTable, //列表组件
     UploadExcel: () => import("@/components/basic/UploadExcel.vue") //导入exect 组件
   },
-  //对外参数
-  props: {},
+  //对外参数 :基本都放在viewGridConfig文件夹下的props.js中
+  props: {  },
   data() {
     return {
-      _inited: false, //是否已经初始化
+      _inited: false, //是否已经初始化   //在钩子activated
       single: false, //表是否单选
       const: _const, //增删改查导入导出等对应的action
       boxInit: false, //新建或编辑的弹出框初化状态，默认不做初始化，点击新建或编辑才初始化弹出框
@@ -148,95 +193,100 @@ var vueParam = {
       exportHref: "",
       currentAction: _const.ADD, //当新建或编辑时，记录当前的状态:如当前操作是新建
       currentRow: {}, //当前编辑或查看数据的行
-      closable: false,
+      //closable: false,//
       boxModel: false, //弹出新建、编辑框
-      width: 700, //弹出框查看表数据结构
       labelWidth: 100, //高级查询的标签宽度
-      viewModel: false, //查看表结构的弹出框
-      viewColumns: [], //查看表结构的列数据
-      viewData: [], //查看表结构信息
+
+      //width: 700, //弹出框查看表数据结构
+      dataStructDialog: false, //查看表结构的弹出框
+      dataStructColumns: [], //查看表结构的列数据  //数据来源于主table的数据 （见methods.js中的openViewColumns方法）
+      dataStructData: [], //查看表结构信息  //数据来源于主table的数据
+
       maxBtnLength: 3, //界面按钮最多显示的个数，超过的数量都显示在更多中
       buttons: [], //查询界面按钮  如需要其他操作按钮，可在表对应的.js中添加(如:Sys_User.js中buttons添加其他按钮)
       splitButtons: [],
-      uploadfiled: [], //上传文件图片的字段
-      boxButtons: [], //弹出框按钮 如需要其他操作按钮，可在表对应的.js中添加
-      dicKeys: [], //当前界面所有的下拉框字典编号及数据源
-      hasKeyField: [], //有字典数据源的字段
-      keyValueType: { _dinit: false },
+      //uploadfiled: [], //上传文件图片的字段
+      //boxButtons: [], //弹出框按钮 如需要其他操作按钮，可在表对应的.js中添加
+      //dicKeys: [], //当前界面所有的下拉框字典编号及数据源
+      //hasKeyField: [], //有字典数据源的字段
+      //keyValueType: { _dinit: false },
       url: "", //界面表查询的数据源的url
-      hasDetail: false, //是否有从表(明细)表格数据
-      initActivated: false,
+      //hasDetail: false, //是否有从表(明细)表格数据
+      //initActivated: false,
       load: true, //是否默认加载表数据
-      activatedLoad: false, //页面触发actived时是否刷新页面数据
-      summary: false, //查询界面table是否显示合计
+      //activatedLoad: false, //页面触发actived时是否刷新页面数据
+      summaryData:{//查询界面table是否显示合计
+        isSummary:false
+      },
       //需要从远程绑定数据源的字典编号,如果字典数据源的查询结果较多，请在onInit中将字典编号添加进来
       //只对自定sql有效
-      remoteKeys: [],
+      //remoteKeys: [],
       // detailUrl: "",
       //弹出框从表(明细)对象
-      detailOptions: {
-        //从表配置
-        buttons: [], //弹出框从表表格操作按钮,目前有删除行，添加行，刷新操作，如需要其他操作按钮，可在表对应的.js中添加
-        cnName: "", //从表名称
-        key: "", //从表主键名
-        data: [], //数据源
-        columns: [], //从表列信息
-        edit: true, //明细是否可以编辑
-        single: false, //明细表是否单选
-        load: true,
-        delKeys: [], //当编辑时删除当前明细的行主键值
-        url: "", //从表加载数据的url
-        pagination: { total: 0, size: 100, sortName: "" }, //从表分页配置数据
-        height: 0, //默认从表高度
-        doubleEdit: true, //使用双击编辑
-        currentReadonly: false, //当前用户没有编辑或新建权限时，表单只读(可用于判断用户是否有编辑或新建权限)
-        //开启编辑时
-        beginEdit: (row, column, index) => {
-          return true;
-        },
-        //结束编辑前
-        endEditBefore: (row, column, index) => {
-          return true;
-        },
-        //结束编辑后
-        endEditAfter: (row, column, index) => {
-          return true;
-        }
-      },
-      auditParam: {
-        //审核对象
-        rows: 0, //当前选中审核的行数
-        model: false, //审核弹出框
-        status: -1, //审核结果
-        reason: "", //审核原因
-        //审核选项(可自行再添加)
-        data: [
-          { text: "通过", status: 1 },
-          { text: "拒绝", status: 2 }
-        ]
-      },
-      upload: {
-        //导入上传excel对象
-        excel: false, //导入的弹出框是否显示
-        url: "", //导入的路径,如果没有值，则不渲染导入功能
-        template: {
-          //下载模板对象
-          url: "", //下载模板路径
-          fileName: "" //模板下载的中文名
-        },
-        init: false //是否有导入权限，有才渲染导入组件
-      },
+      // detailOptions: {
+      //   //从表配置
+      //   buttons: [], //弹出框从表表格操作按钮,目前有删除行，添加行，刷新操作，如需要其他操作按钮，可在表对应的.js中添加
+      //   cnName: "", //从表名称
+      //   key: "", //从表主键名
+      //   data: [], //数据源
+      //   columns: [], //从表列信息
+      //   edit: true, //明细是否可以编辑
+      //   single: false, //明细表是否单选
+      //   load: true,
+      //   delKeys: [], //当编辑时删除当前明细的行主键值
+      //   url: "", //从表加载数据的url
+      //   pagination: { total: 0, size: 100, sortName: "" }, //从表分页配置数据
+      //   height: 0, //默认从表高度
+      //   doubleEdit: true, //使用双击编辑
+      //   currentReadonly: false, //当前用户没有编辑或新建权限时，表单只读(可用于判断用户是否有编辑或新建权限)
+      //   //开启编辑时
+      //   beginEdit: (row, column, index) => {
+      //     return true;
+      //   },
+      //   //结束编辑前
+      //   endEditBefore: (row, column, index) => {
+      //     return true;
+      //   },
+      //   //结束编辑后
+      //   endEditAfter: (row, column, index) => {
+      //     return true;
+      //   }
+      // },
+      // auditParam: {
+      //   //审核对象
+      //   rows: 0, //当前选中审核的行数
+      //   model: false, //审核弹出框
+      //   status: -1, //审核结果
+      //   reason: "", //审核原因
+      //   //审核选项(可自行再添加)
+      //   data: [
+      //     { text: "通过", status: 1 },
+      //     { text: "拒绝", status: 2 }
+      //   ]
+      // },
+
+      // upload: {
+      //   //导入上传excel对象
+      //   excel: false, //导入的弹出框是否显示
+      //   url: "", //导入的路径,如果没有值，则不渲染导入功能
+      //   template: {
+      //     //下载模板对象
+      //     url: "", //下载模板路径
+      //     fileName: "" //模板下载的中文名
+      //   },
+      //   init: false //是否有导入权限，有才渲染导入组件
+      // },
       height: 0, //表高度
-      tableHeight: 0, //查询页面table的高度
+      //tableHeight: 0, //查询页面table的高度
       tableMaxHeight: 0, //查询页面table的最大高度
       pagination: { total: 0, size: 30, sortName: "" }, //从分页配置数据
-      boxOptions: {
-        saveClose: true,
-        labelWidth: 100,
-        height: 0,
-        width: 0,
-        summary: false //弹出框明细table是否显示合计
-      } //saveClose新建或编辑成功后是否关闭弹出框//弹出框的标签宽度labelWidth
+      // boxOptions: {
+      //   saveClose: true,//saveClose新建或编辑成功后是否关闭弹出框
+      //   labelWidth: 100,//弹出框的标签宽度labelWidth
+      //   height: 0,
+      //   width: 0,
+      //   summary: false //弹出框明细table是否显示合计
+      // } 
       
     };
   },

@@ -44,6 +44,14 @@ let props = {
     default: () => {
       return {};
     }
+  //   {
+  //     key: 'Order_Id',//该表的主键//排序字段
+  //     footer: "Foots",//
+  //     cnName: '销售订单',//表中文名
+  //     name: 'SellOrder',//表名(代码生成器的别名)
+  //     url: "/SellOrder/",(后台控制器)
+  //     sortName: "CreateDate"//后台排序字段
+  //  },
   },
   extend: {//表的扩展方法与组件都合并到此属性中
     type: Object,

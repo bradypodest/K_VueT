@@ -14,6 +14,8 @@
        style="width: 100%;"
 
        @selection-change="selectionChange"
+       :show-summary="summaryData.isSummary"
+       :summary-method="getSummaries"
        >
        <!-- 多选框 -->
        <el-table-column v-if="showCheckbox" type="selection" width="55" align="center"></el-table-column>
@@ -278,6 +280,13 @@ export default {
         return true;
       }
     },
+    summaryData:{
+      type: Object,
+      default: {
+        isSummary:false
+        //summaryFun:(columns,data){return [];}//自定义合计方法
+        }
+    }
   },
   data(){
     return {
@@ -716,6 +725,43 @@ export default {
       }
       // this.rowChange(selection[0]);
     },
+
+    ///合计方法
+    getSummaries(param) {
+      const { columns, data } = param;
+      const sums = [];
+
+      let isSummaryFun=false;//是否已经自定义合计方法
+      if(this.summaryData.isSummary && this.summaryData.summaryFun){
+        sums = this.summaryData.summaryFun(columns,data);
+        return sums;
+      }
+
+      ///下方是默认的合计 ：第一列是“合计”
+      columns.forEach((column, index) => {
+        if (index === 0) {
+          sums[index] = '合计';
+          return;
+        }
+        const values = data.map(item => Number(item[column.property]));
+        if (!values.every(value => isNaN(value))) {
+          sums[index] = values.reduce((prev, curr) => {
+            const value = Number(curr);
+            if (!isNaN(value)) {
+              return prev + curr;
+            } else {
+              return prev;
+            }
+          }, 0);
+          sums[index] += ' 元';
+        } else {
+          //sums[index] = 'N/A';
+          sums[index] = '';
+        }
+      });
+
+      return sums;
+    }
   },
   created(){
     this.realHeight = this.getHeight();
