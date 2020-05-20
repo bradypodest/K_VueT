@@ -18,7 +18,8 @@
          :paginationHide=true         
          :columnsOptions="dataStructColumns"
          :tableData="dataStructData"
-         :showCheckbox=false         
+         :showCheckbox=false 
+         :endEditAfter="changeTableFieldIsShow"        
          >
         </kt-table>
       </div>
@@ -69,14 +70,14 @@
             <i :class="btn.icon"></i>
             {{btn.name}}
           </el-button>
-          <el-dropdown trigger="click" @on-click="changeDropdown" v-if="buttons.length> maxBtnLength">
+          <el-dropdown  @command="changeDropdown"  v-if="buttons.length> maxBtnLength">
             <el-button type="primary" ghost size="small">
               更多
               <i class="el-icon-arrow-down el-icon--right"></i>
             </el-button>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item
-                :name="item.name"
+                :command="item.name"
                 v-for="(item,dIndex) in buttons.slice(maxBtnLength,buttons.length)"
                 :key="dIndex"
                 :icon="item.icon"
@@ -266,7 +267,7 @@ var vueParam= {
 
     //一些固定的按钮 start
       buttonsDefault : [{
-        name: "查 询",
+        name: "查 询",//按钮的name最好不要重复
         value: 'Search',
         icon: 'el-icon-search',
         class: 'dropdown',
@@ -342,21 +343,21 @@ var vueParam= {
       //         this.export();
       //     }
       // }, 
-      // {
-      //     name: "数据结构",
-      //     icon: 'ios-cog',
-      //     class: '',
-      //     value: '',
-      //     onClick: function () {
-      //         this.openViewColumns();
-      //     }
-      // }
+      {
+          name: "数据结构",
+          icon: 'ios-cog',
+          class: '',
+          value: '',
+          onClick: function () {
+              this.openViewColumns();
+          }
+      }
       ],
     //一些固定的按钮 end
 
     //表结构 弹出框 start
       dataStructDialog:false,
-      dataStructWidth:"600",
+      dataStructWidth:"800",
       dataStructColumns:[], //查看表结构的列数据  //数据来源于主table的数据 
       dataStructData: [], //查看表结构信息  //数据来源于主table的数据
     //表结构 弹出框 end
@@ -409,11 +410,71 @@ var vueParam= {
        this.search();
     },
 
-  //一些基础方法 ，如查询  Start
+  //表结构 弹窗 的一些扩展方法 start
+  changeTableFieldIsShow(row,column,index){
+    debugger;
+    console.log(row);
+    console.log(column);
+    console.log(index)
+
+    var that=this;
+    
+    if(row.hidden==that.columnsOptions[index].hidden){
+
+    }else{
+      that.columnsOptions[index].hidden=row.hidden;
+    }
+  },
+  //表结构 弹窗 的一些扩展方法 end
+
+  //一些基础方法 ，如查询 ，查看表结构  Start
     search(){// 主表 查询
       this.$refs.table.load(null, true);//调用ref为 table的主kttable组件的load方法 
     },
-  //一些基础方法 ，如查询  end
+    openViewColumns() {//查看表结构
+    var that=this;
+    if (that.dataStructColumns.length == 0) {
+      //that.dataStructColumns=[];
+
+      that.dataStructColumns.push(
+        ...[
+          { title: "名称", field: "title" },
+          { title: "字段", field: "field" },
+          { title: "类型", field: "type" },
+          { title: "是否隐藏", field: "hidden",type:"tag",
+              edit:{
+                type:"switch"
+              },
+              // onChange:(column,row,tableData,value)=>{
+              //   debugger
+              //     //将对应的tabledata中的值修改
+              //    console.log(column);
+              //    console.log(row);
+              //    console.log(tableData);
+              //    console.log(value);
+              // }
+            },
+          { title: "绑定数据源", field: "bind" }
+        ]
+      );
+      debugger
+      that.columnsOptions.forEach(x => {
+        that.dataStructData.push({
+          "title": x.title,
+          field: x.field,
+          type: x.type,
+          //hidden: x.hidden ? "否" : "是",
+          hidden: x.hidden,
+          bind: x.bind ? x.bind.dicNo : "--",
+          // cellClassName: {
+          //   title: "table-info-cell-title"
+          // }
+        });
+      });
+    }
+    that.dataStructDialog = true;
+  },
+  //一些基础方法 ，如查询 ，查看表结构  end
 
   // 初始化  当前rul,  按钮组 Start
     initParam(){
@@ -486,7 +547,8 @@ var vueParam= {
       click.apply(this);
     },
     //点击“更多”下拉菜单的菜单，调用对应的this.buttons点击事件
-    changeDropdown(btnName, v1) {
+    changeDropdown(btnName) {
+      debugger
       let button = this.buttons.filter(x => {
         return x.name == btnName;
       });

@@ -125,9 +125,10 @@
        </el-table-column>
        <el-table-column
           v-if="isShowEditButton"
-          :min-width="100"
+          :min-width="120"
           label="操作"
           fixed="right"
+          align="center"
         >
           <template slot-scope="scope">
             <el-button v-if="currentEditRow.rowIndex!=scope.$index" type="info" size="small" @click="beginWithButtonEdit(scope)" >编辑</el-button>
@@ -342,6 +343,17 @@ export default {
     //获取显示的字段，hidden=false
     filterColumns() {
       return this.columnsOptions.filter(x => {
+        // if(x.hidden=='undefined'){
+        //   return true;
+        // }
+        // if(typeof x.hidden=='boolean'){
+        //   return !x.hidden;
+        // }else if(typeof x.hidden=='number'){
+        //   return x.hidden==0;
+        // }else{
+        //   return true;//默认是显示的
+        // }
+
         return !x.hidden;
       });
     },
