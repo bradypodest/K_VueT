@@ -50,11 +50,11 @@
           <span>{{table.cnName}}</span>
         </div>
         <!-- 备注 -->
-        <div class="“remarks”">
+        <div class="remarks">
           <a class="text" :title="extend.text">{{extend.text}}</a>
         </div>
         <!--快速查询字段 (一个字段))-->
-        <div class="search-one"></div>
+        <div class="search-line"></div>
         <!-- 操作按钮 start -->
         <div class="btn-group">
           <el-button
@@ -63,13 +63,14 @@
             :type="btn.type"
             :class="btn.class"
             @click="onClick(btn.onClick)"
+            size="small"
           >
             <!-- <Icon :type="btn.icon" /> -->
-            <i class="el-icon-edit"></i>
+            <i :class="btn.icon"></i>
             {{btn.name}}
           </el-button>
           <el-dropdown trigger="click" @on-click="changeDropdown" v-if="buttons.length> maxBtnLength">
-            <el-button type="info" ghost>
+            <el-button type="primary" ghost size="small">
               更多
               <i class="el-icon-arrow-down el-icon--right"></i>
             </el-button>
@@ -267,16 +268,16 @@ var vueParam= {
       buttonsDefault : [{
         name: "查 询",
         value: 'Search',
-        icon: 'md-search',
+        icon: 'el-icon-search',
         class: 'dropdown',
-        type: 'info',
+        type: 'primary',
         onClick: function () {
             this.search();
         }
       }, 
       {
           name: "刷 新",
-          icon: 'md-refresh',
+          icon: 'el-icon-refresh',
           class: '',
           type: 'success',
           onClick: function () {
@@ -285,30 +286,30 @@ var vueParam= {
       },
       {
           name: "新 建",
-          icon: 'md-add',
+          icon: 'el-icon-plus',
           value: 'Add',
           class: '',
-          type: 'error',
+          type: 'warning',
           onClick: function () {
               this.add();
           }
       },
       {
           name: "编 辑",
-          icon: 'md-create',
+          icon: 'el-icon-edit',
           value: 'Update',
           class: '',
-          type: 'success',
+          type: 'warning',
           onClick: function () {
               this.edit();
           }
       },  
       {
           name: "删 除",
-          icon: 'md-close',
+          icon: 'el-icon-close',
           class: '',
           value: 'Delete',
-          type: 'error',
+          type: 'warning',
           onClick: function () {
               this.del();
           }
@@ -461,7 +462,7 @@ var vueParam= {
       if (searchIndex != -1) {
         //splice() 方法向/从数组中添加/删除项目，然后返回被删除的项目
         this.buttons.splice(searchIndex + 1, 0, {
-          icon: 'ios-arrow-down',
+          icon: 'el-icon-arrow-down',
           class: 'r-dropdown',
           name: "",
           type: this.buttons[searchIndex].type,
@@ -666,8 +667,19 @@ vueParam.methods = Object.assign(
 );
 
 export default vueParam;
+//import "@/assets/css/ViewContainer.less";
+import "@/assets/css/ViewGrid.less";
 </script>
 
-<style>
-
+<style scoped>
+/* .view-container .view-header .remarks{
+    width: 170px;
+    display: flex;
+    align-items: center;
+    
+    margin-left: 10px;
+    font-size: 12px;
+    margin-top: 10px;
+} */
+/* justify-content: center; */
 </style>

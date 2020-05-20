@@ -22,8 +22,8 @@ export default {
       default: false,
       type: Boolean
     },
-    buttonTop: {
-      default: 100,
+    buttonTop: {//可修改设置按钮的位置
+      default: 50,
       type: Number
     }
   },

@@ -47,7 +47,7 @@ let extension = {
     //  </Alert>' },
     //   modelFooter:"", //() => import("./SellOrderComponents/ModelFooter.vue"),
   },
-  text: "示例覆盖全部可扩展方法,前台扩展文件SellOrder.js，后台Partial->SellOrdeService.cs",
+  text: "ktViewGrid范例",
   buttons: { //根据需要自行实现扩展按钮
       //注：没有编辑或新建权限的情况下，是不会显示此处添加的扩展按钮，如果仍需要显示此处的按钮，可以把按钮在methods的onInited方法中添加,如：this.boxButtons.push(...)
       view: [//ViewGrid查询界面按钮
@@ -56,7 +56,7 @@ let extension = {
               icon: 'md-create',
               value: 'Edit',
               class: '',
-              type: 'error',
+              type: 'success',
               index: 1,//显示的位置
               onClick: function () { //扩展按钮执行事件
                   //this可以获取所有属性，包括this.$refs.gridHeader/gridBody等获取扩展组件对象
@@ -69,7 +69,7 @@ let extension = {
               icon: 'md-create',
               value: 'Edit',
               class: '',
-              type: 'error',
+              type: 'success',
               index: 1,//显示的位置
               onClick: function () { //扩展按钮执行事件
                   this.getServiceDate();
