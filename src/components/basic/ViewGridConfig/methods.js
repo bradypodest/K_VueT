@@ -1,3 +1,5 @@
+///废弃
+
 
 import detailMethods from './detailMethods.js'
 //业务处理方法,全部可以由开发覆盖

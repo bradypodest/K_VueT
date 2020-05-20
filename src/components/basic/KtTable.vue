@@ -282,9 +282,11 @@ export default {
     },
     summaryData:{
       type: Object,
-      default: {
-        isSummary:false
-        //summaryFun:(columns,data){return [];}//自定义合计方法
+      default: function() {
+        return {
+          isSummary:false
+          //summaryFun:(columns,data){return [];}//自定义合计方法
+          }
         }
     }
   },
@@ -612,7 +614,6 @@ export default {
       if (isResetPage) {
         this.resetPage();
       }
-      debugger
       let param = {
         pageIndex: this.paginations.page,
         pageSize: this.paginations.size,
@@ -731,7 +732,7 @@ export default {
       const { columns, data } = param;
       const sums = [];
 
-      let isSummaryFun=false;//是否已经自定义合计方法
+      //let isSummaryFun=false;//是否已经自定义合计方法
       if(this.summaryData.isSummary && this.summaryData.summaryFun){
         sums = this.summaryData.summaryFun(columns,data);
         return sums;
@@ -774,8 +775,7 @@ export default {
     this.isShowEditButton = this.columnsOptions.some(x => {
       return x.hasOwnProperty("edit");
     });
-
-    this.defaultLoadPage && this.load();//加载列表数据
+    this.defaultLoadPage && this.load(null,false);//加载列表数据
   },
 }
 </script>

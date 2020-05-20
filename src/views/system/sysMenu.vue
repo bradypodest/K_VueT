@@ -513,7 +513,8 @@ export default {
 
         var data = that.dialogFormData;
         debugger;
-        data.ParentId = that.dialogFormData.ParentArray.pop();
+        var parentArrayCopy= JSON.parse(JSON.stringify(that.dialogFormData.ParentArray));
+        data.ParentId = parentArrayCopy.pop();//pop() 方法用于删除并返回数组的最后一个元素。
 
         //判断是新增还是编辑
         if (that.dialogForm.dialogFormType == "add") {

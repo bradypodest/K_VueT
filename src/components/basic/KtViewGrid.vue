@@ -113,7 +113,7 @@
           :height="height"
           :maxHeight="tableMaxHeight"
           :url="url"
-          :defaultLoadPage="load"
+          :defaultLoadPage="defaultLoadPage"
           
           :summaryData="summaryData"
          >
@@ -132,96 +132,6 @@
 </template>
 
 <script>
-//一些固定的按钮 start
-  let buttonsDefault = [{
-      name: "查 询",
-      value: 'Search',
-      icon: 'md-search',
-      class: 'dropdown',
-      type: 'info',
-      onClick: function () {
-          this.search();
-      }
-    }, 
-    {
-        name: "刷 新",
-        icon: 'md-refresh',
-        class: '',
-        type: 'success',
-        onClick: function () {
-            this.refresh();
-        }
-    },
-    {
-        name: "新 建",
-        icon: 'md-add',
-        value: 'Add',
-        class: '',
-        type: 'error',
-        onClick: function () {
-            this.add();
-        }
-    },
-    {
-        name: "编 辑",
-        icon: 'md-create',
-        value: 'Update',
-        class: '',
-        type: 'success',
-        onClick: function () {
-            this.edit();
-        }
-    },  
-    {
-        name: "删 除",
-        icon: 'md-close',
-        class: '',
-        value: 'Delete',
-        type: 'error',
-        onClick: function () {
-            this.del();
-        }
-    }, 
-    // {
-    //     name: "审 核",
-    //     icon: 'md-create',
-    //     class: '',
-    //     value: 'Audit',
-    //     type: 'error',
-    //     onClick: function () {
-    //         this.audit();
-    //     }
-    // },
-    // {
-    //     name: "导 入",
-    //     icon: 'md-color-fill',
-    //     class: '',
-    //     value: 'Import',
-    //     onClick: function () {
-    //         this.import();
-    //     }
-    // }, 
-    // {
-    //     name: "导 出",
-    //     icon: 'md-share-alt',
-    //     class: '',
-    //     value: 'Export',
-    //     onClick: function () {
-    //         this.export();
-    //     }
-    // }, 
-    // {
-    //     name: "数据结构",
-    //     icon: 'ios-cog',
-    //     class: '',
-    //     value: '',
-    //     onClick: function () {
-    //         this.openViewColumns();
-    //     }
-    // }
-    ];
-//一些固定的按钮 end
-
 //一些基础的操作 对应的后台的api后缀方法，如查询页面的url则是    api+this._const.PAGE
 //其中api是   this.table.url  (如"/SysRole/"")
 const _const = {
@@ -276,11 +186,11 @@ var vueParam= {
   components:{
     ..._components,
     KtTable,
-    KvDialog:() => import("@/components/basic/VolBox.vue"),
+    KvDialog:() => import("@/components/basic/KvDialog.vue"),
 
   },
   props:{
-    table: {//表的配置信息：主键、排序等（可看成页面信息）
+      table: {//表的配置信息：主键、排序等（可看成页面信息）
       type: Object,
       default: () => {
         return {};
@@ -303,8 +213,8 @@ var vueParam= {
           {
             text:"table扩展文字",
             components:{//动态扩充组件或组件路径
-               //如表单header、content、footer对应位置扩充的组件 , 如果有，以这个为最终的组件
-               gridHeader:() => import("./SellOrderComponents/GridHeaderExtend.vue"),//{ template: "<div>扩展组xx件</div>" },
+              //如表单header、content、footer对应位置扩充的组件 , 如果有，以这个为最终的组件
+              gridHeader:() => import("./SellOrderComponents/GridHeaderExtend.vue"),//{ template: "<div>扩展组xx件</div>" },
             },
             buttons:{//根据需要自行实现扩展按钮
               view:[//kt-ViewGrid查询界面按钮
@@ -350,34 +260,131 @@ var vueParam= {
   },
   data(){
     return {
-      //表结构 弹出框 start
+      _inited: false, //是否已经初始化   //在钩子activated
+      activatedLoad: false, //页面触发actived时是否刷新页面数据
+
+    //一些固定的按钮 start
+      buttonsDefault : [{
+        name: "查 询",
+        value: 'Search',
+        icon: 'md-search',
+        class: 'dropdown',
+        type: 'info',
+        onClick: function () {
+            this.search();
+        }
+      }, 
+      {
+          name: "刷 新",
+          icon: 'md-refresh',
+          class: '',
+          type: 'success',
+          onClick: function () {
+              this.refresh();
+          }
+      },
+      {
+          name: "新 建",
+          icon: 'md-add',
+          value: 'Add',
+          class: '',
+          type: 'error',
+          onClick: function () {
+              this.add();
+          }
+      },
+      {
+          name: "编 辑",
+          icon: 'md-create',
+          value: 'Update',
+          class: '',
+          type: 'success',
+          onClick: function () {
+              this.edit();
+          }
+      },  
+      {
+          name: "删 除",
+          icon: 'md-close',
+          class: '',
+          value: 'Delete',
+          type: 'error',
+          onClick: function () {
+              this.del();
+          }
+      }, 
+      // {
+      //     name: "审 核",
+      //     icon: 'md-create',
+      //     class: '',
+      //     value: 'Audit',
+      //     type: 'error',
+      //     onClick: function () {
+      //         this.audit();
+      //     }
+      // },
+      // {
+      //     name: "导 入",
+      //     icon: 'md-color-fill',
+      //     class: '',
+      //     value: 'Import',
+      //     onClick: function () {
+      //         this.import();
+      //     }
+      // }, 
+      // {
+      //     name: "导 出",
+      //     icon: 'md-share-alt',
+      //     class: '',
+      //     value: 'Export',
+      //     onClick: function () {
+      //         this.export();
+      //     }
+      // }, 
+      // {
+      //     name: "数据结构",
+      //     icon: 'ios-cog',
+      //     class: '',
+      //     value: '',
+      //     onClick: function () {
+      //         this.openViewColumns();
+      //     }
+      // }
+      ],
+    //一些固定的按钮 end
+
+    //表结构 弹出框 start
       dataStructDialog:false,
-      dataStructWidth:600,
+      dataStructWidth:"600",
       dataStructColumns:[], //查看表结构的列数据  //数据来源于主table的数据 
       dataStructData: [], //查看表结构信息  //数据来源于主table的数据
-      //表结构 弹出框 end
+    //表结构 弹出框 end
 
-      //主 按钮组 start
+    //主 按钮组 start
       searchBoxShow: false, //高级查询(界面查询后的下拉框点击触发)
       maxBtnLength:3,//按钮显示最大个数，其他的都放在 “更多”下拉框中
 
-      splitButtons: [],
+      splitButtons: [],//在buttons的基础上拆分出来显示的按钮
       buttons: [], //查询界面按钮  如需要其他操作按钮，可在表对应的.js中添加(如:Sys_User.js中buttons添加其他按钮)
-      //主 按钮组 end
+    //主 按钮组 end
 
-      //主表 start
+    //主表 start
       single:false,
       height:0,
       tableMaxHeight:0,
       pagination: { total: 0, size: 30, sortName: "" }, 
       //paginationHide:false
-      url:"",//之后会
-
-      //主表 end
+      url:"",//之后会生成
+      summaryData:{
+         isSummary:false
+      },
+      defaultLoadPage:true,//是否一进页面就加载数据
+    //主表 end
     }
   },
   methods:{
     //当添加扩展组件gridHeader/gridBody/gridFooter及明细modelHeader/modelBody/modelFooter时，
+    
     //如果要获取父级Vue对象,请使用此方法进行回调
     parentCall(fun) {
       if (typeof fun != 'function') {
@@ -385,11 +392,37 @@ var vueParam= {
       }
       fun(this);
     },
+    
+    mergeComponents() {//合并组件
+      if (this.extend.components) {
+        for (const key in this.extend.components) {
+          if (this.extend.components[key]) {
+            this.$options.components[key] = this.extend.components[key];//vue的实例属性$options是用来获取定义在data外的数据和方法的
+          } else {
+            this.$options.components[key] = Empty;
+          }
+        }
+      }
+    },
+    refresh(){//刷新当前页面
+       this.search();
+    },
+
+  //一些基础方法 ，如查询  Start
+    search(){// 主表 查询
+      this.$refs.table.load(null, true);//调用ref为 table的主kttable组件的load方法 
+    },
+  //一些基础方法 ，如查询  end
+
+  // 初始化  当前rul,  按钮组 Start
     initParam(){
-      this.url = this.getUrl(this._const.PAGE);//生成查询列表url
+      this.url = this.getUrl(_const.PAGE);//生成查询列表url
 
-      initButtons();
+      this.initButtons();
 
+      this.initDialogButtons();
+
+      this.splitButtons = this.getSplitButtons(); //拆分按钮  //生成ViewGrid界面的操作按钮及更多选项
     },
     getUrl(action) {//是否忽略前缀/  获取操作的url
       return  this.table.url + action;
@@ -397,13 +430,13 @@ var vueParam= {
     initButtons(){//初始化主按钮    
       //获取角色权限配置下的 对应页面的按钮(查询,新增,修改,删除,以及扩展下的按钮))
       if (this.extend.buttons.view) {
-        this.buttons=extendBtn(buttonsDefault,this.extend.buttons.view);
+        this.buttons=this.extendBtn(this.buttonsDefault,this.extend.buttons.view);
       }else{
-        this.buttons=buttonsDefault;
+        this.buttons=this.buttonsDefault;
       }
       //筛选出配置在对应页面的权限表中的按钮： 待修改
       
-      getDialogButtons();
+      
     },
     //将页面view 默认按钮与扩展按钮合并
     extendBtn(btns, source) {//btns权限按钮，source为扩展按钮
@@ -413,19 +446,18 @@ var vueParam= {
         //通过按钮的Index属性，放到指定的位置
         btns.splice(x.index == undefined ? btns.length : x.index, 0, x);
       })
+      return btns;
     },
-    getDialogButtons(){//初始化弹出框按钮  初始化新增，编辑按钮 , 详情按钮
+    initDialogButtons(){//初始化弹出框按钮  初始化新增，编辑按钮 , 详情按钮
       //初始化新增，编辑按钮
       //判断当前操作，如是新增操作，则弹出框无 审核按钮
       //判断筛选出权限按钮
 
-    },
 
-  //查询 相关 start
-    //获取按钮 (包含一个高级查询+3个按钮，不是全部按钮)
-    getButtons() {//生成ViewGrid界面的操作按钮及更多选项
+    },
+    getSplitButtons(){//获取到拆分按钮 （及页面只显示最大的按钮数的按钮）
       let searchIndex = this.buttons.findIndex(x => { return x.value == 'Search'; });
-      //添加高级查询
+      //添加高级查询  ：如果主页面按钮中有查询按钮，则要有显示 多条件查询框页面的 按钮
       if (searchIndex != -1) {
         //splice() 方法向/从数组中添加/删除项目，然后返回被删除的项目
         this.buttons.splice(searchIndex + 1, 0, {
@@ -438,11 +470,19 @@ var vueParam= {
           }
         });
       }
+
       this.maxBtnLength += (searchIndex == -1 ? 0 : 1);
       if (this.buttons.length <= this.maxBtnLength) return this.buttons;
-      let btns = this.buttons.slice(0, this.maxBtnLength);//slice() 方法可从已有的数组中返回选定的元素。
-      btns[this.maxBtnLength - 1].last = true;//???
+
+      let btns = this.buttons.slice(0, this.maxBtnLength);
+      btns[this.maxBtnLength - 1].last = true;
       return btns;
+    },
+  // 初始化  当前rul,  按钮组  end
+
+  //主按钮 点击 “更多” 按钮 相关 start
+    onClick(click) {//主按钮 点击
+      click.apply(this);
     },
     //点击“更多”下拉菜单的菜单，调用对应的this.buttons点击事件
     changeDropdown(btnName, v1) {
@@ -453,7 +493,7 @@ var vueParam= {
         button[0].onClick.apply(this);
       }
     },
-  //查询 相关 end
+  //“更多” 按钮 相关 end
 
   //主table 相关 start
     loadTableBefore(param, callBack) {//查询前设置查询条件及分页信息
@@ -468,7 +508,7 @@ var vueParam= {
       let status = this.searchAfter(data);//插口
       callBack(status);
     },
-    rowOnChange(row) {
+    rowOnChange(row) {//选择行事件,只有单选才触发
       this.rowChange(row);
     },
     rowChange(row) {//选中行事件
@@ -476,10 +516,10 @@ var vueParam= {
   //主table 相关 end
 
   //插口方法 start
-     onInit() { //对应created
+    onInit() { //对应created
         console.log('Create执行前')
     },
-     onInited() { //对应created，在onInit与onInited中间会初始化界面数据对象
+    onInited() { //对应created，在onInit与onInited中间会初始化界面数据对象
         console.log('Create执行后')
     },
     mounted() {
@@ -554,10 +594,21 @@ var vueParam= {
     }
   //插口方法 end
   },
+//生命周期钩子 start
+  beforeCreate() {},
   created(){
      //在其他方法中如果拿不到this，请使用$viewGridVue或$this
     $viewGridVue = this;
     $this = this;
+
+    //合并扩展组件
+    this.mergeComponents();
+    //合并自定义业务扩展方法     重点
+    if (this.extend.methods) {
+      for (const key in this.extend.methods) {
+        this[key] = this.extend.methods[key];
+      }
+    }
 
     //如果没有指定排序字段，则用主键作为默认排序字段
     this.pagination.sortName = this.table.sortName || this.table.key;
@@ -575,10 +626,44 @@ var vueParam= {
     //插口 onInited
     this.onInited(); //初始化后，如果需要做其他处理在扩展方法中覆盖此方法
 
-    this.splitButtons = this.getButtons(); //拆分按钮  //生成ViewGrid界面的操作按钮及更多选项
-  }
+  },
+  beforeMount() {},
+  mounted() {
+    //插口 mounted
+    this.mounted();
+  },
+  //生命周期钩子 activated：在使用了keep-alive后有actived钩子：触发顺序在mounted钩子后
+  activated() {
+    if (!this._inited) {
+      this._inited = true;
+      return;
+    }
 
-}
+    if (this.activatedLoad) {
+      this.refresh(); //刷新
+    }
+
+    //合并扩展组件、弹出框新建编辑页面自定义扩展组件或组件路径
+    this.mergeComponents();
+  },
+  beforeUpdate() {},
+  updated() {},
+  beforeDestroy() {},
+  destroyed() {}
+//生命周期钩子 end
+};
+
+
+//import props from "./ViewGridConfig/props.js";
+//合并属性
+//vueParam.props = Object.assign(vueParam.props, props);
+//console.log(props);
+//合并方法
+vueParam.methods = Object.assign(
+  vueParam.methods,
+  //methods,
+  vueParam.props.extend.methods
+);
 
 export default vueParam;
 </script>
