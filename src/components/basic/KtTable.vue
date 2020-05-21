@@ -774,7 +774,11 @@ export default {
       });
 
       return sums;
-    }
+    },
+
+    getSelected() {
+      return this.$refs.table.selection;//获取到多选的值
+    },
   },
   created(){
     this.realHeight = this.getHeight();

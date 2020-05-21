@@ -282,7 +282,6 @@ let _components = {
 };
 var $viewGridVue, $this;
 import KtTable from "@/components/basic/KtTable.vue";
-import KtForm from "@/components/basic/KtForm.vue"
 
 var vueParam= {
   components:{
@@ -662,110 +661,156 @@ var vueParam= {
       console.log(this.editFormOptions);
       // this.modelOpenAfter();
     },
-    initDialog() { //初始化新建、编辑的弹出框
-      this.modelOpenBefore(this.currentRow);
-      if (!this.dialogInit) {
-        this.dialogInit = true;
-        this.dialogModel = true;
-        // this.detailUrl = this.url;
-      }
-    },
-    getCurrentAction() {
-      if (this.currentReadonly) {
-        return '';
-      }
-      return "--" + (this.currentAction == _const.ADD ? "新增" : "编辑");
-    },
-    resetEditForm(sourceObj) {
-      // if (this.hasDetail && this.$refs.detail) {
-      //   // this.$refs.detail.rowData.splice(0);
-      //   this.$refs.detail.reset();
-      // }
-      this.resetForm("form", sourceObj);
-    },
-    resetForm(formName, sourceObj) {
-      //重置表单数据
-      if (this.$refs[formName]) {
-        this.$refs[formName].reset();
-      }
-
-      if (!sourceObj) return;
-      let form = formName == "searchForm"
-        ? this.searchFormData
-        : this.editFormData;
-      //获取数据源的data类型，否则如果数据源data的key是数字，重置的值是字符串就无法绑定值
-      if (!this.keyValueType._dinit) {
-        this.getKeyValueType(this.editFormOptions);
-        this.getKeyValueType(this.searchFormOptions);
-        this.keyValueType._dinit = true;
-      }
-      for (const key in form) {
-        if (sourceObj.hasOwnProperty(key)) {
-          let newVal = sourceObj[key];
-          if (this.keyValueType['_b_' + key] == 'selectList') {
-            if (newVal != "" && newVal != undefined && typeof newVal == 'string') {
-              newVal = newVal.split(',');
-            }
-          } else if (this.keyValueType.hasOwnProperty(key)
-            && typeof (this.keyValueType[key]) == 'number'
-            && newVal * 1 == newVal) {
-            newVal = newVal * 1;
-          } else {
-            if (newVal == null || newVal == undefined) {
-              newVal = '';
-            } else {
-              newVal += "";
-            }
-          }
-          form[key] = newVal;
-        } else {
-          form[key] = form[key] instanceof Array ? [] : "";
+      initDialog() { //初始化新建、编辑的弹出框
+        this.modelOpenBefore(this.currentRow);
+        if (!this.dialogInit) {
+          this.dialogInit = true;
+          this.dialogModel = true;
+          // this.detailUrl = this.url;
         }
-      }
-    },
-    getKeyValueType(formData) {
-      try {
-        formData.forEach(item => {
-          item.forEach(x => {
-            if (this.keyValueType.hasOwnProperty('_b_' + x.field)) {
-              return true;
-            }
-            let data;
-            if (x.type == 'switch') {
-              this.keyValueType[x.field] = 1;
-            }
-            else if (x.bind && x.bind.data) {
-              data = x.bind.data;
-            } else if (x.data) {
-              if (x.data instanceof Array) {
-                data = x.data;
-              } else if (x.data.data && x.data.data instanceof Array) {
-                data = x.data.data;
+      },
+      getCurrentAction() {
+        if (this.currentReadonly) {
+          return '';
+        }
+        return "--" + (this.currentAction == _const.ADD ? "新增" : "编辑");
+      },
+      resetEditForm(sourceObj) {
+        // if (this.hasDetail && this.$refs.detail) {
+        //   // this.$refs.detail.rowData.splice(0);
+        //   this.$refs.detail.reset();
+        // }
+        this.resetForm("form", sourceObj);
+      },
+      resetForm(formName, sourceObj) {
+        //重置表单数据
+        if (this.$refs[formName]) {
+          this.$refs[formName].reset();
+        }
+
+        if (!sourceObj) return;
+        let form = formName == "searchForm"
+          ? this.searchFormData
+          : this.editFormData;
+        //获取数据源的data类型，否则如果数据源data的key是数字，重置的值是字符串就无法绑定值
+        if (!this.keyValueType._dinit) {
+          this.getKeyValueType(this.editFormOptions);
+          this.getKeyValueType(this.searchFormOptions);
+          this.keyValueType._dinit = true;
+        }
+        for (const key in form) {
+          if (sourceObj.hasOwnProperty(key)) {
+            let newVal = sourceObj[key];
+            if (this.keyValueType['_b_' + key] == 'selectList') {
+              if (newVal != "" && newVal != undefined && typeof newVal == 'string') {
+                newVal = newVal.split(',');
+              }
+            } else if (this.keyValueType.hasOwnProperty(key)
+              && typeof (this.keyValueType[key]) == 'number'
+              && newVal * 1 == newVal) {
+              newVal = newVal * 1;
+            } else {
+              if (newVal == null || newVal == undefined) {
+                newVal = '';
+              } else {
+                newVal += "";
               }
             }
-            if (data && data.length > 0 && !this.keyValueType.hasOwnProperty(x.field)) {
-              this.keyValueType[x.field] = data[0].key;
-              this.keyValueType['_b_' + x.field] = x.type;
-            }
+            form[key] = newVal;
+          } else {
+            form[key] = form[key] instanceof Array ? [] : "";
+          }
+        }
+      },
+      getKeyValueType(formData) {
+        try {
+          formData.forEach(item => {
+            item.forEach(x => {
+              if (this.keyValueType.hasOwnProperty('_b_' + x.field)) {
+                return true;
+              }
+              let data;
+              if (x.type == 'switch') {
+                this.keyValueType[x.field] = 1;
+              }
+              else if (x.bind && x.bind.data) {
+                data = x.bind.data;
+              } else if (x.data) {
+                if (x.data instanceof Array) {
+                  data = x.data;
+                } else if (x.data.data && x.data.data instanceof Array) {
+                  data = x.data.data;
+                }
+              }
+              if (data && data.length > 0 && !this.keyValueType.hasOwnProperty(x.field)) {
+                this.keyValueType[x.field] = data[0].key;
+                this.keyValueType['_b_' + x.field] = x.type;
+              }
+            })
           })
+        } catch (error) {
+          console.log(error.message)
+        }
+      },
+      modelOpenProcess(row) {
+        this.$nextTick(() => {
+          this.modelOpenAfter(row);
         })
-      } catch (error) {
-        console.log(error.message)
+        return;
+        // if (!this.$refs.form) {
+        //     let timeOut = setTimeout(x => {
+        //         this.modelOpenAfter(row);
+        //     }, 500)
+        //     return;
+        // }
+        // this.modelOpenAfter(row);
+      },
+
+    edit() {//编辑
+      let rows = this.$refs.table.getSelected();
+      if (rows.length == 0) {
+        return this.$message.error("请选择要编辑的行!");
       }
+
+      //
+      if (rows.length > 1) {
+        this.$message.warning("已选择多个，将默认第一个!");
+      }
+      //记录当前编辑的行
+      this.currentRow = rows[0];
+      //初始化弹出框
+      this.initDialog();
+      //重置表单
+      //this.resetDetailTable();//从表方法  待修改
+
+      //设置当前的数据到表单上
+      this.setEditForm(rows[0]);
+      //设置远程查询表单的默认key/value
+      //this.getRemoteFormDefaultKeyValue();
+      //点击编辑按钮弹出框后，可以在此处写逻辑，如，从后台获取数据
+      this.modelOpenProcess(rows[0]);
+      // this.modelOpenAfter(rows[0]);
     },
-    modelOpenProcess(row) {
-      this.$nextTick(() => {
-        this.modelOpenAfter(row);
-      })
-      return;
-      // if (!this.$refs.form) {
-      //     let timeOut = setTimeout(x => {
-      //         this.modelOpenAfter(row);
-      //     }, 500)
-      //     return;
-      // }
-      // this.modelOpenAfter(row);
-    },
+      setEditForm(row) {
+        // if (this.remoteColumns.length == 0 || !rows || rows.length == 0) return;
+        //let remoteColumns = this.$refs.table.remoteColumns;
+        // remoteColumns.forEach(column => {
+        //   this.editFormOptions.forEach(option => {
+        //     option.forEach(x => {
+        //       if (x.field == column.field) {
+        //         x.data.data = Object.assign([], x.data, column.bind.data);
+        //       }
+        //     })
+        //   });
+        // });
+        //重置编辑表单数据
+        debugger;
+        this.editFormData[this.table.key] = row[this.table.key];
+
+        this.resetEditForm(row);
+        this.currentAction = _const.EDIT;
+        this.dialogModel = true;
+      },
   //一些基础方法 ，如查询 ，查看表结构  end
 
   // 初始化  当前rul,  按钮组 Start

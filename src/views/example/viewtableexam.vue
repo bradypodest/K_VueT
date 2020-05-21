@@ -47,9 +47,9 @@ var vueParam = {
                         ],
                       [{"title":"描述","field":"Description", "colSize":8,"type":"textarea"}],
                       [{"title":"创建人","field":"Creator","disabled":true},
-                        {"title":"创建时间","field":"CreateTime","disabled":true}],
+                        {"title":"创建时间","field":"CreateTime","disabled":true,type:"datetime"}],//是时间类型的要填写，否则按普通的处理
                       [ {"title":"修改者","field":"Modifier","disabled":true}, 
-                        {"title":"修改时间","field":"ModifyTime","disabled":true}
+                        {"title":"修改时间","field":"ModifyTime","disabled":true,type:"datetime"}
                       ]],
       editFormData:{"RoleID":"","Name":"","Description":"","Creator":"","CreateTime":"","Modifier":"","ModifyTime":""},
                 

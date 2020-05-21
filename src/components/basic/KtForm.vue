@@ -180,7 +180,8 @@
      <slot name="footer"></slot>
   </el-form>
 </template>
-<<script>
+<script>
+import dateUtil from '@/utils/date'
 export default {
   comments:{},
   props:{
@@ -764,7 +765,15 @@ export default {
         return "--";
       }
 
-      if (!item.data) return text;
+      if (!item.data) {
+        if(text && item.type=='date'){
+          return dateUtil.formatDate.format(new Date(text), "yyyy-MM-dd")
+        }
+        if(text && item.type=='datetime'){
+          return dateUtil.formatDate.format(new Date(text), "yyyy-MM-dd hh:mm:ss")
+        }
+        return text;
+      }
       let data = item.data;
       // if (item.data.data) {
       //   data = item.data.data;
