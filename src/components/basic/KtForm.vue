@@ -99,7 +99,7 @@
 
               <!-- switch -->
               <el-switch
-                v-else-if="item.type='switch'"
+                v-else-if="item.type=='switch'"
                 :active-value="typeof formData[item.field]=='boolean' ? true:1"
                 :inactive-value="typeof formData[item.field]=='boolean' ? false:0"
                 v-model="formData[item.field]"
@@ -138,7 +138,7 @@
                </el-checkbox>
               </el-checkbox-group>
               <!-- 文本域输入框 -->
-              <el-input v-else-if="item.type='textarea'"
+              <el-input v-else-if="item.type=='textarea'"
                 v-model="formData[item.field]"
                 type="textarea"
                 clearable
@@ -196,8 +196,8 @@ export default {
     },
     //表单左边label文字标签的宽度
     labelWidth: {      
-      type: Number,
-      default: 100
+      type: String,
+      default: "100px"
     },
     ///表单的一些设置参数
     //如 [
@@ -245,7 +245,7 @@ export default {
     },
     ///表单的数据
     formData:{
-      type:object,
+      type:Object,
       default:{}
     }
   },
@@ -275,6 +275,7 @@ export default {
 
       //错误图片
       errorImg: 'this.src="' + require("@/assets/imgs/error.png") + '"',
+      span: 0,
     }
   },
   methods: {
@@ -285,6 +286,7 @@ export default {
       }
       //  this.ruleValidate={};
       this.formOptions.forEach((row, xIndex) => {
+        debugger;
         if (row.length > this.span) this.span = row.length;
 
         row.forEach((item, yIndex) => {
@@ -841,9 +843,9 @@ export default {
       //  this.remoteCall = false;
       this.$refs["formValidate"].resetFields();
       if (!sourceObj) return;
-      for (const key in this.formFileds) {
+      for (const key in this.formData) {
         if (sourceObj.hasOwnProperty(key)) {
-          this.formFileds[key] = sourceObj[key];
+          this.formData[key] = sourceObj[key];
         }
       }
       //  this.remoteCall = true;

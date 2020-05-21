@@ -7,6 +7,8 @@
         :table="table"
         :extend="extend"
         :columnsOptions="columnsOptions"
+        :editFormData="editFormData"
+        :editFormOptions="editFormOptions"
       >
      </kt-view-grid>
    </div>
@@ -39,7 +41,17 @@ var vueParam = {
                 {field:'CreateTime',title:'创建时间',type:'datetime',readonly:true,width:90,require:true,align:'left',hidden:false},
                 {field:'Modifier',title:'修改者',type:'string',width:120,align:'left',sortable:true,hidden:false},
                 {field:'ModifyTime',title:'修改时间',type:'datetime',width:90,align:'left',hidden:false}
-                ]
+                ],
+      editFormOptions:[[{"title":"角色ID","required":true,"field":"RoleID","type":"string"},
+                        {"title":"角色名称","required":true,"field":"Name"},
+                        ],
+                      [{"title":"描述","field":"Description", "colSize":8,"type":"textarea"}],
+                      [{"title":"创建人","field":"Creator","disabled":true},
+                        {"title":"创建时间","field":"CreateTime","disabled":true}],
+                      [ {"title":"修改者","field":"Modifier","disabled":true}, 
+                        {"title":"修改时间","field":"ModifyTime","disabled":true}
+                      ]],
+      editFormData:{"RoleID":"","Name":"","Description":"","Creator":"","CreateTime":"","Modifier":"","ModifyTime":""},
                 
               
     }

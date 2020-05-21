@@ -33,6 +33,104 @@
     <!-- 导入execl end-->
 
     <!-- 新增，编辑 start -->
+    <kv-dialog
+      v-if="dialogInit"
+      :isShow.sync="dialogModel"
+      :title="table.cnName+(getCurrentAction())"
+      :width="dialogOptions.width"
+      :height="dialogOptions.height"
+      :paddinglr="16"
+      :paddingtb="5"
+      >
+        <div class="iview-com" slot="content">
+          <!-- 明细头部自定义组件  -->
+          <modelHeader ref="modelHeader" class="model-header" @parentCall="parentCall"></modelHeader>
+
+          <div class="item form-item"> 
+            <div class="form-text v-text">
+              <span class="title">
+                <i class="el-icon-edit"></i>
+                {{table.cnName}}
+              </span>
+            </div>
+            <kt-form 
+             ref="form"
+             :labelWidth="dialogOptions.labelWidth"
+             :formOptions="editFormOptions"
+             :formData="editFormData"
+             >
+            </kt-form>
+          </div>
+
+          <!--明细body自定义组件-->
+          <modelBody class="model-body" ref="modelBody" @parentCall="parentCall"></modelBody>
+
+           <!-- <div v-if="detail.columns&&detail.columns.length>0" class="grid-detail table-item item">
+              <div class="toolbar">
+                <div class="title form-text">
+                  <span>
+                    <Icon type="md-list-box" />
+                    {{detail.cnName}}
+                  </span>
+                </div>
+                
+                <div class="btns">
+                  <Button
+                    v-for="(btn,bIndex) in detailOptions.buttons"
+                    :key="bIndex"
+                    v-show="!btn.hasOwnProperty('hidden')||!btn.hidden"
+                    @click="onClick(btn.onClick)"
+                    type="dashed"
+                    ghost
+                    :icon="btn.icon"
+                    size="small"
+                  >{{btn.name}}</Button>
+                </div>
+              </div>
+              <vol-table
+                ref="detail"
+                @loadBefore="loadInternalDetailTableBefore"
+                @loadAfter="loadDetailTableAfter"
+                @rowChange="detailRowOnChange"
+                :url="detailOptions.url"
+                :index="detailOptions.edit"
+                :tableData="detailOptions.data"
+                :columns="detailOptions.columns"
+                :pagination="detailOptions.pagination"
+                :height="detailOptions.height"
+                :single="detailOptions.single"
+                :pagination-hide="false"
+                :defaultLoadPage="detailOptions.load"
+                :doubleEdit="detailOptions.doubleEdit"
+                :beginEdit="detailOptions.beginEdit"
+                :endEditBefore="detailOptions.endEditBefore"
+                :endEditAfter="detailOptions.endEditAfter"
+                :summary="detailOptions.summary"
+              ></vol-table>
+            </div> -->
+
+          <!--明细footer自定义组件-->
+          <modelFooter ref="modelFooter" class="model-footer" @parentCall="parentCall"></modelFooter>
+        </div>
+        <div slot="footer">
+            
+
+            <!-- <Button
+              v-for="(btn,bIndex) in dialogButtons"
+              :key="bIndex"
+              :type="btn.type"
+              v-show="!btn.hasOwnProperty('hidden')||!btn.hidden"
+              :disabled="btn.hasOwnProperty('disabled')&&!!btn.disabled"
+              @click="onClick(btn.onClick)"
+            >
+              <Icon :type="btn.icon" />
+              {{btn.name}}
+            </Button>
+            <Button type="info" @click="boxModel=false">
+              <Icon type="md-close" />关闭
+            </Button> -->
+        </div>
+    </kv-dialog>
     <!-- 新增，编辑 end -->
 
     <!-- 头部自定义组件 扩展点 start -->
@@ -93,7 +191,7 @@
       <!-- 主界面头 介绍 和 操作按钮 end-->
 
       <!-- 详细查询条件 start 最好做成下推的样式 -->
-      <div class="search-box">
+      <div class="search-dialog">
       </div>
       <!-- 详细查询条件 end -->
 
@@ -134,8 +232,9 @@
 </template>
 
 <script>
-//一些基础的操作 对应的后台的api后缀方法，如查询页面的url则是    api+this._const.PAGE
+//一些基础的操作 对应的后台的api后缀方法，如查询页面的url则是    api+_const.PAGE
 //其中api是   this.table.url  (如"/SysRole/"")
+//增删改查导入导出等对应的action
 const _const = {
   EDIT: "Update",// 主表 更新
   ADD: "Add",  //主表 新增
@@ -183,13 +282,14 @@ let _components = {
 };
 var $viewGridVue, $this;
 import KtTable from "@/components/basic/KtTable.vue";
+import KtForm from "@/components/basic/KtForm.vue"
 
 var vueParam= {
   components:{
     ..._components,
     KtTable,
     KvDialog:() => import("@/components/basic/KvDialog.vue"),
-
+    KtForm:() => import("@/components/basic/KtForm.vue"),
   },
   props:{
       table: {//表的配置信息：主键、排序等（可看成页面信息）
@@ -235,7 +335,7 @@ var vueParam= {
                   }
                 }
               ],
-              box:{//新建、编辑弹出框按钮:与上面一致
+              dialog:{//新建、编辑弹出框按钮:与上面一致
               },
               detail:{//新建、编辑弹出框明细表table表按钮: 与上面一致                
               }
@@ -259,11 +359,52 @@ var vueParam= {
         return [];
       }
     },
+
+    searchFormData:{//查询form数据
+      type: Object,
+      default: () => {
+        return {};
+      }
+    },
+    searchFormOptions:{
+      type: Array,
+        default: () => {
+          return [];
+        }
+    },
+
+    editFormData: {//新建、编辑字段(key/value)  可参考ktForm组件的参数
+      type: Object,
+      default: () => {
+        return {};
+      }
+    },
+    editFormOptions: {//新建、编辑配置信息   可参考ktForm组件的参数
+      type: Array,
+      default: () => {
+        return [];
+      }
+    },
+
+
+    detail: {//从表明细配置   可参考 kttable组件的参数
+      type: Object,
+      default: () => {
+        return {
+          key:"ID",
+          cnName:"",//详细表的介绍
+          url:"",//获取数据url
+          columnsOptions: [],//从表列 配置
+          sortName: ""//从表排序字段
+        };
+      }
+    },
   },
   data(){
     return {
       _inited: false, //是否已经初始化   //在钩子activated
       activatedLoad: false, //页面触发actived时是否刷新页面数据
+      
 
     //一些固定的按钮 start
       buttonsDefault : [{
@@ -363,7 +504,7 @@ var vueParam= {
     //表结构 弹出框 end
 
     //主 按钮组 start
-      searchBoxShow: false, //高级查询(界面查询后的下拉框点击触发)
+      searchDialogShow: false, //高级查询(界面查询后的下拉框点击触发)
       maxBtnLength:3,//按钮显示最大个数，其他的都放在 “更多”下拉框中
 
       splitButtons: [],//在buttons的基础上拆分出来显示的按钮
@@ -382,6 +523,24 @@ var vueParam= {
       },
       defaultLoadPage:true,//是否一进页面就加载数据
     //主表 end
+
+    //新增 ，编辑 弹出框 Start
+    dialogInit: false,//是否初始化
+    dialogModel:false,//是否显示弹出框
+    currentReadonly: false, //当前用户没有编辑或新建权限时，表单只读(可用于判断用户是否有编辑或新建权限)
+    currentAction:null,//当前操作动作
+    currentRow:[],//当前点击的主表行
+
+    hasDetail: false, //是否有从表(明细)表格数据,可根据props中是否传递detail参数来判断
+    dialogOptions:{//弹出框的配置
+      labelWidth:"110px",
+      width:"1050px",
+      height:360,
+
+    },
+
+    keyValueType: { _dinit: false },
+    //新增 ，编辑 弹出框 end
     }
   },
   methods:{
@@ -411,69 +570,202 @@ var vueParam= {
     },
 
   //表结构 弹窗 的一些扩展方法 start
-  changeTableFieldIsShow(row,column,index){
-    debugger;
-    console.log(row);
-    console.log(column);
-    console.log(index)
+    changeTableFieldIsShow(row,column,index){//更改table主表 列是否隐藏不显示
+      console.log(row);
+      console.log(column);
+      console.log(index)
 
-    var that=this;
-    
-    if(row.hidden==that.columnsOptions[index].hidden){
+      var that=this;
+      
+      if(row.hidden==that.columnsOptions[index].hidden){
 
-    }else{
-      that.columnsOptions[index].hidden=row.hidden;
-    }
-  },
+      }else{
+        that.columnsOptions[index].hidden=row.hidden;
+      }
+    },
   //表结构 弹窗 的一些扩展方法 end
 
   //一些基础方法 ，如查询 ，查看表结构  Start
     search(){// 主表 查询
-      this.$refs.table.load(null, true);//调用ref为 table的主kttable组件的load方法 
+        this.$refs.table.load(null, true);//调用ref为 table的主kttable组件的load方法 
     },
     openViewColumns() {//查看表结构
-    var that=this;
-    if (that.dataStructColumns.length == 0) {
-      //that.dataStructColumns=[];
+      var that=this;
+      if (that.dataStructColumns.length == 0) {
+        //that.dataStructColumns=[];
 
-      that.dataStructColumns.push(
-        ...[
-          { title: "名称", field: "title" },
-          { title: "字段", field: "field" },
-          { title: "类型", field: "type" },
-          { title: "是否隐藏", field: "hidden",type:"tag",
-              edit:{
-                type:"switch"
+        that.dataStructColumns.push(
+          ...[
+            { title: "名称", field: "title" },
+            { title: "字段", field: "field" },
+            { title: "类型", field: "type" },
+            { title: "是否隐藏", field: "hidden",type:"tag",
+                edit:{
+                  type:"switch"
+                },
+                // onChange:(column,row,tableData,value)=>{
+                //   debugger
+                //     //将对应的tabledata中的值修改
+                //    console.log(column);
+                //    console.log(row);
+                //    console.log(tableData);
+                //    console.log(value);
+                // }
               },
-              // onChange:(column,row,tableData,value)=>{
-              //   debugger
-              //     //将对应的tabledata中的值修改
-              //    console.log(column);
-              //    console.log(row);
-              //    console.log(tableData);
-              //    console.log(value);
-              // }
-            },
-          { title: "绑定数据源", field: "bind" }
-        ]
-      );
-      debugger
-      that.columnsOptions.forEach(x => {
-        that.dataStructData.push({
-          "title": x.title,
-          field: x.field,
-          type: x.type,
-          //hidden: x.hidden ? "否" : "是",
-          hidden: x.hidden,
-          bind: x.bind ? x.bind.dicNo : "--",
-          // cellClassName: {
-          //   title: "table-info-cell-title"
-          // }
+            { title: "绑定数据源", field: "bind" }
+          ]
+        );
+        debugger
+        that.columnsOptions.forEach(x => {
+          that.dataStructData.push({
+            "title": x.title,
+            field: x.field,
+            type: x.type,
+            //hidden: x.hidden ? "否" : "是",
+            hidden: x.hidden,
+            bind: x.bind ? x.bind.dicNo : "--",
+            // cellClassName: {
+            //   title: "table-info-cell-title"
+            // }
+          });
         });
-      });
-    }
-    that.dataStructDialog = true;
-  },
+      }
+      that.dataStructDialog = true;
+    },
+    add() {//新建   打开新增弹出框
+      this.currentAction = _const.ADD;
+      this.currentRow = {};
+      this.initDialog();
+      // if (this.hasDetail) {
+      //   this.$refs.detail &&
+      //     //  this.$refs.detail.rowData &&
+      //     this.$refs.detail.reset();
+      // }
+      let obj = {};
+      //如果有switch标签，默认都设置为是
+      debugger;
+      this.editFormOptions.forEach(x => {
+        x.forEach(item => {
+          if (item.type == 'switch') {
+            obj[item.field] = true;
+          }
+        })
+      })
+      this.resetEditForm(obj);
+      //  this.resetEditForm();
+      this.dialogModel = true;
+      //点击新建按钮弹出框后，可以在此处写逻辑，如，从后台获取数据
+      this.modelOpenProcess();
+
+      debugger;
+      console.log(this.editFormData);
+      console.log(this.editFormOptions);
+      // this.modelOpenAfter();
+    },
+    initDialog() { //初始化新建、编辑的弹出框
+      this.modelOpenBefore(this.currentRow);
+      if (!this.dialogInit) {
+        this.dialogInit = true;
+        this.dialogModel = true;
+        // this.detailUrl = this.url;
+      }
+    },
+    getCurrentAction() {
+      if (this.currentReadonly) {
+        return '';
+      }
+      return "--" + (this.currentAction == _const.ADD ? "新增" : "编辑");
+    },
+    resetEditForm(sourceObj) {
+      // if (this.hasDetail && this.$refs.detail) {
+      //   // this.$refs.detail.rowData.splice(0);
+      //   this.$refs.detail.reset();
+      // }
+      this.resetForm("form", sourceObj);
+    },
+    resetForm(formName, sourceObj) {
+      //重置表单数据
+      if (this.$refs[formName]) {
+        this.$refs[formName].reset();
+      }
+
+      if (!sourceObj) return;
+      let form = formName == "searchForm"
+        ? this.searchFormData
+        : this.editFormData;
+      //获取数据源的data类型，否则如果数据源data的key是数字，重置的值是字符串就无法绑定值
+      if (!this.keyValueType._dinit) {
+        this.getKeyValueType(this.editFormOptions);
+        this.getKeyValueType(this.searchFormOptions);
+        this.keyValueType._dinit = true;
+      }
+      for (const key in form) {
+        if (sourceObj.hasOwnProperty(key)) {
+          let newVal = sourceObj[key];
+          if (this.keyValueType['_b_' + key] == 'selectList') {
+            if (newVal != "" && newVal != undefined && typeof newVal == 'string') {
+              newVal = newVal.split(',');
+            }
+          } else if (this.keyValueType.hasOwnProperty(key)
+            && typeof (this.keyValueType[key]) == 'number'
+            && newVal * 1 == newVal) {
+            newVal = newVal * 1;
+          } else {
+            if (newVal == null || newVal == undefined) {
+              newVal = '';
+            } else {
+              newVal += "";
+            }
+          }
+          form[key] = newVal;
+        } else {
+          form[key] = form[key] instanceof Array ? [] : "";
+        }
+      }
+    },
+    getKeyValueType(formData) {
+      try {
+        formData.forEach(item => {
+          item.forEach(x => {
+            if (this.keyValueType.hasOwnProperty('_b_' + x.field)) {
+              return true;
+            }
+            let data;
+            if (x.type == 'switch') {
+              this.keyValueType[x.field] = 1;
+            }
+            else if (x.bind && x.bind.data) {
+              data = x.bind.data;
+            } else if (x.data) {
+              if (x.data instanceof Array) {
+                data = x.data;
+              } else if (x.data.data && x.data.data instanceof Array) {
+                data = x.data.data;
+              }
+            }
+            if (data && data.length > 0 && !this.keyValueType.hasOwnProperty(x.field)) {
+              this.keyValueType[x.field] = data[0].key;
+              this.keyValueType['_b_' + x.field] = x.type;
+            }
+          })
+        })
+      } catch (error) {
+        console.log(error.message)
+      }
+    },
+    modelOpenProcess(row) {
+      this.$nextTick(() => {
+        this.modelOpenAfter(row);
+      })
+      return;
+      // if (!this.$refs.form) {
+      //     let timeOut = setTimeout(x => {
+      //         this.modelOpenAfter(row);
+      //     }, 500)
+      //     return;
+      // }
+      // this.modelOpenAfter(row);
+    },
   //一些基础方法 ，如查询 ，查看表结构  end
 
   // 初始化  当前rul,  按钮组 Start
@@ -528,7 +820,7 @@ var vueParam= {
           name: "",
           type: this.buttons[searchIndex].type,
           onClick: () => {
-            this.searchBoxShow = !this.searchBoxShow;
+            this.searchDialogShow = !this.searchDialogShow;
           }
         });
       }
@@ -676,12 +968,12 @@ var vueParam= {
     //如果没有指定排序字段，则用主键作为默认排序字段
     this.pagination.sortName = this.table.sortName || this.table.key;
 
-    //this.initBoxButtons(); //初始化弹出框与明细表格按钮  //dong?
+    //this.initDialogButtons(); //初始化弹出框与明细表格按钮  //dong?
 
     //插口onInit
     this.onInit(); //初始化前，如果需要做其他处理在扩展方法中覆盖此方法
     //初始编辑框等数据
-    //this.initBoxHeightWidth(); //初始化弹出框的高度与宽度
+    //this.initDialogHeightWidth(); //初始化弹出框的高度与宽度
     this.initParam();//初始化一些参数
 
     //this.initDicKeys(); //初始下框数据源
