@@ -836,7 +836,7 @@ var vueParam= {
       },
     //新增，编辑相关方法 end
 
-    edit() {//编辑
+    edit() {//编辑 打开编辑弹出框
 
       let rows = this.$refs.table.getSelected();
       if (rows.length == 0) {
@@ -881,7 +881,7 @@ var vueParam= {
         }
       })
     },
-    saveExecute() {
+    saveExecute() { //执行保存
       let editFormData = {};
       ////上传文件以逗号隔开
       // for (const key in this.editFormData) {
@@ -990,6 +990,55 @@ var vueParam= {
         });
       }
       
+    },
+    del() {//删除数据   仅仅只能删除一个
+      let rows = this.$refs.table.getSelected();
+      if (rows.length == 0) return this.$error("请选择要删除的行!");
+
+      //多选择的主键ID
+      let delKeys = rows.map(x => {
+        return x[this.table.key];
+      });
+      if (!delKeys || delKeys.length == 0)
+        return this.$message.error("没有获取要删除的行数据!");
+
+      //
+      if(delKeys.length>1){
+        this.$message.warning("本按钮仅只能删除一行数据，如需多删除，请选择批量删除按钮！");
+        return false;
+      }
+
+      //删除前
+      if (!this.delBefore(delKeys, rows)) {
+        return;
+      }
+      let tigger = false;
+
+      this.$confirm("此操作将删除该[" + (rows[0].Name?rows[0].Name:"ID为"+delKeys[0]) + "]的"+ this.table.cnName +", 是否继续?","删除提示",{
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+      }).then(()=>{
+        request({
+          url: this.getUrl(_const.DEL),
+          method:'get',
+          params:{id:delKeys[0]}
+        }).then(res=>{
+          if (res.success) {
+                this.$message({
+                  type: "success",
+                  message: "删除成功!"
+                });
+
+                //删除后
+                if (!this.delAfter(res)) {
+                  return;
+                }
+                this.refresh();
+              }
+        }).catch();
+      });
+
     },
   //一些基础方法 ，如查询 ，新增，编辑，查看表结构  end
 
