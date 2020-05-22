@@ -181,6 +181,7 @@
   </el-form>
 </template>
 <script>
+import request from '@/utils/request'
 import dateUtil from '@/utils/date'
 export default {
   comments:{},
@@ -231,6 +232,7 @@ export default {
         //startPlaceholder:"开始时间",// 只对时间选择器为范围时间时起作用（既参数 range为true 时 ）
         //endPlaceholder:"结束时间",// 同上startPlaceholder 
         //"colSize":"",//每行列的宽度，可选值:12,8,6,如果是12标签会占100%宽度   算法：item.colSize?item.colSize*2:24/span         span 是你准备分为几行
+        //"createSerialNumberUrl":false,//生成流水号url地址
         //},
       //  {"title":"运单号","required":true,"field":"TranNo"},
       //  {"title":"销售数量","required":true,"field":"Qty","type":"number"}],
@@ -875,10 +877,38 @@ export default {
       });
       return result;
     },
+
+    initCreateSerialNumber(){//初始化需要生成流水号的值
+      this.formOptions.forEach(x=>{
+        x.forEach(y=>{
+          
+          if(y.createSerialNumberUrl){
+            this.formData[y.field]=request({
+              url:y.createSerialNumberUrl,
+              method:"get",
+              params: { RandomParameter:new Date().getTime() }//加入时间随机参数
+            }).then(res=>{
+              if (res.success) {
+                // this.$message({
+                //   type: "success",
+                //   message: "删除成功!"
+                // });
+
+                this.formData[y.field]=res.data;
+                x.disabled=true;
+              }
+            }).catch();
+          }
+        })
+      });
+    }
   },
   created(){
     //先初始化规则
     this.initFormOptions(true);
+
+    //是否需要生成流水号
+    this.initCreateSerialNumber();
   },
   watch: {},
 }
