@@ -36,8 +36,8 @@
           <slot></slot> -->
     </div>
     <span slot="footer" class="dialog-footer">
-      <el-button size="" type="info" @click="closeDialog">取 消</el-button>
       <slot name="footer"></slot>
+      <!-- <el-button size="" type="info" @click="closeDialog">取 消</el-button>      -->
     </span>
   </el-dialog>
 </template>

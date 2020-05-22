@@ -27,5 +27,9 @@ module.exports = {
    * @type {boolean} true | false
    * @description Whether show the logo in sidebar
    */
-  sidebarLogo: true
+  sidebarLogo: true,
+
+  paginations:{
+    pageSizes:[3, 60, 100,300,500],
+  }
 }

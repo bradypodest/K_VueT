@@ -113,7 +113,17 @@
           <modelFooter ref="modelFooter" class="model-footer" @parentCall="parentCall"></modelFooter>
         </div>
         <div slot="footer">
-            
+            <el-button v-for="(btn,bIndex) in dialogButtons" 
+              :key="bIndex"
+              :type="btn.type"
+              v-show="!btn.hidden"
+              :disabled="btn.disabled"
+              @click="onClick(btn.onClick)"
+              :icon="btn.icon"
+              >
+              {{btn.name}}
+            </el-button>
+
 
             <!-- <Button
               v-for="(btn,bIndex) in dialogButtons"
@@ -210,8 +220,8 @@
           :tableData="[]"
           :columnsOptions="columnsOptions"
           :pagination="pagination"
-          :height="height"
           :maxHeight="tableMaxHeight"
+         
           :url="url"
           :defaultLoadPage="defaultLoadPage"
           
@@ -232,6 +242,8 @@
 </template>
 
 <script>
+import request from '@/utils/request'
+
 //一些基础的操作 对应的后台的api后缀方法，如查询页面的url则是    api+_const.PAGE
 //其中api是   this.table.url  (如"/SysRole/"")
 //增删改查导入导出等对应的action
@@ -512,9 +524,9 @@ var vueParam= {
 
     //主表 start
       single:false,
-      height:0,
-      tableMaxHeight:0,
-      pagination: { total: 0, size: 30, sortName: "" }, 
+      //height:800,
+      tableMaxHeight:800,
+      pagination: { sortName: "" }, 
       //paginationHide:false
       url:"",//之后会生成
       summaryData:{
@@ -524,6 +536,39 @@ var vueParam= {
     //主表 end
 
     //新增 ，编辑 弹出框 Start
+    dialogButtons:[],
+    //this.extendBtn(this.buttonsDefault,this.extend.buttons.view);
+    dialogButtonsDefault:[
+                    {
+                      name: "保 存",
+                      icon: "el-icon-check",
+                      type: "primary",
+                      hidden:false,
+                      onClick() {
+                        this.save();
+                      }
+                    },
+                    {
+                      name: "重 置",
+                      icon: "el-icon-refresh-right",
+                      type: "warning",
+                      onClick() {
+
+                        this.resetEdit();
+                      }
+                    },
+                    // {
+                    //   name: "取 消",
+                    //   icon: "el-icon-refresh-right",
+                    //   type: "info",
+                    //   onClick() {
+
+                    //     //this.resetEdit();
+
+                    //   }
+                    // },
+                  ],
+
     dialogInit: false,//是否初始化
     dialogModel:false,//是否显示弹出框
     currentReadonly: false, //当前用户没有编辑或新建权限时，表单只读(可用于判断用户是否有编辑或新建权限)
@@ -535,7 +580,7 @@ var vueParam= {
       labelWidth:"110px",
       width:"1050px",
       height:360,
-
+      saveClose:true,//saveClose新建或编辑成功后是否关闭弹出框  为以后可以做扩展，现状态是保存之后就关闭弹出框
     },
 
     keyValueType: { _dinit: false },
@@ -564,8 +609,8 @@ var vueParam= {
         }
       }
     },
-    refresh(){//刷新当前页面
-       this.search();
+    refresh(isNoResetPage){//刷新当前页面
+       this.search(isNoResetPage);
     },
 
   //表结构 弹窗 的一些扩展方法 start
@@ -584,9 +629,10 @@ var vueParam= {
     },
   //表结构 弹窗 的一些扩展方法 end
 
-  //一些基础方法 ，如查询 ，查看表结构  Start
-    search(){// 主表 查询
-        this.$refs.table.load(null, true);//调用ref为 table的主kttable组件的load方法 
+  //一些基础方法 ，如查询 ，新增，编辑，保存 查看表结构  Start
+    search(isNoResetPage){// 主表 查询
+    debugger;
+        this.$refs.table.load(null, !isNoResetPage?true:false);//调用ref为 table的主kttable组件的load方法 
     },
     openViewColumns() {//查看表结构
       var that=this;
@@ -631,6 +677,7 @@ var vueParam= {
       }
       that.dataStructDialog = true;
     },
+    
     add() {//新建   打开新增弹出框
       this.currentAction = _const.ADD;
       this.currentRow = {};
@@ -661,6 +708,7 @@ var vueParam= {
       console.log(this.editFormOptions);
       // this.modelOpenAfter();
     },
+    //新增，编辑相关方法 start
       initDialog() { //初始化新建、编辑的弹出框
         this.modelOpenBefore(this.currentRow);
         if (!this.dialogInit) {
@@ -766,31 +814,6 @@ var vueParam= {
         // this.modelOpenAfter(row);
       },
 
-    edit() {//编辑
-      let rows = this.$refs.table.getSelected();
-      if (rows.length == 0) {
-        return this.$message.error("请选择要编辑的行!");
-      }
-
-      //
-      if (rows.length > 1) {
-        this.$message.warning("已选择多个，将默认第一个!");
-      }
-      //记录当前编辑的行
-      this.currentRow = rows[0];
-      //初始化弹出框
-      this.initDialog();
-      //重置表单
-      //this.resetDetailTable();//从表方法  待修改
-
-      //设置当前的数据到表单上
-      this.setEditForm(rows[0]);
-      //设置远程查询表单的默认key/value
-      //this.getRemoteFormDefaultKeyValue();
-      //点击编辑按钮弹出框后，可以在此处写逻辑，如，从后台获取数据
-      this.modelOpenProcess(rows[0]);
-      // this.modelOpenAfter(rows[0]);
-    },
       setEditForm(row) {
         // if (this.remoteColumns.length == 0 || !rows || rows.length == 0) return;
         //let remoteColumns = this.$refs.table.remoteColumns;
@@ -811,7 +834,164 @@ var vueParam= {
         this.currentAction = _const.EDIT;
         this.dialogModel = true;
       },
-  //一些基础方法 ，如查询 ，查看表结构  end
+    //新增，编辑相关方法 end
+
+    edit() {//编辑
+
+      let rows = this.$refs.table.getSelected();
+      if (rows.length == 0) {
+        return this.$message.error("请选择要编辑的行!");
+      }
+
+      this.currentAction = _const.EDIT;
+      //记录当前编辑的行
+      this.currentRow = rows[0];
+      //初始化弹出框
+      this.initDialog();
+      //重置表单
+      //this.resetDetailTable();//从表方法  待修改
+
+      //
+      if (rows.length > 1) {
+        this.$nextTick(() => {
+          //this.modelOpenAfter(row);
+           this.$message.warning("已选择多个，将默认第一个!");
+        })
+      }
+
+      //设置当前的数据到表单上
+      this.setEditForm(rows[0]);
+      //设置远程查询表单的默认key/value
+      //this.getRemoteFormDefaultKeyValue();
+      //点击编辑按钮弹出框后，可以在此处写逻辑，如，从后台获取数据
+      this.modelOpenProcess(rows[0]);
+
+      
+
+       
+      
+      // this.modelOpenAfter(rows[0]);
+    },
+    save() {//点击 弹出框的保存
+      //新增或编辑时保存
+      // if (!this.$refs.form.validate()) return;
+      this.$refs.form.validate(result => {
+        if (result) {
+          this.saveExecute();
+        }
+      })
+    },
+    saveExecute() {
+      let editFormData = {};
+      ////上传文件以逗号隔开
+      // for (const key in this.editFormData) {
+      //   if (this.uploadfiled &&
+      //     this.uploadfiled.length > 0
+      //     && this.uploadfiled.indexOf(key) != -1
+      //     && this.editFormFileds[key] instanceof Array) {
+      //     let allPath = this.editFormFileds[key].map(x => {
+      //       return x.path;
+      //     })
+      //     editFormFileds[key] = allPath.join(',');
+      //   } else {
+      //     editFormFileds[key] = this.editFormFileds[key];
+      //   }
+      // }
+
+      // else {
+           editFormData = this.editFormData;
+      // }
+      //将数组转换成string
+      for (const key in editFormData) {
+        if (editFormData[key] instanceof Array) {
+          editFormData[key] = editFormData[key].join(',');
+        }
+      }
+
+      let formData = {
+        mainData: editFormData,
+        detailData: null,
+        delKeys: null
+      };
+
+      //获取明细数据(前台数据明细未做校验，待完.后台已经校验)
+      // if (this.hasDetail) {
+      //   formData.detailData = this.$refs.detail.rowData;
+      // }
+      // if (this.detailOptions.delKeys.length > 0) {
+      //   formData.delKeys = this.detailOptions.delKeys;
+      // }
+      //保存前拦截
+      if (this.currentAction == _const.ADD) {
+        if (!this.addBefore(formData)) return;
+      } else {
+        if (!this.updateBefore(formData)) return;
+      }
+      let url = this.getUrl(this.currentAction);
+
+      //待修改 : data 数据需要修改
+      var that=this;
+      if(that.currentAction == _const.ADD || that.currentAction == _const.EDIT){
+        return request({
+          url: url,
+          method: 'post',
+          data: editFormData
+        }).then(res=>{
+          debugger
+          if(res.success){
+            that.$message({
+              type: "success",
+              message: "保存成功!"
+            });
+
+            if (that.currentAction == _const.ADD) {
+              if (!that.addAfter(res)) return;
+            } else {
+              if (!that.updateAfter(res)) return;
+            }
+
+            //如果保存成功后需要关闭编辑框，直接返回不处理后面
+            if (that.dialogOptions.saveClose) {
+              that.dialogModel = false;
+              if (that.currentAction == _const.ADD) {
+                that.refresh(false);//新增则重置分页参数  isNoResetPage为true 则不重置， 
+              }else {
+                that.refresh(true);//编辑则不重置分页参数
+              }
+              
+              return;
+            }
+
+            //下面代码是页面在保存成功之后 不关闭弹出框的情况代码 
+            // let resultRow;
+            // if (typeof x.data == "string" && x.data != "") {
+            //   resultRow = JSON.parse(x.data);
+            // } else {
+            //   resultRow = x.data;
+            // }
+
+            // if (this.currentAction == this.const.ADD) {
+            //   //  this.currentRow=x.data;
+            //   this.editFormFileds[this.table.key] = "";
+            //   this.currentAction = this.const.EDIT;
+            //   this.currentRow = resultRow.data;
+            // }
+            // this.resetEditForm(resultRow.data);
+            // // console.log(resultRow);
+            // if (this.hasDetail) {
+            //   this.detailOptions.delKeys = [];
+            //   if (resultRow.list) {
+            //     this.$refs.detail.rowData.push(...resultRow.list)
+            //   }
+            // }
+            // this.refresh();
+          } 
+
+        });
+      }
+      
+    },
+  //一些基础方法 ，如查询 ，新增，编辑，查看表结构  end
 
   // 初始化  当前rul,  按钮组 Start
     initParam(){
@@ -825,6 +1005,7 @@ var vueParam= {
     },
     getUrl(action) {//是否忽略前缀/  获取操作的url
       return  this.table.url + action;
+      //return "/SysRole/" + "Add"
     },
     initButtons(){//初始化主按钮    
       //获取角色权限配置下的 对应页面的按钮(查询,新增,修改,删除,以及扩展下的按钮))
@@ -849,7 +1030,13 @@ var vueParam= {
     },
     initDialogButtons(){//初始化弹出框按钮  初始化新增，编辑按钮 , 详情按钮
       //初始化新增，编辑按钮
+      if(this.extend.buttons.dialog){
+        this.dialogButtons=this.extendBtn(this.dialogButtonsDefault,this.extend.buttons.dialog);
+      }else{
+         this.dialogButtons=this.dialogButtonsDefault;
+      }
       //判断当前操作，如是新增操作，则弹出框无 审核按钮
+
       //判断筛选出权限按钮
 
 

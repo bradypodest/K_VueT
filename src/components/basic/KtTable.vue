@@ -143,7 +143,7 @@
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
         :current-page="paginations.page"
-        :page-sizes="[30, 60, 100,300,500]"
+        :page-sizes="GLOBAL.paginations.pageSizes"
         :page-size="paginations.size"
         layout="total, sizes, prev, pager, next, jumper"
         :total="paginations.total"
@@ -161,13 +161,13 @@ export default {
       type: Boolean,
       default: false
     },
-    height: {
-      type: Number,
-      default: 0
-    },
+    // height: {
+    //   type: Number,
+    //   default: 0
+    // },
     maxHeight: {
       type: Number,
-      default: 0
+      default: 600
     },
 
     url: {
@@ -250,7 +250,8 @@ export default {
     pagination: {
       type: Object,
       default: function() {
-        return { total: 0, size: 30, sortName: "" };
+        //return { total: 0, size: 30, sortName: "" };
+        return {};
       }
     },
     //是否一进页面就加载数据
@@ -336,7 +337,8 @@ export default {
         wheres: [], //查询条件，格式为[{ name: "字段", value: "xx" }]
         
       },
-      isShowEditButton: true
+      isShowEditButton: true,
+      realMaxHeight:null
     }
   },
   methods:{
@@ -609,7 +611,8 @@ export default {
 
     //处理分页 每页个数 改变
     handleSizeChange(val) {
-      this.paginations.rows = val;
+      this.paginations.size = val;
+      this.paginations.page=1;
       this.load();
     },
     //处理 跳转页
@@ -636,6 +639,7 @@ export default {
         wheres: "" //查询条件，格式为[{ name: "字段", value: "xx" }]
       };
       let status = true;
+      debugger;
       //合并查询信息(包查询分页、排序、查询条件等)
       if (query) {
         param = Object.assign(param, query);
@@ -655,59 +659,61 @@ export default {
 
       //this.loading = true;
 
-      // request({
-      //   url: this.url,
-      //   method: "post",
-      //   data: param
-      // })
-      //   .then(data => {
-      //     //this.loading = false;
-      //     if (data.success) {
-      //       this.$message({
-      //         type: "success",
-      //         message: "查询数据成功!"
-      //       });
-      //      //查询返回结果后处理  loadAfter 插口 s
-      //     this.$emit("loadAfter", data.data || [], result => {
-      //       status = result;
-      //     });
-      //     if (!status) return;
-      //     //loadAfter 插口 e
-      //     debugger
-      //     this.rowData = data.data.data || [];
-      //     this.paginations.total = data.data.dataCount;
-      //     //合计
-      //     //this.getSummaries(data);
-      //     }
-      //   })
-      //   .catch();
-      this.rowData=[{"Status":1,"RoleID":"PhoneAdmin","Name":"手机管理员","Description":"手机管理员q","CreateID":"1","Creator":"admin","CreateTime":"2020-02-01T10:45:02.93","ModifyID":"1","Modifier":"admin","ModifyTime":"2020-03-20T14:00:07.817","ID":"d940bb2d-948c-4e4e-a9e7-9b8d3e523acf","DeleteTime":null,"Deleter":null,"DeleterID":null},{"Status":1,"RoleID":"Admin","Name":"管理员","Description":"管理员","CreateID":"1","Creator":"admin","CreateTime":"2019-12-31T16:44:26.01","ModifyID":null,"Modifier":null,"ModifyTime":null,"ID":"e687b190-ac64-4dcd-b94f-26d7e562e620","DeleteTime":null,"Deleter":null,"DeleterID":null},{"Status":1,"RoleID":"Test","Name":"测试","Description":"测试描述eeeeeewwwqeeew","CreateID":"1","Creator":"admin","CreateTime":"2019-12-31T15:41:12.303","ModifyID":"1","Modifier":"admin","ModifyTime":"2019-12-31T16:09:38.06","ID":"52331972-6010-403b-8e23-c96e33acdcc4","DeleteTime":null,"Deleter":null,"DeleterID":null}];
-      this.paginations.total = 3;
+      //var url=  this.table.url + action;
+      request({
+        url: this.url,
+        method: "post",
+        data: param
+      })
+      .then(data => {
+        //this.loading = false;
+        debugger
+        if (data.success) {
+          this.$message({
+            type: "success",
+            message: "查询数据成功!"
+          });
+          //查询返回结果后处理  loadAfter 插口 s
+          this.$emit("loadAfter", data.data || [], result => {
+            status = result;
+          });
+          if (!status) return;
+          //loadAfter 插口 e
+          this.rowData = data.data.data || [];
+          this.paginations.total = data.data.dataCount;
+          //合计
+          //this.getSummaries(data);
+        }
+      })
+      .catch();
+
+      //this.rowData=[{"Status":1,"RoleID":"PhoneAdmin","Name":"手机管理员","Description":"手机管理员q","CreateID":"1","Creator":"admin","CreateTime":"2020-02-01T10:45:02.93","ModifyID":"1","Modifier":"admin","ModifyTime":"2020-03-20T14:00:07.817","ID":"d940bb2d-948c-4e4e-a9e7-9b8d3e523acf","DeleteTime":null,"Deleter":null,"DeleterID":null},{"Status":1,"RoleID":"Admin","Name":"管理员","Description":"管理员","CreateID":"1","Creator":"admin","CreateTime":"2019-12-31T16:44:26.01","ModifyID":null,"Modifier":null,"ModifyTime":null,"ID":"e687b190-ac64-4dcd-b94f-26d7e562e620","DeleteTime":null,"Deleter":null,"DeleterID":null},{"Status":1,"RoleID":"Test","Name":"测试","Description":"测试描述eeeeeewwwqeeew","CreateID":"1","Creator":"admin","CreateTime":"2019-12-31T15:41:12.303","ModifyID":"1","Modifier":"admin","ModifyTime":"2019-12-31T16:09:38.06","ID":"52331972-6010-403b-8e23-c96e33acdcc4","DeleteTime":null,"Deleter":null,"DeleterID":null}];
+      //this.paginations.total = 3;
     },
     //重置查询分页 参数
     resetPage() {
-      this.paginations.size = 30;
+      this.paginations.size = this.GLOBAL.paginations.pageSizes[0];
       this.paginations.page = 1;
     },
 
 
-    getHeight() {
-      //没有定义高度与最大高度，使用table默认值
-      if (!this.height && !this.maxHeight) {
-        return null;
-      }
-      //定义了最大高度则不使用高度
-      if (this.maxHeight) {
-        return null;
-      }
-      //使用当前定义的高度
-      return this.height;
-    },
+    // getHeight() {
+    //   //没有定义高度与最大高度，使用table默认值
+    //   if (!this.height && !this.maxHeight) {
+    //     return null;
+    //   }
+    //   //定义了最大高度则不使用高度
+    //   if (this.maxHeight) {
+    //     return null;
+    //   }
+    //   //使用当前定义的高度
+    //   return this.height;
+    // },
     getMaxHeight() {
       //没有定义高度与最大高度，使用table默认值
-      if (!this.height && !this.maxHeight) {
-        return null;
-      }
+      // if (!this.height && !this.maxHeight) {
+      //   return null;
+      // }
       //定义了最大高度使用最大高度
       if (this.maxHeight) {
         return this.maxHeight;
@@ -781,11 +787,12 @@ export default {
     },
   },
   created(){
-    this.realHeight = this.getHeight();
+    //this.realHeight = this.getHeight();
     this.realMaxHeight = this.getMaxHeight();
-
-    this.paginations.sort = this.pagination.sortName;
-    this.paginations.size=this.pagination.size;
+debugger;
+    this.paginations.sort = this.pagination.sortName?this.pagination.sortName:this.paginations.sort;
+    //this.paginations.size=this.pagination.size;
+    this.paginations.size= this.pagination.size?this.pagination.size: this.GLOBAL.paginations.pageSizes[0];
 
     //this.isShowEditButton=true;
     this.isShowEditButton = this.columnsOptions.some(x => {
