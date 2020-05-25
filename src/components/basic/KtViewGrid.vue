@@ -702,8 +702,6 @@ var vueParam= {
       this.dialogModel = true;
       //点击新建按钮弹出框后，可以在此处写逻辑，如，从后台获取数据
       this.modelOpenProcess();
-
-      debugger;
       console.log(this.editFormData);
       console.log(this.editFormOptions);
       // this.modelOpenAfter();
@@ -802,6 +800,11 @@ var vueParam= {
       },
       modelOpenProcess(row) {
         this.$nextTick(() => {
+
+          // 判断是否需要流水号
+          console.log("model后")
+
+          this.initCreateSerialNumber();
           this.modelOpenAfter(row);
         })
         return;
@@ -812,6 +815,31 @@ var vueParam= {
         //     return;
         // }
         // this.modelOpenAfter(row);
+      },
+
+      initCreateSerialNumber(){//初始化需要生成流水号的值:用于新增
+        this.editFormOptions.forEach(x=>{
+          x.forEach(y=>{
+            //当有valueUrl且对应没有数据时，则获取对应url的值:反正编辑有值，也可以再加个判断action
+            if(y.valueUrl&& !this.editFormData[y.field]){
+              request({
+                url:y.valueUrl,
+                method:"get",
+                params: { RandomParameter:new Date().getTime() }//加入时间随机参数
+              }).then(res=>{
+                if (res.success) {
+                  // this.$message({
+                  //   type: "success",
+                  //   message: "删除成功!"
+                  // });
+
+                  this.editFormData[y.field]=res.data;
+                  x.disabled=true;
+                }
+              }).catch();
+            }
+          })
+        });
       },
 
       setEditForm(row) {
@@ -1216,7 +1244,7 @@ var vueParam= {
     resetUpdateFormAfter() { //重置编辑表单后的内容
         return true;
     },
-    modelOpenBefore(row) { //点击编辑/新建按钮弹出框前，可以在此处写逻辑，如，从后台获取数据
+    modelmodelOpenBefore(row) { //点击编辑/新建按钮弹出框前，可以在此处写逻辑，如，从后台获取数据
 
     },
     modelOpenAfter(row) {  //点击编辑/新建按钮弹出框后，可以在此处写逻辑，如，从后台获取数据

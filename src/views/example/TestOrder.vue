@@ -35,23 +35,25 @@ var vueParam = {
       //注意：hidden:true必须要有，不然表结构 改变选择时容易出现bug
       columnsOptions: [{field:'ID',title:'ID',type:'string',width:90,hidden:true,readonly:true,require:true,align:'left'},
                 {field:'OrderNo',title:'订单号',type:'string',width:90,require:true,align:'center',sortable:true,hidden:false},
-                {field:'Qty',title:'订单数量',type:'string',link:true,width:150,require:true,hidden:false},
+                {field:'Qty',title:'订单数量',type:'number',link:true,width:150,require:true,hidden:false},
                 {field:'Remakes',title:'备注',type:'string',width:200,require:true,align:'left',hidden:false},
+                {field:'Status',title:'状态',type:'string',width:90,require:true,hidden:false},//switch 还不能使用，等待字典
                 {field:'Creator',title:'创建者',type:'int',width:90,readonly:true,require:true,align:'left',click:(row,column,event)=>{console.log(row);console.log(column);console.log(event);this.$message.success(column)},hidden:false},
-                {field:'CreateTime',title:'创建时间',type:'datetime',readonly:true,width:90,require:true,align:'left',hidden:false},
+                {field:'CreateTime',title:'创建时间',type:'datetime',readonly:true,width:100,require:true,align:'left',hidden:false},
                 {field:'Modifier',title:'修改者',type:'string',width:120,align:'left',sortable:true,hidden:false},
-                {field:'ModifyTime',title:'修改时间',type:'datetime',width:90,align:'left',hidden:false}
+                {field:'ModifyTime',title:'修改时间',type:'datetime',width:100,align:'left',hidden:false}
                 ],
-      editFormOptions:[[{"title":"订单号","required":true,"field":"OrderNo","type":"string","createSerialNumberUrl":"/TestOrder/GetOneOrderNo"},
-                        {"title":"订单数量","required":true,"field":"Qty"},
+      editFormOptions:[[{"title":"订单号","required":true,"field":"OrderNo","type":"string","valueUrl":"/TestOrder/GetOneOrderNo"},
+                        {"title":"订单数量","required":true,"field":"Qty",type:'number'},
                         ],
+                        [{"title":"状态","field":"Status",type:'switch'}],
                       [{"title":"备注","field":"Remakes", "colSize":8,"type":"textarea"}],
                       [{"title":"创建人","field":"Creator","disabled":true},
                         {"title":"创建时间","field":"CreateTime","disabled":true,type:"datetime"}],//是时间类型的要填写，否则按普通的处理
                       [ {"title":"修改者","field":"Modifier","disabled":true}, 
                         {"title":"修改时间","field":"ModifyTime","disabled":true,type:"datetime"}
                       ]],
-      editFormData:{"OrderNo":"","Qty":"","Remakes":"","Creator":"","CreateTime":"","Modifier":"","ModifyTime":""},
+      editFormData:{"OrderNo":"","Qty":"","Status":"","Remakes":"","Creator":"","CreateTime":"","Modifier":"","ModifyTime":""},
                 
               
     }
