@@ -65,6 +65,37 @@
           <!--明细body自定义组件-->
           <modelBody class="model-body" ref="modelBody" @parentCall="parentCall"></modelBody>
 
+          <!-- 子表 start -->
+          <div v-if="detail.columnsOptions&&detail.columnsOptions.length>0" class="grid-detail table-item item">
+            <!-- 工具栏  start-->
+            <div class="toolbar">
+              <div class="title form-text">
+                <span>
+                  <Icon type="md-list-box" />
+                  {{detail.cnName}}
+                </span>
+              </div>
+              <!--明细表格按钮-->
+              <div class="btns">
+                <el-button
+                  v-for="(btn,bIndex) in detailOptions.buttons"
+                  :key="bIndex"
+                  v-show="!btn.hasOwnProperty('hidden')||!btn.hidden"
+                  @click="onClick(btn.onClick)"
+                  type="dashed"
+                  ghost
+                  :icon="btn.icon"
+                  size="small"
+                >{{btn.name}}</el-button>
+              </div>
+            </div>
+            <!-- 工具栏 end-->
+            <!-- 子表表格 start -->
+
+            <!-- 子表表格 end -->
+          </div>
+          <!-- 字表  end-->
+
            <!-- <div v-if="detail.columns&&detail.columns.length>0" class="grid-detail table-item item">
               <div class="toolbar">
                 <div class="title form-text">
@@ -303,7 +334,7 @@ var vueParam= {
     KtForm:() => import("@/components/basic/KtForm.vue"),
   },
   props:{
-      table: {//表的配置信息：主键、排序等（可看成页面信息）
+    table: {//表的配置信息：主键、排序等（可看成页面信息）
       type: Object,
       default: () => {
         return {};
@@ -417,7 +448,7 @@ var vueParam= {
       activatedLoad: false, //页面触发actived时是否刷新页面数据
       
 
-    //一些固定的按钮 start
+    //一些固定的主界面按钮 静态数据 start
       buttonsDefault : [{
         name: "查 询",//按钮的name最好不要重复
         value: 'Search',
@@ -505,7 +536,7 @@ var vueParam= {
           }
       }
       ],
-    //一些固定的按钮 end
+    //一些固定的主界面按钮 静态数据 end
 
     //表结构 弹出框 start
       dataStructDialog:false,
@@ -536,9 +567,9 @@ var vueParam= {
     //主表 end
 
     //新增 ，编辑 弹出框 Start
-    dialogButtons:[],
-    //this.extendBtn(this.buttonsDefault,this.extend.buttons.view);
-    dialogButtonsDefault:[
+      dialogButtons:[],
+      //this.extendBtn(this.buttonsDefault,this.extend.buttons.view);
+      dialogButtonsDefault:[
                     {
                       name: "保 存",
                       icon: "el-icon-check",
@@ -569,21 +600,21 @@ var vueParam= {
                     // },
                   ],
 
-    dialogInit: false,//是否初始化
-    dialogModel:false,//是否显示弹出框
-    currentReadonly: false, //当前用户没有编辑或新建权限时，表单只读(可用于判断用户是否有编辑或新建权限)
-    currentAction:null,//当前操作动作
-    currentRow:[],//当前点击的主表行
+      dialogInit: false,//是否初始化
+      dialogModel:false,//是否显示弹出框
+      currentReadonly: false, //当前用户没有编辑或新建权限时，表单只读(可用于判断用户是否有编辑或新建权限)
+      currentAction:null,//当前操作动作
+      currentRow:[],//当前点击的主表行
 
-    hasDetail: false, //是否有从表(明细)表格数据,可根据props中是否传递detail参数来判断
-    dialogOptions:{//弹出框的配置
-      labelWidth:"110px",
-      width:"1050px",
-      height:360,
-      saveClose:true,//saveClose新建或编辑成功后是否关闭弹出框  为以后可以做扩展，现状态是保存之后就关闭弹出框
-    },
+      hasDetail: false, //是否有从表(明细)表格数据,可根据props中是否传递detail参数来判断
+      dialogOptions:{//弹出框的配置
+        labelWidth:"110px",
+        width:"1050px",
+        height:360,
+        saveClose:true,//saveClose新建或编辑成功后是否关闭弹出框  为以后可以做扩展，现状态是保存之后就关闭弹出框
+      },
 
-    keyValueType: { _dinit: false },
+      keyValueType: { _dinit: false },
     //新增 ，编辑 弹出框 end
     }
   },
@@ -728,6 +759,47 @@ var vueParam= {
         // }
         this.resetForm("form", sourceObj);
       },
+      // resetForm(formName, sourceObj) {//第一版
+        
+      //   //重置表单数据
+      //   if (this.$refs[formName]) {
+      //     this.$refs[formName].reset();
+      //   }
+
+      //   if (!sourceObj) return;
+      //   let form = formName == "searchForm"
+      //     ? this.searchFormData
+      //     : this.editFormData;
+      //   //获取数据源的data类型，否则如果数据源data的key是数字，重置的值是字符串就无法绑定值
+      //   if (!this.keyValueType._dinit) {
+      //     this.getKeyValueType(this.editFormOptions);
+      //     this.getKeyValueType(this.searchFormOptions);
+      //     this.keyValueType._dinit = true;
+      //   }
+      //   for (const key in form) {
+      //     if (sourceObj.hasOwnProperty(key)) {
+      //       let newVal = sourceObj[key];
+      //       if (this.keyValueType['_b_' + key] == 'selectList') {
+      //         if (newVal != "" && newVal != undefined && typeof newVal == 'string') {
+      //           newVal = newVal.split(',');
+      //         }
+      //       } else if (this.keyValueType.hasOwnProperty(key)
+      //         && typeof (this.keyValueType[key]) == 'number'
+      //         && newVal * 1 == newVal) {
+      //         newVal = newVal * 1;
+      //       } else {
+      //         if (newVal == null || newVal == undefined) {
+      //           newVal = '';
+      //         } else {
+      //           newVal += "";
+      //         }
+      //       }
+      //       form[key] = newVal;
+      //     } else {
+      //       form[key] = form[key] instanceof Array ? [] : "";
+      //     }
+      //   }
+      // },
       resetForm(formName, sourceObj) {
         //重置表单数据
         if (this.$refs[formName]) {
@@ -735,21 +807,31 @@ var vueParam= {
         }
 
         if (!sourceObj) return;
-        let form = formName == "searchForm"
-          ? this.searchFormData
-          : this.editFormData;
+        debugger
+        let form, keyLeft;
+        if (formName == "searchForm") {
+          form = this.searchFormData;
+          keyLeft = 's' + '_b_';
+        } else {
+          form = this.editFormData;
+          keyLeft = 'e' + '_b_';
+        }
         //获取数据源的data类型，否则如果数据源data的key是数字，重置的值是字符串就无法绑定值
         if (!this.keyValueType._dinit) {
-          this.getKeyValueType(this.editFormOptions);
-          this.getKeyValueType(this.searchFormOptions);
+          this.getKeyValueType(this.editFormOptions, true);
+          this.getKeyValueType(this.searchFormOptions, false);
           this.keyValueType._dinit = true;
         }
         for (const key in form) {
           if (sourceObj.hasOwnProperty(key)) {
             let newVal = sourceObj[key];
-            if (this.keyValueType['_b_' + key] == 'selectList') {
+            let kv_type = this.keyValueType[keyLeft + key];
+            if (kv_type == 'selectList'
+              || kv_type == 'checkbox') {
               if (newVal != "" && newVal != undefined && typeof newVal == 'string') {
                 newVal = newVal.split(',');
+              } else if (kv_type == 'checkbox') {
+                newVal = [];
               }
             } else if (this.keyValueType.hasOwnProperty(key)
               && typeof (this.keyValueType[key]) == 'number'
@@ -768,6 +850,7 @@ var vueParam= {
           }
         }
       },
+
       getKeyValueType(formData) {
         try {
           formData.forEach(item => {
@@ -900,6 +983,8 @@ var vueParam= {
       
       // this.modelOpenAfter(rows[0]);
     },
+
+
     save() {//点击 弹出框的保存
       //新增或编辑时保存
       // if (!this.$refs.form.validate()) return;
@@ -1067,6 +1152,24 @@ var vueParam= {
         }).catch();
       });
 
+    },
+    resetEdit() { //重置编辑的数据
+      let isEdit = this.currentAction != _const.ADD;
+      let objKey = {};
+      //编辑状态下,不需要重置主键,创建时间创建人    // 编辑下到底是恢复到原数据，还是信息数据都为空？待解决
+      if (isEdit) {
+        objKey[this.table.key] = this.editFormData[this.table.key];
+        //objKey["Creator"]=
+      }
+      //重置之前
+      if (!this[isEdit ? 'resetUpdateFormBefore' : 'resetAddFormBefore']()) {
+        return;
+      }
+      this.resetEditForm(objKey);
+      //重置之后
+      if (!this[isEdit ? 'resetUpdateFormAfter' : 'resetAddFormAfter']()) {
+        return;
+      }
     },
   //一些基础方法 ，如查询 ，新增，编辑，查看表结构  end
 

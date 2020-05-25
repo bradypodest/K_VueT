@@ -257,23 +257,23 @@ let extension = {
       },
       resetAddFormAfter() { //重置新建表单后的内容
           //如果某些字段不需要重置，则可以重新赋值
-          this.editFormFileds.Remark = '新建重置默认值66666';
+          //this.editFormFileds.Remark = '新建重置默认值66666';
           //给明细表添加默认一行
-          this.$refs.detail.rowData.push({ Remark: "新建666666" });
+          //this.$refs.detail.rowData.push({ Remark: "新建666666" });
           return true;
       },
       resetUpdateFormBefore() { //重置编辑表单前的内容
           //this.editFormFileds当前值
-          console.log(this.editFormFileds)
+          //console.log(this.editFormFileds)
           //当前明细表的行
-          console.log(this.$refs.detail.rowData)
+          //console.log(this.$refs.detail.rowData)
           return true;
       },
       resetUpdateFormAfter() { //重置编辑表单后的内容
           //如果某些字段不需要重置，则可以重新赋值
-          this.editFormFileds.Remark = '编辑重置默认值66666';
+          //this.editFormFileds.Remark = '编辑重置默认值66666';
           //给明细表添加默认一行
-          this.$refs.detail.rowData.push({ Remark: "编辑666666" });
+          //this.$refs.detail.rowData.push({ Remark: "编辑666666" });
           return true;
       },
       importAfter(data) { //导入excel后刷新table表格数据
