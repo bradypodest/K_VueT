@@ -1159,7 +1159,11 @@ var vueParam= {
       //编辑状态下,不需要重置主键,创建时间创建人    // 编辑下到底是恢复到原数据，还是信息数据都为空？待解决
       if (isEdit) {
         objKey[this.table.key] = this.editFormData[this.table.key];
-        //objKey["Creator"]=
+
+        this.GLOBAL.ignoreResetFields.forEach(x => {//忽略的不重置的字段
+          objKey[x]=this.editFormData[x]
+        });
+        
       }
       //重置之前
       if (!this[isEdit ? 'resetUpdateFormBefore' : 'resetAddFormBefore']()) {

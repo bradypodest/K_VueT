@@ -29,7 +29,16 @@ module.exports = {
    */
   sidebarLogo: true,
 
-  paginations:{
+  paginations:{//分页设置
     pageSizes:[3, 60, 100,300,500],
-  }
+  },
+
+  ignoreResetFields:[//忽略的不重置的字段
+    "ID",
+    "Creator",
+    "CreateTime",
+    "Modifier",
+    "ModifyTime",
+    "Status",
+  ],
 }
