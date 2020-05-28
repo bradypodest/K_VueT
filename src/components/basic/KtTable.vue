@@ -488,7 +488,7 @@ export default {
       }
       if (!this.isShowEditButton) return;
       //编辑前
-      if (!this.beginEdit(row, column, editIndex)) return;
+      if (!this.beginEdit(row, column, editIndex)) return;//传入的 插口 ，
 
       this.currentEditRow.rowIndex = editIndex;
       
@@ -501,7 +501,7 @@ export default {
       if (
         !this.endEditBefore(scope.row, this.columnsOptions[scope.$index], scope.$index)
       )
-        return;
+        return;////传入的 插口 
 
       for (let index = 0; index < this.columnsOptions.length; index++) {
         let column = this.columnsOptions[index];
@@ -516,7 +516,7 @@ export default {
       if (
         !this.endEditAfter(scope.row, this.columnsOptions[scope.$index], scope.$index)
       )
-        return;
+        return;//传入的 插口
     },
     //将 当前编辑行参数 重置
     resetCurrentEditRow(){

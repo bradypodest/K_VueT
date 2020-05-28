@@ -82,7 +82,7 @@
                   :key="bIndex"
                   v-show="!btn.hasOwnProperty('hidden')||!btn.hidden"
                   @click="onClick(btn.onClick)"
-                  type="dashed"
+                  :type="btn.type"
                   ghost
                   :icon="btn.icon"
                   size="small"
@@ -91,55 +91,37 @@
             </div>
             <!-- 工具栏 end-->
             <!-- 子表表格 start -->
+            <!-- :maxHeight="tableMaxHeight" -->
+            <!-- :beginEdit="detailOptions.beginEdit"
+                :endEditBefore="detailOptions.endEditBefore"
+                :endEditAfter="detailOptions.endEditAfter" -->
+            <kt-table
+             ref="detail"
+
+              :single="detailOptions.single"
+              @loadBefore="loadInternalDetailTableBefore"
+              @loadAfter="loadDetailTableAfter"
+              @rowChange="detailRowOnChange"
+
+              :tableData="[]"
+              :columnsOptions="detailOptions.columnsOptions"
+              :pagination="detailOptions.pagination"
+              
+            
+              :url="detailOptions.url"
+              :defaultLoadPage="detailOptions.defaultLoadPage"
+              
+              :summaryData="detailOptions.summaryData"
+
+              :beginEdit="detailOptions.beginEdit"
+              :endEditBefore="detailOptions.endEditBefore"
+              :endEditAfter="detailOptions.endEditAfter"
+             >
+            </kt-table>
 
             <!-- 子表表格 end -->
           </div>
           <!-- 字表  end-->
-
-           <!-- <div v-if="detail.columns&&detail.columns.length>0" class="grid-detail table-item item">
-              <div class="toolbar">
-                <div class="title form-text">
-                  <span>
-                    <Icon type="md-list-box" />
-                    {{detail.cnName}}
-                  </span>
-                </div>
-                
-                <div class="btns">
-                  <Button
-                    v-for="(btn,bIndex) in detailOptions.buttons"
-                    :key="bIndex"
-                    v-show="!btn.hasOwnProperty('hidden')||!btn.hidden"
-                    @click="onClick(btn.onClick)"
-                    type="dashed"
-                    ghost
-                    :icon="btn.icon"
-                    size="small"
-                  >{{btn.name}}</Button>
-                </div>
-              </div>
-              <vol-table
-                ref="detail"
-                @loadBefore="loadInternalDetailTableBefore"
-                @loadAfter="loadDetailTableAfter"
-                @rowChange="detailRowOnChange"
-                :url="detailOptions.url"
-                :index="detailOptions.edit"
-                :tableData="detailOptions.data"
-                :columns="detailOptions.columns"
-                :pagination="detailOptions.pagination"
-                :height="detailOptions.height"
-                :single="detailOptions.single"
-                :pagination-hide="false"
-                :defaultLoadPage="detailOptions.load"
-                :doubleEdit="detailOptions.doubleEdit"
-                :beginEdit="detailOptions.beginEdit"
-                :endEditBefore="detailOptions.endEditBefore"
-                :endEditAfter="detailOptions.endEditAfter"
-                :summary="detailOptions.summary"
-              ></vol-table>
-            </div> -->
-
           <!--明细footer自定义组件-->
           <modelFooter ref="modelFooter" class="model-footer" @parentCall="parentCall"></modelFooter>
         </div>
@@ -610,12 +592,75 @@ var vueParam= {
       dialogOptions:{//弹出框的配置
         labelWidth:"110px",
         width:"1050px",
-        height:360,
+        height:410,
         saveClose:true,//saveClose新建或编辑成功后是否关闭弹出框  为以后可以做扩展，现状态是保存之后就关闭弹出框
       },
 
       keyValueType: { _dinit: false },
     //新增 ，编辑 弹出框 end
+
+    //弹出框 的 子表 start
+      detailButtonsDefault:[
+        {
+          name: "添加行",
+          icon: "el-icon-plus",
+          type: "primary",
+          hidden:false,
+          onClick() {
+            this.addRow();
+          }
+        },
+        {
+          name: "删除行",
+          icon: "el-icon-delete",
+          type: "primary",
+          hidden:false,
+          onClick() {
+            this.delRow();
+          }
+        },
+        {
+          name: "刷新",
+          icon: "el-icon-refresh-right",
+          type: "primary",
+          hidden:false,
+          onClick() {
+            //this.delRow();
+          }
+        }
+      ],
+
+      detailOptions:{
+        cnName:"",//从表名称
+        key:"",//从表主键名
+        data:[],//数据
+        columnsOptions:[],//列信息
+        url: "", //从表加载数据的url
+
+        pagination: { total: 0, size: 100, sortName: "" }, //从表分页配置数据
+
+        buttons:[],//按钮
+        edit: true, //明细是否可以编辑
+        single: false, //明细表是否单选
+        load: true,
+
+        defaultLoadPage:true,//是否一进table页面就加载数据
+        delKeys: [], //当编辑时删除当前明细的行主键值
+        currentReadonly: false, //当前用户没有编辑或新建权限时，表单只读(可用于判断用户是否有编辑或新建权限)
+        //开启编辑时
+        beginEdit: (row, column, index) => {
+          return true;
+        },
+        //结束编辑前
+        endEditBefore: (row, column, index) => {
+          return true;
+        },
+        //结束编辑后
+        endEditAfter: (row, column, index) => {
+          return true;
+        }
+      }
+    //弹出框 的 子表 end
     }
   },
   methods:{
@@ -1181,11 +1226,24 @@ var vueParam= {
     initParam(){
       this.url = this.getUrl(_const.PAGE);//生成查询列表url
 
-      this.initButtons();
+      this.initButtons();//主按钮
 
       this.initDialogButtons();
 
       this.splitButtons = this.getSplitButtons(); //拆分按钮  //生成ViewGrid界面的操作按钮及更多选项
+
+      //子表数据
+      this.initDetailButtons();//子表按钮
+      this.initDetailParam();//子表参数
+
+    },
+    initDetailParam(){
+      this.detailOptions.columnsOptions = this.detail.columnsOptions;
+      this.detailOptions.pagination.sortName =  this.detail.sortName;;
+
+      this.detailOptions.cnName = this.detail.cnName;
+      this.detailOptions.key = this.detail.key;
+      this.detailOptions.url = this.detail.url?this.detail.url: this.getUrl("getDetailPage");
     },
     getUrl(action) {//是否忽略前缀/  获取操作的url
       return  this.table.url + action;
@@ -1219,7 +1277,28 @@ var vueParam= {
       }else{
          this.dialogButtons=this.dialogButtonsDefault;
       }
-      //判断当前操作，如是新增操作，则弹出框无 审核按钮
+       //判断当前操作，如是新增操作，则弹出框无 审核按钮
+
+
+      //判断筛选出权限按钮
+
+
+    },
+    initDetailButtons(){//初始化详细表按钮 
+      //初始化新增，编辑按钮
+      if(this.extend.buttons.detail){
+        this.detailOptions.buttons=this.extendBtn(this.detailButtonsDefault,this.extend.buttons.detail);
+      }else{
+         this.detailOptions.buttons=this.detailButtonsDefault;
+      }
+      //判断当前操作，如是新增操作，则无 刷新按钮
+      if(this.currentAction==_const.ADD){
+        for(var i=0;i<this.detailOptions.buttons.length;i++){
+          if(this.detailOptions.buttons[i].name=="刷新"){
+            this.detailOptions.buttons[i].hidden=true;
+          }
+        }
+      }
 
       //判断筛选出权限按钮
 
@@ -1362,8 +1441,87 @@ var vueParam= {
     },
     reloadDicSource() { //重新加载字典绑定的数据源
         this.initDicKeys();
-    }
+    },
   //插口方法 end
+
+  //子表 相关方法 start
+     //查询从表前先做内部处理
+    loadInternalDetailTableBefore(param, callBack) {//加载明细表数据之前,需要设定查询的主表的ID
+        //每次只要加载明细表格数据就重置删除明细的值
+        if (this.detailOptions.delKeys.length > 0) {
+            this.detailOptions.delKeys = [];
+        }
+        let key = this.table.key;
+        if (this.currentRow && this.currentRow.hasOwnProperty(key)) {
+            param.value = this.currentRow[key];
+        }
+        return this.loadDetailTableBefore(param, callBack);
+    },
+    loadDetailTableBefore(param, callBack) {//明细查询前
+      //新建时禁止加载明细
+      if (this.currentAction == this.const.ADD) {
+        callBack(false);
+        return false;
+      }
+      let status = this.searchDetailBefore(param);//插口方法
+      callBack(status);
+    },
+    loadDetailTableAfter(data, callBack) {//明细查询后
+      let status = this.searchDetailAfter(data);//插口方法
+      callBack(status);
+    },
+
+    detailRowOnChange(row) {
+        this.detailRowChange(row);
+    },
+    detailRowChange(row) {//选中行事件
+
+    },
+    resetDetailTable(row) {//编辑和查看明细时重置从表数据
+        if (!this.detailOptions.columns || this.detailOptions.columns.length == 0) {
+            return;
+        }
+        let key = this.table.key;
+        let query = { value: row ? row[key] : this.currentRow[key] }
+        if (this.$refs.detail) {
+            this.$refs.detail.reset();
+            this.$refs.detail.load(query);
+        }
+    },
+    //从后面加载从表数据
+    refreshRow() {
+        this.resetDetailTable();
+    },
+    addRow() {
+        this.$refs.detail.addRow({});
+        //  this.detailOptions.columns.push({});
+    },
+    delRow() {
+        let rows = this.$refs.detail.getSelected();
+        if (!rows || rows.length == 0) {
+            return this.$message.error("请选择要删除的行!");
+        }
+        if (!this.delDetailRow(rows)) {
+            return false;
+        }
+        this.$Modal.confirm({
+            title: "删除警告!",
+            content:
+                '<p style="color: red;font-weight: bold;letter-spacing: 3px;">确认要删除选择的数据吗?</p>',
+            onOk: () => {
+                rows = this.$refs.detail.delRow();
+                let key = this.detailOptions.key;
+                //记录删除的行数据
+                rows.forEach(x => {
+                    if (x.hasOwnProperty(key) && x[key]) {
+                        this.detailOptions.delKeys.push(x[key]);
+                    }
+                })
+
+            }
+        });
+    }
+  //子表 相关方法 end
   },
 //生命周期钩子 start
   beforeCreate() {},
