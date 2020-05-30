@@ -658,7 +658,7 @@ export default {
       }
 
       //this.loading = true;
-
+debugger
       //var url=  this.table.url + action;
       request({
         url: this.url,

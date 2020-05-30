@@ -71,7 +71,7 @@
             <div class="toolbar">
               <div class="title form-text">
                 <span>
-                  <Icon type="md-list-box" />
+                  <i class="el-icon-s-grid" />
                   {{detail.cnName}}
                 </span>
               </div>
@@ -417,7 +417,7 @@ var vueParam= {
         return {
           key:"ID",
           cnName:"",//详细表的介绍
-          url:"",//获取数据url
+          url:"",//获取数据url  如：  /SysRole/GetDetailPageData    如果没有填写的话则是 当前 的   this.table.url+"GetDetailPageData"
           columnsOptions: [],//从表列 配置
           sortName: ""//从表排序字段
         };
@@ -1243,7 +1243,7 @@ var vueParam= {
 
       this.detailOptions.cnName = this.detail.cnName;
       this.detailOptions.key = this.detail.key;
-      this.detailOptions.url = this.detail.url?this.detail.url: this.getUrl("getDetailPage");
+      this.detailOptions.url = this.detail.url?this.detail.url: this.getUrl("GetDetailPageData");
     },
     getUrl(action) {//是否忽略前缀/  获取操作的url
       return  this.table.url + action;
@@ -1453,13 +1453,13 @@ var vueParam= {
         }
         let key = this.table.key;
         if (this.currentRow && this.currentRow.hasOwnProperty(key)) {
-            param.value = this.currentRow[key];
+            param.value = this.currentRow[key];//将主表的ID  赋值给查询参数
         }
         return this.loadDetailTableBefore(param, callBack);
     },
     loadDetailTableBefore(param, callBack) {//明细查询前
       //新建时禁止加载明细
-      if (this.currentAction == this.const.ADD) {
+      if (this.currentAction == _const.ADD) {
         callBack(false);
         return false;
       }

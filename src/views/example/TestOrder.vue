@@ -9,6 +9,8 @@
         :columnsOptions="columnsOptions"
         :editFormData="editFormData"
         :editFormOptions="editFormOptions"
+
+        :detail=detail
       >
      </kt-view-grid>
    </div>
@@ -55,7 +57,24 @@ var vueParam = {
                       ]],
       editFormData:{"OrderNo":"","Qty":"","Status":"","Remakes":"","Creator":"","CreateTime":"","Modifier":"","ModifyTime":""},
                 
-              
+      detail:{
+        cnName:"订单明细",
+        columnsOptions: [{field:'ID',title:'ID',type:'string',width:90,hidden:true,require:true,align:'left'},
+                       {field:'OrderID',title:'订单Id',type:'string',width:90,hidden:true,readonly:true,require:true,align:'left'},
+                       {field:'GoodsName',title:'商品名称',type:'string',width:150,edit:{type:'text'},require:true,align:'left',sortable:true},
+                       {field:'GoodsBatch',title:'商品批次',type:'string',width:100,edit:{type:'text'},require:true,align:'left'},
+                       {field:'Qty',title:'数量',type:'int',width:90,edit:{type:'number'},require:true,align:'left'},
+                       {field:'Weight',title:'重量',type:'decimal',width:90,edit:{type:'decimal'},align:'left'},
+                       {field:'Remarks',title:'备注',type:'string',width:120,edit:{type:'text'},align:'left'},
+                       {field:'CreateID',title:'CreateID',type:'int',width:80,hidden:true,align:'left'},
+                       {field:'Creator',title:'创建人',type:'string',width:130,align:'left'},
+                       {field:'CreateTime',title:'创建时间',type:'datetime',width:90,align:'left',sortable:true},
+                       {field:'ModifyID',title:'ModifyID',type:'int',width:80,hidden:true,align:'left'},
+                       {field:'Modifier',title:'修改人',type:'string',width:100,align:'left'},
+                       {field:'ModifyTime',title:'修改时间',type:'datetime',width:90,align:'left',sortable:true}],
+        sortName: "CreateTime",
+        key:"ID"
+      }        
     }
   },
 };
