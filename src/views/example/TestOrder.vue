@@ -60,8 +60,8 @@ var vueParam = {
       detail:{
         cnName:"订单明细",
         columnsOptions: [{field:'ID',title:'ID',type:'string',width:90,hidden:true,require:true,align:'left'},
-                       {field:'OrderID',title:'订单Id',type:'string',width:90,hidden:true,readonly:true,require:true,align:'left'},
-                       {field:'GoodsName',title:'商品名称',type:'string',width:150,edit:{type:'text'},require:true,align:'left',sortable:true},
+                       {field:'OrderID',title:'订单Id',type:'string',width:90,hidden:true,readonly:true,require:true,align:'left',fixed:'left'},
+                       {field:'GoodsName',title:'商品名称',type:'string',width:150,edit:{type:'text'},require:true,align:'left',sortable:true,fixed:'left'},
                        {field:'GoodsBatch',title:'商品批次',type:'string',width:100,edit:{type:'text'},require:true,align:'left'},
                        {field:'Qty',title:'数量',type:'int',width:90,edit:{type:'number'},require:true,align:'left'},
                        {field:'Weight',title:'重量',type:'decimal',width:90,edit:{type:'decimal'},align:'left'},

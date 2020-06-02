@@ -18,7 +18,7 @@
        :summary-method="getSummaries"
        >
        <!-- 多选框 -->
-       <el-table-column v-if="showCheckbox" type="selection" width="55" align="center"></el-table-column>
+       <el-table-column v-if="showCheckbox" type="selection" width="55" align="center" ></el-table-column>
        <el-table-column 
         v-for="(column,cindex) in filterColumns()"
         :key="cindex"
@@ -125,7 +125,7 @@
        </el-table-column>
        <el-table-column
           v-if="isShowEditButton"
-          :min-width="120"
+          :min-width="180"
           label="操作"
           fixed="right"
           align="center"
@@ -199,7 +199,7 @@ export default {
           title:"名字",//显示名称
           type:"text",// 标签显示类型 img,tag,    text,date,datetime,select,switch,
           width:"100",//px
-          fixed:"true", //列是否固定在左侧或者右侧，true 表示固定在左侧
+          fixed:"left", //列是否固定在左侧或者右侧，left 表示固定在左侧
           align:"center",//单元格内容和表头文字位置 ：left/center/right 
           hidden:false,//是否隐藏 空也是不隐藏
           require:true,//是否必须，防止编辑之后设为空
@@ -531,8 +531,9 @@ export default {
         if (val != "0" && (val == "" || val == undefined)) {
           //if (!this.errorFiled) {
             //  event.focus();
-            this.$Message.error(option.title + "不能为空");
+            //this.$message.error(option.title + "不能为空");
           //}
+            this.$message.error(option.title + "不能为空");
           return false;
         }
       }
@@ -785,6 +786,29 @@ debugger
     getSelected() {
       return this.$refs.table.selection;//获取到多选的值
     },
+
+    //重置table
+    reset() {
+      if (this.tableData && this.tableData.length > 0) {
+        this.tableData.splice(0);
+      }
+      if (this.rowData && this.rowData.length > 0) {
+        this.rowData.splice(0);
+      }
+      if (!this.paginationHide) {
+        //this.paginations.page = 1;
+        //this.paginations.size = 30;
+        this.resetPage();
+        if (this.paginations.wheres && this.paginations.wheres.length > 0) {
+          this.paginations.wheres.splice(0);
+        }
+      }
+      // this.errorFiled = "";
+      // this.edit.columnIndex = -1;
+      // this.edit.rowIndex = -1;
+
+      this.resetCurrentEditRow();
+    },
   },
   created(){
     //this.realHeight = this.getHeight();
@@ -844,6 +868,12 @@ debugger;
 .kt-table >>> .el-table__body-wrapper::-webkit-scrollbar-thumb {
   border-radius: 5px;
   background: #ddd;
+}
+.kt-table >>> .el-table__fixed-right{
+  bottom:10px !important;
+}
+.kt-table >>> .el-table__fixed{
+  bottom:10px !important;
 }
 
 </style>

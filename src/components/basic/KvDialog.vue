@@ -14,10 +14,11 @@
     :show-close="true"
     :close-on-press-escape="false"
     :title="title"
-    :width="width"
+    :width="width+'px'"
     :visible.sync="dialogVisible"
     custom-class="dialog-custom-class"
     @close="closeDialog"
+    top="4vh"
   >
     <!-- 这里的插槽会替换title显示的内容 -->
     <div slot="title" class="header-title">
@@ -50,8 +51,8 @@ export default {
       default: "基本信息"
     },
     width: {//整个宽度
-      type: String,
-      default: "650px" //也可以设置为50%
+      type: Number,
+      default: 650 
     },
     isShow: {
       //是否显示dialog
@@ -64,7 +65,7 @@ export default {
     },
     height:{//中心内容高度
       type: Number,
-      default: 200
+      default: 350
     },
     paddinglr: {//中心内容边距  左右
       type: Number,

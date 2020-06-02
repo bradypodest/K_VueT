@@ -11,7 +11,7 @@
     <!-- 表 数据结构  start-->
     <kv-dialog 
       :isShow.sync="dataStructDialog"
-      :height="450" :width="dataStructWidth" 
+      :height="520" :width="dataStructWidth" 
       :title="table.cnName+'数据结构'">
       <div slot=content>
         <kt-table 
@@ -440,37 +440,37 @@ var vueParam= {
         onClick: function () {
             this.search();
         }
-      }, 
-      {
-          name: "刷 新",
-          icon: 'el-icon-refresh',
-          class: '',
-          type: 'success',
-          onClick: function () {
-              this.refresh();
-          }
-      },
-      {
-          name: "新 建",
-          icon: 'el-icon-plus',
-          value: 'Add',
-          class: '',
-          type: 'warning',
-          onClick: function () {
-              this.add();
-          }
-      },
-      {
-          name: "编 辑",
-          icon: 'el-icon-edit',
-          value: 'Update',
-          class: '',
-          type: 'warning',
-          onClick: function () {
-              this.edit();
-          }
-      },  
-      {
+        }, 
+        {
+            name: "刷 新",
+            icon: 'el-icon-refresh',
+            class: '',
+            type: 'success',
+            onClick: function () {
+                this.refresh();
+            }
+        },
+        {
+            name: "新 建",
+            icon: 'el-icon-plus',
+            value: 'Add',
+            class: '',
+            type: 'warning',
+            onClick: function () {
+                this.add();
+            }
+        },
+        {
+            name: "编 辑",
+            icon: 'el-icon-edit',
+            value: 'Update',
+            class: '',
+            type: 'warning',
+            onClick: function () {
+                this.edit();
+            }
+        },  
+        {
           name: "删 除",
           icon: 'el-icon-close',
           class: '',
@@ -479,50 +479,50 @@ var vueParam= {
           onClick: function () {
               this.del();
           }
-      }, 
-      // {
-      //     name: "审 核",
-      //     icon: 'md-create',
-      //     class: '',
-      //     value: 'Audit',
-      //     type: 'error',
-      //     onClick: function () {
-      //         this.audit();
-      //     }
-      // },
-      // {
-      //     name: "导 入",
-      //     icon: 'md-color-fill',
-      //     class: '',
-      //     value: 'Import',
-      //     onClick: function () {
-      //         this.import();
-      //     }
-      // }, 
-      // {
-      //     name: "导 出",
-      //     icon: 'md-share-alt',
-      //     class: '',
-      //     value: 'Export',
-      //     onClick: function () {
-      //         this.export();
-      //     }
-      // }, 
-      {
-          name: "数据结构",
-          icon: 'ios-cog',
-          class: '',
-          value: '',
-          onClick: function () {
-              this.openViewColumns();
-          }
-      }
+        }, 
+        // {
+        //     name: "审 核",
+        //     icon: 'md-create',
+        //     class: '',
+        //     value: 'Audit',
+        //     type: 'error',
+        //     onClick: function () {
+        //         this.audit();
+        //     }
+        // },
+        // {
+        //     name: "导 入",
+        //     icon: 'md-color-fill',
+        //     class: '',
+        //     value: 'Import',
+        //     onClick: function () {
+        //         this.import();
+        //     }
+        // }, 
+        // {
+        //     name: "导 出",
+        //     icon: 'md-share-alt',
+        //     class: '',
+        //     value: 'Export',
+        //     onClick: function () {
+        //         this.export();
+        //     }
+        // }, 
+        {
+            name: "数据结构",
+            icon: 'ios-cog',
+            class: '',
+            value: '',
+            onClick: function () {
+                this.openViewColumns();
+            }
+        }
       ],
     //一些固定的主界面按钮 静态数据 end
 
     //表结构 弹出框 start
       dataStructDialog:false,
-      dataStructWidth:"800",
+      dataStructWidth: 800,
       dataStructColumns:[], //查看表结构的列数据  //数据来源于主table的数据 
       dataStructData: [], //查看表结构信息  //数据来源于主table的数据
     //表结构 弹出框 end
@@ -591,8 +591,9 @@ var vueParam= {
       hasDetail: false, //是否有从表(明细)表格数据,可根据props中是否传递detail参数来判断
       dialogOptions:{//弹出框的配置
         labelWidth:"110px",
-        width:"1050px",
-        height:410,
+        //width:"1050px",
+        width: 1200,
+        height:520,
         saveClose:true,//saveClose新建或编辑成功后是否关闭弹出框  为以后可以做扩展，现状态是保存之后就关闭弹出框
       },
 
@@ -637,7 +638,7 @@ var vueParam= {
         columnsOptions:[],//列信息
         url: "", //从表加载数据的url
 
-        pagination: { total: 0, size: 100, sortName: "" }, //从表分页配置数据
+        pagination: { total: 0, size: 8, sortName: "" }, //从表分页配置数据
 
         buttons:[],//按钮
         edit: true, //明细是否可以编辑
@@ -758,11 +759,11 @@ var vueParam= {
       this.currentAction = _const.ADD;
       this.currentRow = {};
       this.initDialog();
-      // if (this.hasDetail) {
-      //   this.$refs.detail &&
-      //     //  this.$refs.detail.rowData &&
-      //     this.$refs.detail.reset();
-      // }
+      if (this.hasDetail) {
+        this.$refs.detail &&
+          //  this.$refs.detail.rowData &&
+          this.$refs.detail.reset();
+      }
       let obj = {};
       //如果有switch标签，默认都设置为是
       debugger;
@@ -998,14 +999,14 @@ var vueParam= {
       if (rows.length == 0) {
         return this.$message.error("请选择要编辑的行!");
       }
-
+debugger
       this.currentAction = _const.EDIT;
       //记录当前编辑的行
       this.currentRow = rows[0];
       //初始化弹出框
       this.initDialog();
-      //重置表单
-      //this.resetDetailTable();//从表方法  待修改
+      //重置表单 子表
+      this.resetDetailTable();//从表方法  待修改
 
       //
       if (rows.length > 1) {
@@ -1233,13 +1234,20 @@ var vueParam= {
       this.splitButtons = this.getSplitButtons(); //拆分按钮  //生成ViewGrid界面的操作按钮及更多选项
 
       //子表数据
-      this.initDetailButtons();//子表按钮
-      this.initDetailParam();//子表参数
+      if( this.detail.columnsOptions && this.detail.columnsOptions.length>0){
+          this.initDetailButtons();//子表按钮
+          this.initDetailParam();//子表参数
+
+          this.hasDetail=true;
+      }
+    
+      this.initDialogHeightWidth();//初始化弹出框高宽
 
     },
     initDetailParam(){
       this.detailOptions.columnsOptions = this.detail.columnsOptions;
       this.detailOptions.pagination.sortName =  this.detail.sortName;;
+      this.detailOptions.pagination.size=this.GLOBAL.paginations[0];
 
       this.detailOptions.cnName = this.detail.cnName;
       this.detailOptions.key = this.detail.key;
@@ -1326,6 +1334,32 @@ var vueParam= {
       let btns = this.buttons.slice(0, this.maxBtnLength);
       btns[this.maxBtnLength - 1].last = true;
       return btns;
+    },
+    initDialogHeightWidth(){//初始化弹出框高度和宽度  待修改
+      let clientHeight = document.documentElement.clientHeight;//当前屏幕高度
+      let clientWidth = document.documentElement.clientWidth;//当前屏幕宽度
+
+       //屏幕高度至少350px
+      clientHeight = clientHeight < 350 ? 350 : clientHeight;
+
+      //有子表的页面加大默认高度
+      if(this.detail.columnsOptions && this.detail.columnsOptions.length>0){
+         this.dialogOptions.height=760;
+      }
+
+      if (this.dialogOptions.height) {
+        //如果高度与宽度超过了获取到的可见高宽度，则设为默认的90%高宽
+        if (this.dialogOptions.height >= clientHeight * 0.7) {
+          this.dialogOptions.height = clientHeight * 0.7
+        }
+      }
+
+      if (this.dialogOptions.width) {
+        //如果高度与宽度超过了获取到的可见高宽度，则设为默认的90%高宽
+        if (this.dialogOptions.width >= clientWidth * 0.7) {
+          this.dialogOptions.width = clientWidth * 0.7
+        }
+      }
     },
   // 初始化  当前rul,  按钮组  end
 
@@ -1478,14 +1512,17 @@ var vueParam= {
 
     },
     resetDetailTable(row) {//编辑和查看明细时重置从表数据
-        if (!this.detailOptions.columns || this.detailOptions.columns.length == 0) {
-            return;
-        }
+        // if (!this.detailOptions.columnsOptions || this.detailOptions.columnsOptions.length == 0) {
+        //     return;
+        // }
+        if(!this.hasDetail) return;
+
         let key = this.table.key;
         let query = { value: row ? row[key] : this.currentRow[key] }
         if (this.$refs.detail) {
             this.$refs.detail.reset();
-            this.$refs.detail.load(query);
+            debugger
+            this.$refs.detail.load(query,true);
         }
     },
     //从后面加载从表数据

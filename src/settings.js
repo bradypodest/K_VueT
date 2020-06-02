@@ -30,7 +30,7 @@ module.exports = {
   sidebarLogo: true,
 
   paginations:{//分页设置
-    pageSizes:[3, 60, 100,300,500],
+    pageSizes:[8, 20, 50,100,300,500],
   },
 
   ignoreResetFields:[//忽略的不重置的字段
