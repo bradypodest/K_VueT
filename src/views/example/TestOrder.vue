@@ -68,10 +68,11 @@ var vueParam = {
                        {field:'Remarks',title:'备注',type:'string',width:120,edit:{type:'text'},align:'left'},
                        {field:'CreateID',title:'CreateID',type:'int',width:80,hidden:true,align:'left'},
                        {field:'Creator',title:'创建人',type:'string',width:130,align:'left'},
-                       {field:'CreateTime',title:'创建时间',type:'datetime',width:90,align:'left',sortable:true},
+                       //{field:'CreateTime',title:'创建时间',type:'datetime',width:90,align:'left',sortable:true},
                        {field:'ModifyID',title:'ModifyID',type:'int',width:80,hidden:true,align:'left'},
                        {field:'Modifier',title:'修改人',type:'string',width:100,align:'left'},
-                       {field:'ModifyTime',title:'修改时间',type:'datetime',width:90,align:'left',sortable:true}],
+                       //{field:'ModifyTime',title:'修改时间',type:'datetime',width:90,align:'left',sortable:true}
+                       ],
         sortName: "CreateTime",
         key:"ID"
       }        

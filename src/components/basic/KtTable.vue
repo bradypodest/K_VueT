@@ -77,8 +77,14 @@
               :value="kv.key"
              ></el-option>
             </el-select>
-             <el-input
+             <!-- <el-input
               v-else-if="column.edit.type=='text'||column.edit.type=='string'"
+              clearable
+              v-model="scope.row[column.field]"
+              :placeholder="'请输入'+column.title"              
+            ></el-input> -->
+            <el-input
+              v-else
               clearable
               v-model="scope.row[column.field]"
               :placeholder="'请输入'+column.title"              
@@ -546,11 +552,11 @@ export default {
         if (val == "" || val == undefined) return true;
         if (editType == "decimal") {
           if (!this.rule.decimal.test(val)) {
-            this.$Message.error(option.title + "只能是数字");
+            this.$message.error(option.title + "只能是数字");
             return false;
           }
         } else if (!this.rule.decimal.test(val)) {
-          this.$Message.error(option.title + "只能是整数");
+          this.$message.error(option.title + "只能是整数");
           return false;
         }
         if (
@@ -558,7 +564,7 @@ export default {
           typeof option.edit.min == "number" &&
           val < option.edit.min
         ) {
-          this.$Message.error(option.title + "不能小于" + option.edit.min);
+          this.$message.error(option.title + "不能小于" + option.edit.min);
           return false;
         }
         if (
@@ -566,7 +572,7 @@ export default {
           typeof option.edit.max == "number" &&
           val > option.edit.max
         ) {
-          this.$Message.error(option.title + "不能大于" + option.edit.min);
+          this.$message.error(option.title + "不能大于" + option.edit.min);
           return false;
         }
         return true;
@@ -579,7 +585,7 @@ export default {
           typeof option.edit.min == "number" &&
           val.length < option.edit.min
         ) {
-          this.$Message.error(
+          this.$message.error(
             option.title + "至少" + option.edit.min + "个字符"
           );
           return false;
@@ -589,7 +595,7 @@ export default {
           typeof option.edit.max == "number" &&
           val.length > option.edit.max
         ) {
-          this.$Message.error(
+          this.$message.error(
             option.title + "最多" + option.edit.max + "个字符"
           );
           return false;
@@ -809,11 +815,50 @@ debugger
 
       this.resetCurrentEditRow();
     },
+    addRow(row) {//新增一行  
+      if (!row) {
+        row = {};
+      }
+      this.columnsOptions.forEach(x => {
+        if (x.edit && x.edit.type == "switch") {
+          if (!row.hasOwnProperty(x.field)) {
+            row[x.field] = x.type == "bool" ? false : 0;
+          }
+        }
+      });
+      if (!this.url) {
+        this.tableData.push(row);
+        return;
+      }
+      this.rowData.push(row);
+    },
+    
+     delRow() {//删除选中的行  
+      let rows = this.getSelected();
+      if (rows.length == 0) return this.$message.error("请选择要删除的行!");
+
+
+      Array.prototype.diff = function(a) {
+          return this.filter(function(i) {return a.indexOf(i) < 0;});
+      };
+      //移除 
+      var nowRow;
+      if (!this.url) {
+        nowRow=this.tableData.diff(rows);
+        this.tableData=nowRow;
+      }else{
+        nowRow=this.rowData.diff(rows);
+        this.rowData=nowRow;
+      }
+
+
+      return rows;
+    },
   },
   created(){
     //this.realHeight = this.getHeight();
     this.realMaxHeight = this.getMaxHeight();
-debugger;
+
     this.paginations.sort = this.pagination.sortName?this.pagination.sortName:this.paginations.sort;
     //this.paginations.size=this.pagination.size;
     this.paginations.size= this.pagination.size?this.pagination.size: this.GLOBAL.paginations.pageSizes[0];
@@ -870,12 +915,31 @@ debugger;
   background: #ddd;
 }
 .kt-table >>> .el-table__fixed-right{
-  bottom:10px !important;
-}
-.kt-table >>> .el-table__fixed{
-  bottom:10px !important;
-}
 
+  bottom:0px !important;
+  /* height: 100% !important; */
+}
+/*
+  有bug 待修改 : 当下方设置为0px 时 ：table 无滚动条 正常
+                             table  有横轴滚动条 时  固定列的滚动条无法拖动
+          当下方设置为10px 时：table 无滚动条 固定列距离下方边界有一定的空隙覆盖了，
+                              table 有滚动条时 正常             
+*/
+.kt-table >>> .el-table__fixed{
+  bottom:0px !important; 
+  /* height: 100% !important; */
+}
+/* .kt-table >>> .el-table__fixed-body-wrapper{
+  height: 100% !important;
+} */
+
+</style>
+<style lang="scss" scoped>
+// .v-table {
+//   /deep/ .el-table__fixed-right {
+//   height: 100% !important; //设置高优先，以覆盖内联样式
+//   }
+// }
 </style>
 
 

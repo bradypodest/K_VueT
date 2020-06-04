@@ -106,7 +106,7 @@
               :tableData="[]"
               :columnsOptions="detailOptions.columnsOptions"
               :pagination="detailOptions.pagination"
-              
+              :maxHeight="detailOptions.maxHeight"
             
               :url="detailOptions.url"
               :defaultLoadPage="detailOptions.defaultLoadPage"
@@ -261,8 +261,10 @@ import request from '@/utils/request'
 //其中api是   this.table.url  (如"/SysRole/"")
 //增删改查导入导出等对应的action
 const _const = {
-  EDIT: "Update",// 主表 更新
-  ADD: "Add",  //主表 新增
+  //EDIT: "Update",// 主表 更新
+  EDIT: "UpdateT",// 主表 更新
+  //ADD: "Add",  //主表 新增
+    ADD: "AddT",  //主表 新增
   //VIEW: "view",
   VIEW: "GetOneByID",//主表 一行数据查询
   PAGE: "GetPageData",//主表 查询
@@ -627,6 +629,11 @@ var vueParam= {
           hidden:false,
           onClick() {
             //this.delRow();
+            //如果子表还在编辑中
+            if(this.$refs.detail.currentEditRow.rowIndex != -1){
+              this.$message.warning(this.detail.cnName+"表格正在编辑中，无法刷新!")
+              return;
+            }
           }
         }
       ],
@@ -639,6 +646,7 @@ var vueParam= {
         url: "", //从表加载数据的url
 
         pagination: { total: 0, size: 8, sortName: "" }, //从表分页配置数据
+        maxHeight:300,
 
         buttons:[],//按钮
         edit: true, //明细是否可以编辑
@@ -1068,18 +1076,31 @@ debugger
       }
 
       let formData = {
-        mainData: editFormData,
-        detailData: null,
-        delKeys: null
+        MainData: editFormData,
+        //DetailData: [{OrderID:this.editFormData["ID"],GoodsName:"测试api2",GoodsBatch:"20200603002",Qty:18,Weight:12.5,Remarks:"测试一波"},],
+        DetailData: null,
+        DelKeys: null
       };
 
       //获取明细数据(前台数据明细未做校验，待完.后台已经校验)
-      // if (this.hasDetail) {
-      //   formData.detailData = this.$refs.detail.rowData;
-      // }
-      // if (this.detailOptions.delKeys.length > 0) {
-      //   formData.delKeys = this.detailOptions.delKeys;
-      // }
+      if (this.hasDetail) {
+
+        //如果子表还在编辑中
+        if(this.$refs.detail.currentEditRow.rowIndex != -1){
+          this.$message.warning(this.detail.cnName+"还在编辑中，无法保存!")
+          return;
+        }
+
+        formData.DetailData = this.$refs.detail.rowData;
+        // formData.detailData = [];
+        // this.$refs.detail.rowData.forEach(x={
+          
+
+        // })
+      }
+      if (this.detailOptions.delKeys.length > 0) {
+        formData.DelKeys = this.detailOptions.delKeys;
+      }
       //保存前拦截
       if (this.currentAction == _const.ADD) {
         if (!this.addBefore(formData)) return;
@@ -1093,8 +1114,10 @@ debugger
       if(that.currentAction == _const.ADD || that.currentAction == _const.EDIT){
         return request({
           url: url,
+          //url: this.table.url+"UpdateExT",
           method: 'post',
-          data: editFormData
+          //data: editFormData
+            data: formData
         }).then(res=>{
           debugger
           if(res.success){
@@ -1200,6 +1223,13 @@ debugger
 
     },
     resetEdit() { //重置编辑的数据
+
+      //如果子表还在编辑中
+      if(this.$refs.detail.currentEditRow.rowIndex != -1){
+        this.$message.warning(this.detail.cnName+"还在编辑中，无法重置!")
+        return;
+      }
+
       let isEdit = this.currentAction != _const.ADD;
       let objKey = {};
       //编辑状态下,不需要重置主键,创建时间创建人    // 编辑下到底是恢复到原数据，还是信息数据都为空？待解决
@@ -1530,10 +1560,22 @@ debugger
         this.resetDetailTable();
     },
     addRow() {
+        //如果子表还在编辑中
+        if(this.$refs.detail.currentEditRow.rowIndex != -1){
+          this.$message.warning(this.detail.cnName+"表格正在编辑中，无法新增任何行!")
+          return;
+        }
+
         this.$refs.detail.addRow({});
         //  this.detailOptions.columns.push({});
     },
     delRow() {
+        //如果子表还在编辑中
+        if(this.$refs.detail.currentEditRow.rowIndex != -1){
+          this.$message.warning(this.detail.cnName+"表格正在编辑中，无法删除任何行!")
+          return;
+        }
+
         let rows = this.$refs.detail.getSelected();
         if (!rows || rows.length == 0) {
             return this.$message.error("请选择要删除的行!");
@@ -1541,22 +1583,23 @@ debugger
         if (!this.delDetailRow(rows)) {
             return false;
         }
-        this.$Modal.confirm({
-            title: "删除警告!",
-            content:
-                '<p style="color: red;font-weight: bold;letter-spacing: 3px;">确认要删除选择的数据吗?</p>',
-            onOk: () => {
-                rows = this.$refs.detail.delRow();
-                let key = this.detailOptions.key;
-                //记录删除的行数据
-                rows.forEach(x => {
-                    if (x.hasOwnProperty(key) && x[key]) {
-                        this.detailOptions.delKeys.push(x[key]);
-                    }
-                })
 
-            }
+        this.$confirm("是否删除表格选择的数据?点击[保存]之后，数据才会正式删除","删除提示",{
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        }).then(()=>{
+          rows = this.$refs.detail.delRow();
+          let key = this.detailOptions.key;
+
+          //记录删除的行数据
+          rows.forEach(x => {
+              if (x.hasOwnProperty(key) && x[key]) {
+                  this.detailOptions.delKeys.push(x[key]);
+              }
+          })
         });
+
     }
   //子表 相关方法 end
   },
