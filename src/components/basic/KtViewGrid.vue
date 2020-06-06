@@ -227,9 +227,9 @@
                 <i class="el-icon-search"></i> 查询
               </el-button>
               <!-- <Icon type="md-close-circle" color="color" size="20" /> -->
-              <el-button size="small" type="info" ghost @click="resetSearch">
+              <!-- <el-button size="small" type="info" ghost @click="resetSearch">
                 <i class="el-icon-refresh-right"></i>重置
-              </el-button>
+              </el-button> -->
               <el-button size="small" type="warning" ghost @click="searchDialogShow=!searchDialogShow">
                 <i class="el-icon-circle-close"></i>关闭
               </el-button>

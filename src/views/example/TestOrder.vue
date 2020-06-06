@@ -9,6 +9,8 @@
         :columnsOptions="columnsOptions"
         :editFormData="editFormData"
         :editFormOptions="editFormOptions"
+        :searchFormData="searchFormData"
+        :searchFormOptions="searchFormOptions"
 
         :detail=detail
       >
@@ -57,6 +59,8 @@ var vueParam = {
                       ]],
       editFormData:{"OrderNo":"","Qty":"","Status":"","Remakes":"","Creator":"","CreateTime":"","Modifier":"","ModifyTime":""},
                 
+      searchFormData: {"OrderNo":"","Qty":"","Remakes":"","Creator":"","CreateTime":"","ModifyTime":""},
+      searchFormOptions:[[{"title":"订单号","field":"OrderNo"},{"title":"数量","field":"Qty"},{"title":"备注","field":"Remakes"}],[{"title":"创建人","field":"Creator"},{"title":"创建时间","field":"CreateTime","type":"datetime"},{"title":"修改时间","field":"ModifyTime"}]],
       detail:{
         cnName:"订单明细",
         columnsOptions: [{field:'ID',title:'ID',type:'string',width:90,hidden:true,require:true,align:'left'},
