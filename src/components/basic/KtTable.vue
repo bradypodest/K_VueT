@@ -641,9 +641,10 @@ export default {
         pageSize: this.paginations.size,
         sort: this.paginations.sort,
         //order: this.paginations.order,
-        //wheres: [] //查询条件，格式为[{ name: "字段", value: "xx" }]
+        //wheres: [{name:"OrderNo",value:"DD202006",displayType:"like"}], //查询条件，格式为[{ name: "字段", value: "xx" }]
+        wheres: [], //查询条件，格式为[{ name: "字段", value: "xx" }]
         order: "",
-        wheres: "" //查询条件，格式为[{ name: "字段", value: "xx" }]
+        //wheres: "" //查询条件，格式为[{ name: "字段", value: "xx" }]
       };
       let status = true;
       debugger;

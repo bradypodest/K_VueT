@@ -214,8 +214,30 @@
       <!-- 主界面头 介绍 和 操作按钮 end-->
 
       <!-- 详细查询条件 start 最好做成下推的样式 -->
-      <div class="search-dialog">
-      </div>
+      <el-collapse-transition>
+        <div class="search-form" v-show="searchDialogShow">
+           <kt-form 
+             ref="searchForm"
+             :labelWidth="searchFormOptions.labelWidth"
+             :formOptions="searchFormOptions"
+             :formData="searchFormData"
+             >
+             <div class="form-closex" slot="footer">
+              <el-button size="small" type="primary" ghost @click="search">
+                <i class="el-icon-search"></i> 查询
+              </el-button>
+              <!-- <Icon type="md-close-circle" color="color" size="20" /> -->
+              <el-button size="small" type="info" ghost @click="resetSearch">
+                <i class="el-icon-refresh-right"></i>重置
+              </el-button>
+              <el-button size="small" type="warning" ghost @click="searchDialogShow=!searchDialogShow">
+                <i class="el-icon-circle-close"></i>关闭
+              </el-button>
+            </div>
+            </kt-form>
+        </div>
+      
+      </el-collapse-transition>
       <!-- 详细查询条件 end -->
 
       <!--body自定义组件-->
@@ -267,7 +289,8 @@ const _const = {
     ADD: "AddT",  //主表 新增
   //VIEW: "view",
   VIEW: "GetOneByID",//主表 一行数据查询
-  PAGE: "GetPageData",//主表 查询
+  //PAGE: "GetPageData",//主表 查询
+  PAGE: "GetPageDataT",//主表 查询
   DEL: "Delete",//主表 删除数据
   
   // AUDIT: "audit",
