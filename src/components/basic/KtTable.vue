@@ -647,18 +647,17 @@ export default {
         //wheres: "" //查询条件，格式为[{ name: "字段", value: "xx" }]
       };
       let status = true;
-      debugger;
       //合并查询信息(包查询分页、排序、查询条件等)
       if (query) {
         param = Object.assign(param, query);
       }
 
-      // loadBefore 插口代码 s
+      // loadBefore  父类方法传递的方法
       this.$emit("loadBefore", param, result => {
         status = result;
       });
       if (!status) return;
-      // loadBefore 插口代码 e
+      // loadBefore  
 
       //param.wheres instanceof Array 意思是 wheres 是否是数组
       if (param.wheres && param.wheres instanceof Array) {

@@ -13,16 +13,16 @@
     <el-row
       type="flex"
       class="row-bg"
-      justify="space-around"
+      justify=" space-between"
       v-for="(row,rindex) in formOptions"
       :key="rindex"
     >
-      <el-col v-for="(item,index) in row" :key="index">
+      <el-col :span="(item.colSize?item.colSize*2:24/span)"  v-for="(item,index) in row" :key="index">
         <el-form-item
           :prop="item.field"
           :label="item.title?(item.title+':'):''"
           :rules="getRule(item,formData)"
-        >
+         >
           <!--  v-if  只读文件-->
           <div v-if="isReadonlyImgFile(item,formData)">
             <!-- 文件图片 -->
@@ -114,7 +114,8 @@
                 v-else-if="item.type=='date'||item.type=='datetime'||item.columnType=='datetime'"
                >
                 <el-col :span="24">
-                    <el-date-picker 
+                  <!-- style="width:290px" -->
+                    <el-date-picker                    
                       :type="item.range?(item.type+'range'):item.type"
                       :format="item.type=='date'? 'yyyy-MM-dd':'yyyy-MM-dd HH:mm:ss'"
                       :placeholder="item.placeholder||item.title"
@@ -250,7 +251,7 @@ export default {
     formData:{
       type:Object,
       default:{}
-    }
+    },
   },
   data(){
     return{
@@ -914,3 +915,9 @@ export default {
   watch: {},
 }
 </script>
+<style lang="less" scoped>
+.row-bg  .el-date-editor{
+  width:100%;
+}
+</style>
+

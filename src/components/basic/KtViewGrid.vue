@@ -215,7 +215,7 @@
 
       <!-- 详细查询条件 start 最好做成下推的样式 -->
       <el-collapse-transition>
-        <div class="search-form" v-show="searchDialogShow">
+        <div class="search-form" v-show="searchFormShow">
            <kt-form 
              ref="searchForm"
              :labelWidth="searchFormOptions.labelWidth"
@@ -230,7 +230,7 @@
               <!-- <el-button size="small" type="info" ghost @click="resetSearch">
                 <i class="el-icon-refresh-right"></i>重置
               </el-button> -->
-              <el-button size="small" type="warning" ghost @click="searchDialogShow=!searchDialogShow">
+              <el-button size="small" type="warning" ghost @click="searchFormShow=!searchFormShow">
                 <i class="el-icon-circle-close"></i>关闭
               </el-button>
             </div>
@@ -553,7 +553,8 @@ var vueParam= {
     //表结构 弹出框 end
 
     //主 按钮组 start
-      searchDialogShow: false, //高级查询(界面查询后的下拉框点击触发)
+      searchFormShow: false, //高级查询(界面查询后的下拉框点击触发)
+
       maxBtnLength:3,//按钮显示最大个数，其他的都放在 “更多”下拉框中
 
       splitButtons: [],//在buttons的基础上拆分出来显示的按钮
@@ -1371,12 +1372,14 @@ debugger
       if (searchIndex != -1) {
         //splice() 方法向/从数组中添加/删除项目，然后返回被删除的项目
         this.buttons.splice(searchIndex + 1, 0, {
-          icon: 'el-icon-arrow-down',
+          //icon:this.searchFormShowButtonIcon,
+          icon:'el-icon-arrow-down',
+          //icon: !this.searchFormShow? 'el-icon-arrow-down' : 'el-icon-arrow-up',
           class: 'r-dropdown',
           name: "",
           type: this.buttons[searchIndex].type,
           onClick: () => {
-            this.searchDialogShow = !this.searchDialogShow;
+            this.searchFormShow = !this.searchFormShow;
           }
         });
       }
@@ -1434,12 +1437,59 @@ debugger
 
   //主table 相关 start
     loadTableBefore(param, callBack) {//查询前设置查询条件及分页信息
-      //let query = this.getSearchParameters();//获取查询参数
-      // if (query) {
-      //   param = Object.assign(param, query);
-      // }
+      let query = this.getSearchParameters();//获取查询参数
+      if (query) {
+        param = Object.assign(param, query);
+      }
       let status = this.searchBefore(param);//插口
       callBack(status);
+    },
+    getSearchParameters(){
+       let query = { wheres: [] };
+
+       for (const key in this.searchFormData) {
+        let value = this.searchFormData[key];
+        if (this.emptyValue(value)) continue;
+        if (typeof value == 'number') {
+          value = value + '';
+        }
+        let displayType = this.getSearchItem(key);
+        if (typeof value == "string" || ["date", "datetime"].indexOf(displayType) == -1) {
+          query.wheres.push({
+            name: key,
+            value: typeof value == "string" || !value ? value : value.join(','),
+            displayType: displayType
+          });
+          continue;
+        }
+        for (let index = 0; index < value.length; index++) {//时间类型
+          query.wheres.push({
+            name: key,
+            value: value[index],
+            displayType: (() => {
+              if (["date", "datetime"].indexOf(displayType) != -1) {
+                return index ? "lessorequal" : "thanorequal";
+              }
+              return displayType;
+            })()
+          });
+        }
+      }
+      return query;
+    },
+    emptyValue(value) {
+      return (value === null || value === undefined || value === "");
+    },
+    getSearchItem(field) {//获取查询的参数
+      let data;
+      for (let index = 0; index < this.searchFormOptions.length; index++) {
+        if (data) return data.type;
+        const item = this.searchFormOptions[index];
+        data = item.find(x => {
+          return x.field == field;
+        });
+      }
+      return data.type;
     },
     loadTableAfter(data, callBack) {//查询后
       let status = this.searchAfter(data);//插口
