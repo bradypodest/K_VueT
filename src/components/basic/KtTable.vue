@@ -344,7 +344,9 @@ export default {
         
       },
       isShowEditButton: true,
-      realMaxHeight:null
+      realMaxHeight:null,
+
+      isSearchResetPageSize:true,//重置是否重置 页size
     }
   },
   methods:{
@@ -699,7 +701,11 @@ debugger
     },
     //重置查询分页 参数
     resetPage() {
-      this.paginations.size = this.GLOBAL.paginations.pageSizes[0];
+      if(this.isSearchResetPageSize)
+      {//第一次进入需要重置分页
+        this.paginations.size = this.GLOBAL.paginations.pageSizes[0];
+      }
+      
       this.paginations.page = 1;
     },
 
@@ -723,6 +729,7 @@ debugger
       // }
       //定义了最大高度使用最大高度
       if (this.maxHeight) {
+        debugger;
         return this.maxHeight;
       }
       //不使用最大高度

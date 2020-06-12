@@ -1,4 +1,4 @@
-/// 测试ktviewtable组件页面 的  扩展js ,里面可以更改原ktviewgrid的扩展组件
+/// 测试kteviewtable组件页面 的  扩展js ,里面可以更改原kteviewgrid的扩展组件
 /// 还可以 添加主，弹出框 按钮，添加方法或重写 ktviewgrid组件中的方法 
 /// Karl 
 /// 20200520 
@@ -47,7 +47,7 @@ let extension = {
     //  </Alert>' },
     //   modelFooter:"", //() => import("./SellOrderComponents/ModelFooter.vue"),
   },
-  text: "ktViewGrid范例",
+  text: "testOrder范例",
   buttons: { //根据需要自行实现扩展按钮
       //注：没有编辑或新建权限的情况下，是不会显示此处添加的扩展按钮，如果仍需要显示此处的按钮，可以把按钮在methods的onInited方法中添加,如：this.boxButtons.push(...)
       view: [//ViewGrid查询界面按钮
@@ -89,18 +89,25 @@ let extension = {
                   }
               }],
       detail: //新建、编辑弹出框明细表table表按钮
-          [//ViewGrid查询界面按钮
-              {
-                  name: "点我2",
-                  icon: 'md-create',
-                  value: 'Edit',
-                  class: '',
-                  type: 'success',
-                  index: 1,//显示的位置
-                  onClick: function () {
-                      this.$message.error("扩展的明细table按钮,可设置index值指定显示位置");
-                  }
-              }]
+            [
+                {
+                    tableName:"TestOrderDetail",
+                    btns:[ //ViewGrid查询界面按钮
+                        {
+                            name: "点我2",
+                            icon: 'md-create',
+                            value: 'Edit',
+                            class: '',
+                            type: 'success',
+                            index: 1,//显示的位置
+                            onClick: function () {
+                                this.$message.error("扩展的明细table按钮,可设置index值指定显示位置");
+                            }
+                        }
+                    ]
+                }, 
+                
+            ]
   },//扩展的按钮
   methods: {
     //扩展方法使用示例,根据需要实行下面的方法
@@ -257,23 +264,23 @@ let extension = {
       },
       resetAddFormAfter() { //重置新建表单后的内容
           //如果某些字段不需要重置，则可以重新赋值
-          this.editFormFileds.Remark = '新建重置默认值66666';
+          //this.editFormFileds.Remark = '新建重置默认值66666';
           //给明细表添加默认一行
-          this.$refs.detail.rowData.push({ Remark: "新建666666" });
+          //this.$refs.detail.rowData.push({ Remark: "新建666666" });
           return true;
       },
       resetUpdateFormBefore() { //重置编辑表单前的内容
           //this.editFormFileds当前值
-          console.log(this.editFormFileds)
+          //console.log(this.editFormFileds)
           //当前明细表的行
-          console.log(this.$refs.detail.rowData)
+          //console.log(this.$refs.detail.rowData)
           return true;
       },
       resetUpdateFormAfter() { //重置编辑表单后的内容
           //如果某些字段不需要重置，则可以重新赋值
-          this.editFormFileds.Remark = '编辑重置默认值66666';
+          //this.editFormFileds.Remark = '编辑重置默认值66666';
           //给明细表添加默认一行
-          this.$refs.detail.rowData.push({ Remark: "编辑666666" });
+          //this.$refs.detail.rowData.push({ Remark: "编辑666666" });
           return true;
       },
       importAfter(data) { //导入excel后刷新table表格数据

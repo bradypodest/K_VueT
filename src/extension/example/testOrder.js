@@ -146,7 +146,7 @@ let extension = {
           //动态设置弹出框table的高度
           //this.detailOptions.height = 160;
           //动态设置查询界面table高度
-          this.tableMaxHeight = 400;
+          //this.tableMaxHeight = 400;
           //this.$Notice.success({ title: 'create方法执行时,你可以此处编写业务逻辑' });
           this.$message.success("create方法执行时,你可以此处编写业务逻辑")
         },

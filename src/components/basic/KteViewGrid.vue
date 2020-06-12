@@ -66,60 +66,69 @@
           <modelBody class="model-body" ref="modelBody" @parentCall="parentCall"></modelBody>
 
           <!-- 子表 start -->
-          <div v-if="detail.columnsOptions&&detail.columnsOptions.length>0" class="grid-detail table-item item">
-            <!-- 工具栏  start-->
-            <div class="toolbar">
-              <div class="title form-text">
-                <span>
-                  <i class="el-icon-s-grid" />
-                  {{detail.cnName}}
-                </span>
-              </div>
-              <!--明细表格按钮-->
-              <div class="btns">
-                <el-button
-                  v-for="(btn,bIndex) in detailOptions.buttons"
-                  :key="bIndex"
-                  v-show="!btn.hasOwnProperty('hidden')||!btn.hidden"
-                  @click="onClick(btn.onClick)"
-                  :type="btn.type"
-                  ghost
-                  :icon="btn.icon"
-                  size="small"
-                >{{btn.name}}</el-button>
-              </div>
-            </div>
-            <!-- 工具栏 end-->
-            <!-- 子表表格 start -->
-            <!-- :maxHeight="tableMaxHeight" -->
-            <!-- :beginEdit="detailOptions.beginEdit"
-                :endEditBefore="detailOptions.endEditBefore"
-                :endEditAfter="detailOptions.endEditAfter" -->
-            <kt-table
-             ref="detail"
+          <div v-if="details&&details.length>0&&details[0].columnsOptions&&details[0].columnsOptions.length>0" class="grid-detail table-item item">
+             <el-tabs v-model="activeDetailName" type="card" @tab-click="handleDetailClick">
+              <el-tab-pane
+                v-for="(detail,dIndex) in detailsOptions"
+                :key="dIndex"
+                :label="detail.cnName"
+                :name="detail.tableName"
+               >
+                <span slot="label"><i lass="el-icon-s-grid"></i>{{detail.cnName}}</span>
+                <!-- 工具栏  start-->
+                  <div class="toolbar">
+                    <!-- <div class="title form-text">
+                      <span>
+                        <i class="el-icon-s-grid" />
+                        {{detail.cnName}}
+                      </span>
+                    </div> -->
+                    <!--明细表格按钮-->
+                    <div class="btns">
+                      <el-button
+                        v-for="(btn,bIndex) in detailsOptions.filter(x=>{return x.tableName==detail.tableName})[0].buttons   "
+                        :key="bIndex"
+                        v-show="!btn.hasOwnProperty('hidden')||!btn.hidden"
+                        @click="onClick(btn.onClick)"
+                        :type="btn.type"
+                        ghost
+                        :icon="btn.icon"
+                        size="small"
+                      >{{btn.name}}</el-button>
+                    </div>
+                  </div>
+                <!-- 工具栏 end-->
+                <!-- 子表表格 start -->
+                  <!-- :maxHeight="tableMaxHeight" -->
+                  <!-- :beginEdit="detailOptions.beginEdit"
+                      :endEditBefore="detailOptions.endEditBefore"
+                      :endEditAfter="detailOptions.endEditAfter" -->
+                  <kt-table
+                    :ref="detail.tableName"
+                    :single="detail.single"
+                    @loadBefore="loadInternalDetailTableBefore"
+                    @loadAfter="loadDetailTableAfter"
+                    @rowChange="detailRowOnChange"
 
-              :single="detailOptions.single"
-              @loadBefore="loadInternalDetailTableBefore"
-              @loadAfter="loadDetailTableAfter"
-              @rowChange="detailRowOnChange"
+                    :tableData="[]"
+                    :columnsOptions="detail.columnsOptions"
+                    :pagination="detail.pagination"
+                    :maxHeight="detail.maxHeight"
+                  
+                    :url="detail.url"
+                    :defaultLoadPage="detail.defaultLoadPage"
+                    
+                    :summaryData="detail.summaryData"
 
-              :tableData="[]"
-              :columnsOptions="detailOptions.columnsOptions"
-              :pagination="detailOptions.pagination"
-              :maxHeight="detailOptions.maxHeight"
-            
-              :url="detailOptions.url"
-              :defaultLoadPage="detailOptions.defaultLoadPage"
-              
-              :summaryData="detailOptions.summaryData"
+                    :beginEdit="detail.beginEdit"
+                    :endEditBefore="detail.endEditBefore"
+                    :endEditAfter="detail.endEditAfter"
+                  >
+                  </kt-table>
+                <!-- 子表表格 end -->
 
-              :beginEdit="detailOptions.beginEdit"
-              :endEditBefore="detailOptions.endEditBefore"
-              :endEditAfter="detailOptions.endEditAfter"
-             >
-            </kt-table>
-
-            <!-- 子表表格 end -->
+              </el-tab-pane>
+            </el-tabs>
           </div>
           <!-- 字表  end-->
           <!--明细footer自定义组件-->
@@ -293,6 +302,7 @@ const _const = {
   PAGE: "GetPageDataT",//主表 查询
   DEL: "Delete",//主表 删除数据
   
+  DETAIL:"GetDetailPageData",
   // AUDIT: "audit",
   // EXPORT: "Export", //导出操作返回加密后的路径
   // DOWNLOAD: "DownLoadFile", //导出文件
@@ -436,16 +446,10 @@ var vueParam= {
     },
 
 
-    detail: {//从表明细配置   可参考 kttable组件的参数
-      type: Object,
+    details: {//从表明细配置   多个子
+      type: Array,
       default: () => {
-        return {
-          key:"ID",
-          cnName:"",//详细表的介绍
-          url:"",//获取数据url  如：  /SysRole/GetDetailPageData    如果没有填写的话则是 当前 的   this.table.url+"GetDetailPageData"
-          columnsOptions: [],//从表列 配置
-          sortName: ""//从表排序字段
-        };
+        return [];
       }
     },
   },
@@ -662,37 +666,43 @@ var vueParam= {
         }
       ],
 
-      detailOptions:{
-        cnName:"",//从表名称
-        key:"",//从表主键名
-        data:[],//数据
-        columnsOptions:[],//列信息
-        url: "", //从表加载数据的url
+      detailsOptions:[],
+            /*
+              [
+                {
+                  cnName:"",//从表名称
+                  key:"",//从表主键名
+                  data:[],//数据
+                  columnsOptions:[],//列信息
+                  url: "", //从表加载数据的url
 
-        pagination: { total: 0, size: 8, sortName: "" }, //从表分页配置数据
-        maxHeight:300,
+                  pagination: { total: 0, size: 8, sortName: "" }, //从表分页配置数据
+                  maxHeight:300, //最好几个子表都一样
 
-        buttons:[],//按钮
-        edit: true, //明细是否可以编辑
-        single: false, //明细表是否单选
-        load: true,
+                  buttons:[],//按钮
+                  edit: true, //明细是否可以编辑
+                  single: false, //明细表是否单选
+                  load: true,
 
-        defaultLoadPage:true,//是否一进table页面就加载数据
-        delKeys: [], //当编辑时删除当前明细的行主键值
-        currentReadonly: false, //当前用户没有编辑或新建权限时，表单只读(可用于判断用户是否有编辑或新建权限)
-        //开启编辑时
-        beginEdit: (row, column, index) => {
-          return true;
-        },
-        //结束编辑前
-        endEditBefore: (row, column, index) => {
-          return true;
-        },
-        //结束编辑后
-        endEditAfter: (row, column, index) => {
-          return true;
-        }
-      }
+                  defaultLoadPage:true,//是否一进table页面就加载数据
+                  delKeys: [], //当编辑时删除当前明细的行主键值
+                  currentReadonly: false, //当前用户没有编辑或新建权限时，表单只读(可用于判断用户是否有编辑或新建权限)
+                  //开启编辑时
+                  beginEdit: (row, column, index) => {
+                    return true;
+                  },
+                  //结束编辑前
+                  endEditBefore: (row, column, index) => {
+                    return true;
+                  },
+                  //结束编辑后
+                  endEditAfter: (row, column, index) => {
+                    return true;
+                  }
+                }
+              ]
+            */
+      activeDetailName:"",
     //弹出框 的 子表 end
     }
   },
@@ -1031,7 +1041,7 @@ var vueParam= {
       if (rows.length == 0) {
         return this.$message.error("请选择要编辑的行!");
       }
-debugger
+
       this.currentAction = _const.EDIT;
       //记录当前编辑的行
       this.currentRow = rows[0];
@@ -1288,25 +1298,66 @@ debugger
       this.splitButtons = this.getSplitButtons(); //拆分按钮  //生成ViewGrid界面的操作按钮及更多选项
 
       //子表数据
-      if( this.detail.columnsOptions && this.detail.columnsOptions.length>0){
-          this.initDetailButtons();//子表按钮
-          this.initDetailParam();//子表参数
+      if(this.details&&this.details.length>0){
+        this.activeDetailName=this.details[0].tableName;
+        this.details.forEach(item => {
+          this.addDetailToDetailsOptions(item);//初始化 data数据的 detailsOptions 参数
+          this.initDetailButtons(item);//子表按钮
+          //this.initDetailParam(item);//子表参数
+        });
 
-          this.hasDetail=true;
+        this.hasDetail=true;
       }
     
       this.initDialogHeightWidth();//初始化弹出框高宽
 
     },
-    initDetailParam(){
-      this.detailOptions.columnsOptions = this.detail.columnsOptions;
-      this.detailOptions.pagination.sortName =  this.detail.sortName;;
-      this.detailOptions.pagination.size=this.GLOBAL.paginations[0];
+    addDetailToDetailsOptions(detail){//添加数据到  data数据的 detailsOptions 参数中
+      this.detailsOptions.push(
+                                {
+                                  tableName:detail.tableName,
+                                  cnName:detail.cnName,//从表名称
+                                  key:detail.key,//从表主键名
+                                  //data:[],//数据
+                                  columnsOptions:detail.columnsOptions,//列信息
+                                  url: "/"+detail.tableName+"/"+_const.PAGE, //从表加载数据的url :根据 从表名来生成url
 
-      this.detailOptions.cnName = this.detail.cnName;
-      this.detailOptions.key = this.detail.key;
-      this.detailOptions.url = this.detail.url?this.detail.url: this.getUrl("GetDetailPageData");
+                                  pagination: { total: 0, size: 8, sortName: "" }, //从表分页配置数据
+                                  maxHeight:300, //最好几个子表都一样
+
+                                  buttons:[],//按钮
+                                  edit: true, //明细是否可以编辑
+                                  single: false, //明细表是否单选
+                                  load: true,
+
+                                  defaultLoadPage:true,//是否一进table页面就加载数据
+                                  delKeys: [], //当编辑时删除当前明细的行主键值
+                                  currentReadonly: false, //当前用户没有编辑或新建权限时，表单只读(可用于判断用户是否有编辑或新建权限)
+                                  //开启编辑时
+                                  beginEdit: (row, column, index) => {
+                                    return true;
+                                  },
+                                  //结束编辑前
+                                  endEditBefore: (row, column, index) => {
+                                    return true;
+                                  },
+                                  //结束编辑后
+                                  endEditAfter: (row, column, index) => {
+                                    return true;
+                                  }
+                                }
+      );
     },
+
+    // initDetailParam(){
+    //   this.detailOptions.columnsOptions = this.detail.columnsOptions;
+    //   this.detailOptions.pagination.sortName =  this.detail.sortName;;
+    //   this.detailOptions.pagination.size=this.GLOBAL.paginations[0];
+
+    //   this.detailOptions.cnName = this.detail.cnName;
+    //   this.detailOptions.key = this.detail.key;
+    //   this.detailOptions.url = this.detail.url?this.detail.url: this.getUrl("GetDetailPageData");
+    // },
     getUrl(action) {//是否忽略前缀/  获取操作的url
       return  this.table.url + action;
       //return "/SysRole/" + "Add"
@@ -1346,18 +1397,27 @@ debugger
 
 
     },
-    initDetailButtons(){//初始化详细表按钮 
+    initDetailButtons(detail){//初始化详细表按钮 
+      var tableNameBtns=this.extend.buttons.detail.filter(x=>{return x.tableName==detail.tableName});
+      var btns=[];
+      if(tableNameBtns)
+      {
+        btns=tableNameBtns[0].btns;
+      }
+
       //初始化新增，编辑按钮
-      if(this.extend.buttons.detail){
-        this.detailOptions.buttons=this.extendBtn(this.detailButtonsDefault,this.extend.buttons.detail);
+      if(btns&&btns.length>0){
+        this.detailsOptions.filter(x=>{return x.tableName==detail.tableName})[0].buttons=this.extendBtn(this.detailButtonsDefault,btns);
+
+        //this.detailOptions.buttons=this.extendBtn(this.detailButtonsDefault,this.extend.buttons.detail);
       }else{
-         this.detailOptions.buttons=this.detailButtonsDefault;
+         this.detailsOptions.filter(x=>{return x.tableName==detail.tableName})[0].buttons==this.detailButtonsDefault;
       }
       //判断当前操作，如是新增操作，则无 刷新按钮
       if(this.currentAction==_const.ADD){
-        for(var i=0;i<this.detailOptions.buttons.length;i++){
-          if(this.detailOptions.buttons[i].name=="刷新"){
-            this.detailOptions.buttons[i].hidden=true;
+        for(var i=0;i<this.detailsOptions.filter(x=>{return x.tableName==detail.tableName})[0].buttons.length;i++){
+          if(this.detailsOptions.filter(x=>{return x.tableName==detail.tableName})[0].buttons[i].name=="刷新"){
+            this.detailsOptions.filter(x=>{return x.tableName==detail.tableName})[0].buttons[i].hidden=true;
           }
         }
       }
@@ -1582,6 +1642,9 @@ debugger
   //插口方法 end
 
   //子表 相关方法 start
+    handleDetailClick(tab, event){
+        console.log(tab, event);
+    },
      //查询从表前先做内部处理
     loadInternalDetailTableBefore(param, callBack) {//加载明细表数据之前,需要设定查询的主表的ID
         //每次只要加载明细表格数据就重置删除明细的值
@@ -1628,7 +1691,7 @@ debugger
             this.$refs.detail.load(query,true);
         }
     },
-    //从后面加载从表数据
+    //重置加载从表数据
     refreshRow() {
         this.resetDetailTable();
     },
