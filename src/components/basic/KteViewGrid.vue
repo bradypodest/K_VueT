@@ -658,7 +658,7 @@ var vueParam= {
           onClick() {
             //this.delRow();
             //如果子表还在编辑中
-            if(this.$refs.detail.currentEditRow.rowIndex != -1){
+            if(this.$refs[this.activeDetailName][0].currentEditRow.rowIndex != -1){
               this.$message.warning(this.detail.cnName+"表格正在编辑中，无法刷新!")
               return;
             }
@@ -1120,7 +1120,7 @@ var vueParam= {
       if (this.hasDetail) {
 
         //如果子表还在编辑中
-        if(this.$refs.detail.currentEditRow.rowIndex != -1){
+        if(this.$refs[this.activeDetailName][0].currentEditRow.rowIndex != -1){
           this.$message.warning(this.detail.cnName+"还在编辑中，无法保存!")
           return;
         }
@@ -1259,7 +1259,7 @@ var vueParam= {
     resetEdit() { //重置编辑的数据
 
       //如果子表还在编辑中
-      if(this.$refs.detail.currentEditRow.rowIndex != -1){
+      if(this.$refs[this.activeDetailName][0].currentEditRow.rowIndex != -1){
         this.$message.warning(this.detail.cnName+"还在编辑中，无法重置!")
         return;
       }
@@ -1459,7 +1459,7 @@ var vueParam= {
       clientHeight = clientHeight < 350 ? 350 : clientHeight;
 
       //有子表的页面加大默认高度
-      if(this.detail.columnsOptions && this.detail.columnsOptions.length>0){
+      if(this.details && this.details.length>0 && this.details[0].columnsOptions&& this.details[0].columnsOptions.length>0){
          this.dialogOptions.height=760;
       }
 
@@ -1648,9 +1648,14 @@ var vueParam= {
      //查询从表前先做内部处理
     loadInternalDetailTableBefore(param, callBack) {//加载明细表数据之前,需要设定查询的主表的ID
         //每次只要加载明细表格数据就重置删除明细的值
-        if (this.detailOptions.delKeys.length > 0) {
-            this.detailOptions.delKeys = [];
-        }
+        this.detailsOptions.forEach(item => {
+
+            if(item.tableName==this.activeDetailName)
+              item.delKeys=[];
+        });
+
+        console.log("详细相关参数："+this.detailsOptions);
+
         let key = this.table.key;
         if (this.currentRow && this.currentRow.hasOwnProperty(key)) {
             param.value = this.currentRow[key];//将主表的ID  赋值给查询参数
@@ -1681,14 +1686,36 @@ var vueParam= {
         // if (!this.detailOptions.columnsOptions || this.detailOptions.columnsOptions.length == 0) {
         //     return;
         // }
-        if(!this.hasDetail) return;
+        if(!this.hasDetail) return;//这里不知道需不需要修改
 
         let key = this.table.key;
         let query = { value: row ? row[key] : this.currentRow[key] }
-        if (this.$refs.detail) {
-            this.$refs.detail.reset();
+ 
+
+        //检测dateilsoptions 里面是否有 新增的数据 ， 删除的数据
+        var hasDelOrDelDetail= this.detailsOptions.filter((x)=>{
+          var hasAdd=false; 
+          if(this.$refs[x.tableName]&&this.$refs[x.tableName][0].rowData.length>0){
+            this.$refs[x.tableName][0].rowData.forEach(item => {
+              if(item[x.key]){
+                debugger
+                hasAdd=true;
+              }
+            });
+          }
+
+          return x.delKeys&&x.delKeys.length>0&&hasAdd;
+        })[0];
+        debugger;
+        if(hasDelOrDelDetail){
+          this.$message.warning("检测到有新增和删除的数据")
+          //return;
+        }
+
+        if (this.$refs[this.activeDetailName][0]) {
+            this.$refs[this.activeDetailName][0].reset();
             debugger
-            this.$refs.detail.load(query,true);
+            this.$refs[this.activeDetailName][0].load(query,true);
         }
     },
     //重置加载从表数据
@@ -1696,27 +1723,39 @@ var vueParam= {
         this.resetDetailTable();
     },
     addRow() {
+
+      debugger
         //如果子表还在编辑中
-        if(this.$refs.detail.currentEditRow.rowIndex != -1){
-          this.$message.warning(this.detail.cnName+"表格正在编辑中，无法新增任何行!")
+        if(this.$refs[this.activeDetailName][0].currentEditRow.rowIndex != -1){
+          
+
+          this.$message.warning(this.findActiveDetail().cnName+"表格正在编辑中，无法新增任何行!")
           return;
         }
 
-        this.$refs.detail.addRow({});
+        this.$refs[this.activeDetailName][0].addRow({});
         //  this.detailOptions.columns.push({});
     },
+    findActiveDetail(){//找到对应的详细表的数据
+      var detail= this.detailsOptions.filter((x)=>{
+        return x.tableName==this.activeDetailName;
+      })[0];
+      debugger;
+      return detail;
+    },
+
     delRow() {
         //如果子表还在编辑中
-        if(this.$refs.detail.currentEditRow.rowIndex != -1){
-          this.$message.warning(this.detail.cnName+"表格正在编辑中，无法删除任何行!")
+        if(this.$refs[this.activeDetailName][0].currentEditRow.rowIndex != -1){
+          this.$message.warning(this.findActiveDetail().cnName+"表格正在编辑中，无法删除任何行!")
           return;
         }
 
-        let rows = this.$refs.detail.getSelected();
+        let rows = this.$refs[this.activeDetailName][0].getSelected();
         if (!rows || rows.length == 0) {
             return this.$message.error("请选择要删除的行!");
         }
-        if (!this.delDetailRow(rows)) {
+        if (!this.delDetailRow(rows)) {//插口方法
             return false;
         }
 
@@ -1725,13 +1764,13 @@ var vueParam= {
           cancelButtonText: "取消",
           type: "warning"
         }).then(()=>{
-          rows = this.$refs.detail.delRow();
-          let key = this.detailOptions.key;
+          rows = this.$refs[this.activeDetailName][0].delRow();
+          let key = this.findActiveDetail().key;
 
           //记录删除的行数据
           rows.forEach(x => {
               if (x.hasOwnProperty(key) && x[key]) {
-                  this.detailOptions.delKeys.push(x[key]);
+                  this.findActiveDetail().delKeys.push(x[key]);
               }
           })
         });

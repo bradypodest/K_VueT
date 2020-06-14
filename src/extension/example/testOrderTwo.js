@@ -180,11 +180,11 @@ let extension = {
       },
       searchAfter(result) { //查询ViewGird表数据后param查询参数,result回返查询的结果
           //this.$message.success( title: this.table.cnName + ',查询结果', desc: '返回的对象：' + JSON.stringify(result) });
-          this.$notify({
-            title: this.table.cnName + ',查询结果',
-            message: '返回的对象：' + JSON.stringify(result),
-            type: 'success'
-          });
+        //   this.$notify({
+        //     title: this.table.cnName + ',查询结果',
+        //     message: '返回的对象：' + JSON.stringify(result),
+        //     type: 'success'
+        //   });
           return true;
       },
       searchDetailBefore(param) {//查询从表表数据前,param查询参数

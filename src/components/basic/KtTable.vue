@@ -654,6 +654,7 @@ export default {
         param = Object.assign(param, query);
       }
 
+debugger
       // loadBefore  父类方法传递的方法
       this.$emit("loadBefore", param, result => {
         status = result;
