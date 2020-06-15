@@ -39,6 +39,7 @@ var vueParam = {
       //注意：hidden:true必须要有，不然表结构 改变选择时容易出现bug
       columnsOptions: [{field:'ID',title:'ID',type:'string',width:90,hidden:true,readonly:true,require:true,align:'left'},
                 {field:'OrderNo',title:'订单号',type:'string',width:90,require:true,align:'center',sortable:true,hidden:false},
+                {field:'OrderDescribe',title:'订单描述',type:'string',width:90,require:true,align:'center',sortable:true,hidden:false},
                 {field:'Qty',title:'订单数量',type:'number',link:true,width:150,require:true,hidden:false},
                 {field:'Remakes',title:'备注',type:'string',width:200,require:true,align:'left',hidden:false},
                 {field:'Status',title:'状态',type:'string',width:90,require:true,hidden:false},//switch 还不能使用，等待字典
@@ -50,14 +51,14 @@ var vueParam = {
       editFormOptions:[[{"title":"订单号","required":true,"field":"OrderNo","type":"string","valueUrl":"/TestOrder/GetOneOrderNo"},
                         {"title":"订单数量","required":true,"field":"Qty",type:'number'},
                         ],
-                        [{"title":"状态","field":"Status",type:'switch'}],
+                        [{"title":"订单描述","required":true,"field":"OrderDescribe","type":"string"},{"title":"状态","field":"Status",type:'switch'}],
                       [{"title":"备注","field":"Remakes", "colSize":8,"type":"textarea"}],
                       [{"title":"创建人","field":"Creator","disabled":true},
                         {"title":"创建时间","field":"CreateTime","disabled":true,type:"datetime"}],//是时间类型的要填写，否则按普通的处理
                       [ {"title":"修改者","field":"Modifier","disabled":true}, 
                         {"title":"修改时间","field":"ModifyTime","disabled":true,type:"datetime"}
                       ]],
-      editFormData:{"OrderNo":"","Qty":"","Status":"","Remakes":"","Creator":"","CreateTime":"","Modifier":"","ModifyTime":""},
+      editFormData:{"OrderNo":"","Qty":"","OrderDescribe":"","Status":"","Remakes":"","Creator":"","CreateTime":"","Modifier":"","ModifyTime":""},
                 // {"title":"创建人","field":"Creator"},
       searchFormData: {"OrderNo":"","Qty":"","Remakes":"","Creator":"","CreateTime":"","ModifyTime":""},
       searchFormOptions:[[{"title":"订单号","field":"OrderNo","type":"like"},{"title":"数量","field":"Qty"},{"title":"备注","field":"Remakes"}],
@@ -83,7 +84,28 @@ var vueParam = {
                         ],
           sortName: "CreateTime",
           key:"ID"
-        }     
+        },
+        {
+          tableName:"TestOrderDetailTwo",
+          cnName:"订单明细Two",
+          columnsOptions: [{field:'ID',title:'ID',type:'string',width:90,hidden:true,require:true,align:'left'},
+                        {field:'OrderID',title:'订单Id',type:'string',width:90,hidden:true,readonly:true,require:true,align:'left',fixed:'left'},
+                        {field:'GoodsName',title:'商品名称',type:'string',width:150,edit:{type:'text'},require:true,align:'left',sortable:true,fixed:'left'},
+                        {field:'GoodsCode',title:'商品编码',type:'string',width:150,edit:{type:'text'},require:true,align:'left'},
+                        {field:'GoodsBatch',title:'商品批次',type:'string',width:100,edit:{type:'text'},require:true,align:'left'},
+                        {field:'Qty',title:'数量',type:'int',width:90,edit:{type:'number'},require:true,align:'left'},
+                        {field:'Weight',title:'重量',type:'decimal',width:90,edit:{type:'decimal'},align:'left'},
+                        {field:'Remarks',title:'备注',type:'string',width:120,edit:{type:'text'},align:'left'},
+                        {field:'CreateID',title:'CreateID',type:'int',width:80,hidden:true,align:'left'},
+                        {field:'Creator',title:'创建人',type:'string',width:130,align:'left'},
+                        //{field:'CreateTime',title:'创建时间',type:'datetime',width:90,align:'left',sortable:true},
+                        {field:'ModifyID',title:'ModifyID',type:'int',width:80,hidden:true,align:'left'},
+                        {field:'Modifier',title:'修改人',type:'string',width:100,align:'left'},
+                        //{field:'ModifyTime',title:'修改时间',type:'datetime',width:90,align:'left',sortable:true}
+                        ],
+          sortName: "CreateTime",
+          key:"ID"
+        }        
       ]  
     }
     

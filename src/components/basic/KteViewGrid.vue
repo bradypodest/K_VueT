@@ -293,9 +293,9 @@ import request from '@/utils/request'
 //增删改查导入导出等对应的action
 const _const = {
   //EDIT: "Update",// 主表 更新
-  EDIT: "UpdateT",// 主表 更新
+  EDIT: "UpdateTE",// 主表 更新
   //ADD: "Add",  //主表 新增
-    ADD: "AddT",  //主表 新增
+    ADD: "AddTE",  //主表 新增
   //VIEW: "view",
   VIEW: "GetOneByID",//主表 一行数据查询
   //PAGE: "GetPageData",//主表 查询
@@ -661,6 +661,8 @@ var vueParam= {
             if(this.$refs[this.activeDetailName][0].currentEditRow.rowIndex != -1){
               this.$message.warning(this.detail.cnName+"表格正在编辑中，无法刷新!")
               return;
+            }else{
+              this.refreshActiveRow();
             }
           }
         }
@@ -802,9 +804,21 @@ var vueParam= {
       this.currentRow = {};
       this.initDialog();
       if (this.hasDetail) {
-        this.$refs.detail &&
+
+        this.$nextTick(()=>{
+                       this.detailsOptions.forEach( detail => {
+                         if(this.$refs[detail.tableName]&&this.$refs[detail.tableName][0]){
+                            this.$refs[detail.tableName][0].reset();
+                            //this.$refs[detail.tableName][0].load(query,true);
+                         }
+                       });
+                      });
+
+        this.activeDetailName=this.detailsOptions[0].tableName;
+
+        //this.$refs.detail &&
           //  this.$refs.detail.rowData &&
-          this.$refs.detail.reset();
+          //this.$refs.detail.reset();
       }
       let obj = {};
       //如果有switch标签，默认都设置为是
@@ -832,6 +846,25 @@ var vueParam= {
           this.dialogInit = true;
           this.dialogModel = true;
           // this.detailUrl = this.url;
+        }
+
+        //判断当前操作，如是新增操作，则无 刷新按钮
+        if(this.currentAction==_const.ADD){
+          this.detailsOptions.forEach(detail => {
+            for(var i=0;i<this.detailsOptions.filter(x=>{return x.tableName==detail.tableName})[0].buttons.length;i++){
+              if(this.detailsOptions.filter(x=>{return x.tableName==detail.tableName})[0].buttons[i].name=="刷新"){
+                  this.detailsOptions.filter(x=>{return x.tableName==detail.tableName})[0].buttons[i].hidden=true;
+              }
+            }
+          });
+        }else{
+           this.detailsOptions.forEach(detail => {
+            for(var i=0;i<this.detailsOptions.filter(x=>{return x.tableName==detail.tableName})[0].buttons.length;i++){
+              if(this.detailsOptions.filter(x=>{return x.tableName==detail.tableName})[0].buttons[i].name=="刷新"){
+                  this.detailsOptions.filter(x=>{return x.tableName==detail.tableName})[0].buttons[i].hidden=false;
+              }
+            }
+          });
         }
       },
       getCurrentAction() {
@@ -1047,15 +1080,17 @@ var vueParam= {
       this.currentRow = rows[0];
       //初始化弹出框
       this.initDialog();
-      //重置表单 子表
-      this.resetDetailTable();//从表方法  待修改
+
+      if(this.hasDetail){
+         this.activeDetailName=this.detailsOptions[0].tableName;
+          //重置表单 子表
+         this.resetDetailTable();//从表方法 (清空，且加载数据)  
+      }
+     
 
       //
       if (rows.length > 1) {
-        this.$nextTick(() => {
-          //this.modelOpenAfter(row);
-           this.$message.warning("已选择多个，将默认第一个!");
-        })
+        this.$message.warning("已选择多个，将默认第一个!");
       }
 
       //设置当前的数据到表单上
@@ -1102,7 +1137,7 @@ var vueParam= {
       // else {
            editFormData = this.editFormData;
       // }
-      //将数组转换成string
+      //将数组转换成string   ??   待修改
       for (const key in editFormData) {
         if (editFormData[key] instanceof Array) {
           editFormData[key] = editFormData[key].join(',');
@@ -1111,30 +1146,73 @@ var vueParam= {
 
       let formData = {
         MainData: editFormData,
-        //DetailData: [{OrderID:this.editFormData["ID"],GoodsName:"测试api2",GoodsBatch:"20200603002",Qty:18,Weight:12.5,Remarks:"测试一波"},],
-        DetailData: null,
-        DelKeys: null
+        
+        DetailDatas: null
+        /*
+          "detailDatas": [
+                          {
+                            "tableName": "TestOrderDetail",
+                            "detailData": [
+                              {"GoodsName":"商1name1","GoodsBatch":"0612001","Qty":451,"Weight":4.51,"Remarks":"测试1备注1"},
+                              {"GoodsName":"商1name2","GoodsBatch":"0612002","Qty":452,"Weight":4.52,"Remarks":"测试1备注2"}
+                            ],
+                            "delKeys": [
+                              {}
+                            ]
+                          },
+                          {
+                            "tableName": "TestOrderDetailTwo",
+                            "detailData": [
+                              {"GoodsName":"商2name1","GoodsCode":"123", "GoodsBatch":"0612003","Qty":451,"Weight":4.51,"Remarks":"测试2备注1"},
+                              {"GoodsName":"商2name2","GoodsCode":"124", "GoodsBatch":"0612004","Qty":452,"Weight":4.52,"Remarks":"测试2备注2"}
+                            ],
+                            "delKeys": [
+                              {}
+                            ]
+                          }
+                        ]
+        */
       };
 
       //获取明细数据(前台数据明细未做校验，待完.后台已经校验)
       if (this.hasDetail) {
 
         //如果子表还在编辑中
-        if(this.$refs[this.activeDetailName][0].currentEditRow.rowIndex != -1){
-          this.$message.warning(this.detail.cnName+"还在编辑中，无法保存!")
-          return;
-        }
+        var hasEditing=false;//是否有行正在编辑中
+        this.detailsOptions.forEach(detail => {
+          if(this.$refs[detail.tableName][0].currentEditRow.rowIndex != -1){
+            this.$message.warning(detail.cnName+"还在编辑中，无法保存!")
+            
+            hasEditing=true;
+            
+            return;
+          }
+        });
+        if(hasEditing) return;
 
-        formData.DetailData = this.$refs.detail.rowData;
+        // if(this.$refs[this.activeDetailName][0].currentEditRow.rowIndex != -1){
+        //   this.$message.warning(this.detail.cnName+"还在编辑中，无法保存!")
+        //   return;
+        // }
+debugger
+        formData.DetailDatas=[];
+        this.detailsOptions.forEach(detail => {
+          formData.DetailDatas.push({
+            "TableName":detail.tableName,
+            "DetailData": this.$refs[detail.tableName][0].rowData,
+            "DelKeys":detail.delKeys.length>0?detail.delKeys:null,
+          });
+        });
+        //formData.DetailData = this.$refs.detail.rowData;//需要修改
         // formData.detailData = [];
         // this.$refs.detail.rowData.forEach(x={
           
 
         // })
       }
-      if (this.detailOptions.delKeys.length > 0) {
-        formData.DelKeys = this.detailOptions.delKeys;
-      }
+      // if (this.detailOptions.delKeys.length > 0) {
+      //   formData.DelKeys = this.detailOptions.delKeys;
+      // }
       //保存前拦截
       if (this.currentAction == _const.ADD) {
         if (!this.addBefore(formData)) return;
@@ -1142,7 +1220,7 @@ var vueParam= {
         if (!this.updateBefore(formData)) return;
       }
       let url = this.getUrl(this.currentAction);
-
+debugger;
       //待修改 : data 数据需要修改
       var that=this;
       if(that.currentAction == _const.ADD || that.currentAction == _const.EDIT){
@@ -1259,10 +1337,21 @@ var vueParam= {
     resetEdit() { //重置编辑的数据
 
       //如果子表还在编辑中
-      if(this.$refs[this.activeDetailName][0].currentEditRow.rowIndex != -1){
-        this.$message.warning(this.detail.cnName+"还在编辑中，无法重置!")
-        return;
-      }
+      // if(this.$refs[this.activeDetailName][0].currentEditRow.rowIndex != -1){
+      //   this.$message.warning(this.detail.cnName+"还在编辑中，无法重置!")
+      //   return;
+      // }
+
+      var isGo=true;
+      this.detailsOptions.forEach(detail => {
+        if((this.$refs[detail.tableName][0].currentEditRow.rowIndex != -1)){
+          this.$message.warning(detail.cnName+"还在编辑中，无法重置!")
+          isGo=false;
+          return;
+        }
+      });
+      if(!isGo) return;
+debugger
 
       let isEdit = this.currentAction != _const.ADD;
       let objKey = {};
@@ -1279,7 +1368,10 @@ var vueParam= {
       if (!this[isEdit ? 'resetUpdateFormBefore' : 'resetAddFormBefore']()) {
         return;
       }
+
       this.resetEditForm(objKey);
+      this.resetDetailTable();
+      
       //重置之后
       if (!this[isEdit ? 'resetUpdateFormAfter' : 'resetAddFormAfter']()) {
         return;
@@ -1330,7 +1422,7 @@ var vueParam= {
                                   single: false, //明细表是否单选
                                   load: true,
 
-                                  defaultLoadPage:true,//是否一进table页面就加载数据
+                                  defaultLoadPage:false,//是否一进table页面就加载数据  //这里因为是子表，在主页面点击编辑时会有方法调用子表load，所以不需要一进页面就加载数据
                                   delKeys: [], //当编辑时删除当前明细的行主键值
                                   currentReadonly: false, //当前用户没有编辑或新建权限时，表单只读(可用于判断用户是否有编辑或新建权限)
                                   //开启编辑时
@@ -1398,30 +1490,30 @@ var vueParam= {
 
     },
     initDetailButtons(detail){//初始化详细表按钮 
-      var tableNameBtns=this.extend.buttons.detail.filter(x=>{return x.tableName==detail.tableName});
+      var tableNameExtendBtns=this.extend.buttons.detail.filter(x=>{return x.tableName==detail.tableName});
       var btns=[];
-      if(tableNameBtns)
+      debugger
+      if(tableNameExtendBtns&&tableNameExtendBtns.length>0)
       {
-        btns=tableNameBtns[0].btns;
+        btns=tableNameExtendBtns[0].btns;
       }
 
       //初始化新增，编辑按钮
       if(btns&&btns.length>0){
-        this.detailsOptions.filter(x=>{return x.tableName==detail.tableName})[0].buttons=this.extendBtn(this.detailButtonsDefault,btns);
+        var detailCopy=this.detailsOptions.filter(x=>{return x.tableName==detail.tableName})[0];
+        var indexofDetail=this.detailsOptions.indexOf(detailCopy);
+        detailCopy.buttons=this.extendBtn(this.detailButtonsDefault,btns);
+        //this.detailsOptions.splice(indexofDetail,1,detailCopy);//不需要这行代码也可以  why
+
+        //this.detailsOptions.filter(x=>{return x.tableName==detail.tableName})[0].buttons=this.extendBtn(this.detailButtonsDefault,btns);
 
         //this.detailOptions.buttons=this.extendBtn(this.detailButtonsDefault,this.extend.buttons.detail);
       }else{
-         this.detailsOptions.filter(x=>{return x.tableName==detail.tableName})[0].buttons==this.detailButtonsDefault;
+        
+         this.detailsOptions.filter(x=>{return x.tableName==detail.tableName})[0].buttons=this.detailButtonsDefault;
       }
-      //判断当前操作，如是新增操作，则无 刷新按钮
-      if(this.currentAction==_const.ADD){
-        for(var i=0;i<this.detailsOptions.filter(x=>{return x.tableName==detail.tableName})[0].buttons.length;i++){
-          if(this.detailsOptions.filter(x=>{return x.tableName==detail.tableName})[0].buttons[i].name=="刷新"){
-            this.detailsOptions.filter(x=>{return x.tableName==detail.tableName})[0].buttons[i].hidden=true;
-          }
-        }
-      }
-
+      
+debugger
       //判断筛选出权限按钮
 
 
@@ -1682,7 +1774,7 @@ var vueParam= {
     detailRowChange(row) {//选中行事件
 
     },
-    resetDetailTable(row) {//编辑和查看明细时重置从表数据
+    resetDetailTable(row,isActiveDetail) {//编辑和查看明细时重置从表数据  ,isActiveDetail true时只刷新当前活动的子表，false则是全部子表
         // if (!this.detailOptions.columnsOptions || this.detailOptions.columnsOptions.length == 0) {
         //     return;
         // }
@@ -1693,34 +1785,72 @@ var vueParam= {
  
 
         //检测dateilsoptions 里面是否有 新增的数据 ， 删除的数据
-        var hasDelOrDelDetail= this.detailsOptions.filter((x)=>{
-          var hasAdd=false; 
-          if(this.$refs[x.tableName]&&this.$refs[x.tableName][0].rowData.length>0){
-            this.$refs[x.tableName][0].rowData.forEach(item => {
-              if(item[x.key]){
-                debugger
-                hasAdd=true;
-              }
-            });
-          }
+        // var hasDelOrDelDetail= this.detailsOptions.filter((x)=>{
+        //   var hasAdd=false; 
+        //   if(this.$refs[x.tableName]&&this.$refs[x.tableName][0].rowData.length>0){
+        //     this.$refs[x.tableName][0].rowData.forEach(item => {
+        //       if(item[x.key]){
+        //         debugger
+        //         hasAdd=true;
+        //       }
+        //     });
+        //   }
 
-          return x.delKeys&&x.delKeys.length>0&&hasAdd;
-        })[0];
-        debugger;
-        if(hasDelOrDelDetail){
-          this.$message.warning("检测到有新增和删除的数据")
+        //   return (x.delKeys&&x.delKeys.length>0)||hasAdd;
+        // })[0];
+
+        //if(hasDelOrDelDetail){
+          //this.$message.warning("检测到有新增或删除的数据")
           //return;
-        }
 
-        if (this.$refs[this.activeDetailName][0]) {
-            this.$refs[this.activeDetailName][0].reset();
-            debugger
-            this.$refs[this.activeDetailName][0].load(query,true);
+         
+          // this.$confirm('检测到有新增或删除的数据, 是否继续重置?', '提示', {
+          //   confirmButtonText: '确定',
+          //   cancelButtonText: '取消',
+          //   type: 'warning'
+          // }).then(() => {
+          //   // this.$message({
+          //   //   type: 'success',
+          //   //   message: '删除成功!'
+          //   // });
+          //   debugger;
+          //   isGo=true;
+          // }).catch(() => {
+          //   // this.$message({
+          //   //   type: 'info',
+          //   //   message: '已取消删除'
+          //   // });   
+          //   isGo=false;       
+          // });
+        //}
+        
+
+        if(isActiveDetail){
+          this.$nextTick(()=>{
+             if(this.$refs[this.activeDetailName]&&this.$refs[this.activeDetailName][0]){
+                this.$refs[this.activeDetailName][0].reset();
+                debugger
+                this.$refs[this.activeDetailName][0].load(query,true);
+              }
+          });
+        }else{
+           //第一次加载页面时，组件没出来，需要处理
+         this.$nextTick(()=>{
+                       this.detailsOptions.forEach( detail => {
+                         if(this.$refs[detail.tableName]&&this.$refs[detail.tableName][0]){
+                            this.$refs[detail.tableName][0].reset();
+                            debugger
+                            this.$refs[detail.tableName][0].load(query,true);
+                         }
+                       });
+                      });
         }
+       
+        
     },
-    //重置加载从表数据
-    refreshRow() {
-        this.resetDetailTable();
+    //重置加载当前从表数据
+    refreshActiveRow() {//重置加载从表数据      isActiveDetail :true  只刷新当前活动的 detail table; false 是全部的从表
+        this.resetDetailTable(null,true);
     },
     addRow() {
 

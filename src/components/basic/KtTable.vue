@@ -16,6 +16,8 @@
        @selection-change="selectionChange"
        :show-summary="summaryData.isSummary"
        :summary-method="getSummaries"
+
+       :row-class-name="tableRowClassName"
        >
        <!-- 多选框 -->
        <el-table-column v-if="showCheckbox" type="selection" width="55" align="center" ></el-table-column>
@@ -654,7 +656,6 @@ export default {
         param = Object.assign(param, query);
       }
 
-debugger
       // loadBefore  父类方法传递的方法
       this.$emit("loadBefore", param, result => {
         status = result;
@@ -730,7 +731,6 @@ debugger
       // }
       //定义了最大高度使用最大高度
       if (this.maxHeight) {
-        debugger;
         return this.maxHeight;
       }
       //不使用最大高度
@@ -862,6 +862,18 @@ debugger
 
       return rows;
     },
+
+    tableRowClassName({row, rowIndex}){//每行的特殊样式
+        if(rowIndex==0){
+          console.log(row);
+        }
+        if (row&&(row.ID||row.CreateTime||row.CreateID)) {
+          return 'old-row';
+        } else {
+          return 'new-row';
+        }
+        return '';
+    },
   },
   created(){
     //this.realHeight = this.getHeight();
@@ -940,6 +952,10 @@ debugger
 /* .kt-table >>> .el-table__fixed-body-wrapper{
   height: 100% !important;
 } */
+
+.kt-table >>> .new-row{
+  background: #f0f9eb;
+}
 
 </style>
 <style lang="scss" scoped>
