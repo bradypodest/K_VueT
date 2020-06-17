@@ -11,12 +11,12 @@
       >
        <div class="iview-com" slot="content">
           <div class="item form-item"> 
-            <div class="form-text v-text">
+            <!-- <div class="form-text v-text">
               <span class="title">
                 <i class="el-icon-edit"></i>
                新建配置table信息
               </span>
-            </div>
+            </div> -->
             <kt-form 
              ref="initTableForm"
              labelWidth="120px"
@@ -58,6 +58,7 @@
           <!-- 操作按钮 start -->
           <div class="btn-group">
             <el-button type="primary" icon="el-icon-message" @click="dialogAddModel=!dialogAddModel" size="small">新建</el-button>
+            <el-button type="primary" icon="el-icon-message" @click="createModel" size="small">生成Model</el-button>
           </div>
           <!-- 操作按钮 end -->
         </div>
@@ -84,7 +85,7 @@
           <div class="header-empty"></div>
           <!-- 操作按钮 start -->
           <div class="btn-group">
-            <el-button type="primary" icon="el-icon-message" @click="initTableInfo" size="small"></el-button>
+            <el-button type="primary" icon="el-icon-message" @click="saveTableColumns" size="small">保存</el-button>
           </div>
         </div>
         <div class="view-container">
@@ -108,7 +109,7 @@ import request from '@/utils/request';
 //静态 数据
   let _const={
     initTableInfo:"LoadTableInfo",
-
+    saveTableColumns:"saveTableColumns"
   };
 
   let columnType = [
@@ -198,14 +199,14 @@ export default {
           data: {
             ID: "",
             RefID: "0",
-            namespace: "",
-            cName: "",
-            tableName: "",
-            folderName: "",
-            detailCnName: "",
-            detailName: "",
-            sortName: "",
-            vuePath: ""
+            Namespace: "",
+            CnName: "",
+            TableName: "",
+            FolderName: "",
+            DetailCnName: "",
+            DetailName: "",
+            SortName: "",
+            VuePath: ""
           },
           options: [
             [
@@ -227,23 +228,23 @@ export default {
               {
                 title: "命名空间",
                 placeholder: "项目命令空间(类库名)",
-                field: "namespace",
+                field: "Namespace",
                 type: "string",
                 required: true
               }
             ],
             [
-              { title: "表中文名", field: "cNName", required: true },
+              { title: "表中文名", field: "CnName", required: true },
               {
                 title: "表名",
                 placeholder: "默认与实际表名相同",
-                field: "tableName",
+                field: "TableName",
                 required: true
               },
               {
                 title: "项目文件夹",
                 placeholder: "生成文件所在类库中的文件夹名(文件夹可以不存在)",
-                field: "folderName",
+                field: "FolderName",
                 required: true
               }
             ],
@@ -251,18 +252,18 @@ export default {
               {
                 title: "子表名",
                 placeholder: "多个子表用逗号隔开",
-                field: "detailName"
+                field: "DetailName"
               },
               {
                 title: "子表中文名",
                 placeholder: "多个子表用逗号隔开",
-                field: "detailCnName"
+                field: "DetailCnName"
               },
               {
                 title: "排序字段",
                 placeholder: "现阶段会默认为createTime",
-                field: "sortName",
-                placeholder: "非自增主键需要输入排序字段"
+                field: "SortName",
+                placeholder: "默认是 CreateTime"
               }
             ],[
               // [ //待完
@@ -271,7 +272,7 @@ export default {
               // ],
               {
                 title: "Vue视图路径",
-                field: "vuePath",
+                field: "VuePath",
                 type: "textarea",
                 placeholder:
                   "Vue项目所在绝对路径,到views文件夹,如：E:/app/src/views",
@@ -307,7 +308,7 @@ export default {
             hidden: true
           },
           {
-            field: "columnCnName",
+            field: "ColumnCnName",
             title: "列显示名称",
             fixed: true,
             width: 120,
@@ -315,7 +316,7 @@ export default {
             edit: { type: "text" }
           },
           {
-            field: "columnName",
+            field: "ColumnName",
             title: "列名",
             fixed: true,
             width: 120,
@@ -323,7 +324,7 @@ export default {
             edit: { type: "text" }
           },
           {
-            field: "isKey",
+            field: "IsKey",
             title: "主键",
             width: 90,
             align: "center",
@@ -338,21 +339,21 @@ export default {
           //   bind: { data: columnType }
           // },
           {
-            field: "searchRowNo",
+            field: "SearchRowNo",
             title: "查询行",
             width: 90,
             align: "center",
             edit: { type: "text" }
           },
           {
-            field: "searchColNo",
+            field: "SearchColNo",
             title: "查询列",
             width: 90,
             align: "center",
             edit: { type: "text" }
           },
           {
-            field: "searchType",
+            field: "SearchType",
             title: "查询类型",
             width: 150,
             align: "center",
@@ -360,21 +361,21 @@ export default {
             bind: { data: searchDataType }
           },
           {
-            field: "editRowNo",
+            field: "EditRowNo",
             title: "编辑行",
             width: 90,
             align: "numberbox",
             edit: { type: "text" }
           },
           {
-            field: "editColNo",
+            field: "EditColNo",
             title: "编辑列",
             width: 90,
             align: "numberbox",
             edit: { type: "text" }
           },
           {
-            field: "editType",
+            field: "EditType",
             title: "编辑类型",
             width: 150,
             align: "center",
@@ -382,7 +383,7 @@ export default {
             bind: { data: dataType }
           },
           {
-            field: "colSize",
+            field: "ColSize",
             title: "编辑列标签宽度colSize",
             width: 90,
             align: "center",
@@ -398,56 +399,56 @@ export default {
           //   edit: { type: "select", data: [] }
           // },
           {
-            field: "orderNo",
+            field: "OrderNo",
             title: "列显示排序",
             width: 120,
             align: "center",
             edit: { type: "text" }
           },
           {
-            field: "maxlength",
+            field: "Maxlength",
             title: "字段最大长度",
             width: 130,
             align: "center",
             edit: { type: "text" }
           },
           {
-            field: "columnType",
+            field: "ColumnType",
             title: "数据类型",
             width: 120,
             align: "center",
             edit: { type: "text" }
           },
           {
-            field: "isNull",
+            field: "IsNull",
             title: "可为空",
             width: 120,
             align: "center",
             edit: { type: "switch" }
           },
           {
-            field: "isReadDataset",
+            field: "IsReadDataset",
             title: "是否只读",
             width: 120,
             align: "center",
             edit: { type: "switch" }
           },
           {
-            field: "isColumnData",
+            field: "IsColumnData",
             title: "数据列",
             width: 120,
             align: "center",
             edit: { type: "switch" }
           },
           {
-            field: "isDisplay",
+            field: "IsDisplay",
             title: "是否显示",
             width: 120,
             align: "center",
             edit: { type: "switch" }
           },
           {
-            field: "columnWidth",
+            field: "ColumnWidth",
             title: "table列宽度",
             width: 120,
             align: "center",
@@ -461,7 +462,7 @@ export default {
           // { field: 'columnformat', title: '显示格式', width: 120, align: 'left', editor: 'text', editor: 'textarea' },
           // { field: 'script', title: '脚本', width: 120, align: 'left', editor: 'textarea' },
           // { field: 'creator', title: '创建人', width: 120, align: 'left' },
-          { field: "createTime", title: "创建时间", width: 120, align: "left" }
+          { field: "CreateTime", title: "创建时间", width: 120, align: "left" }
           // { field: 'modifier', title: '修改人', width: 120, align: 'left' },
           // { field: 'modifyDate', title: '修改时间', width: 120, align: 'left' }
         ],
@@ -471,21 +472,33 @@ export default {
     };
   },
   methods: {
-    initTableInfo() {
+    initTableInfo(isInit) {
       //初始化tableInfo  //新建
       //var param=this.builderData.dialogAddData;
-      let param =
-          "parentId=" +
-          this.builderData.dialogAddData.RefID +
-          "&tableName=" +
-          this.builderData.dialogAddData.tableName +
-          "&cNName=" +
-          this.builderData.dialogAddData.cNName +
-          "&nameSpace=" +
-          this.builderData.dialogAddData.namespace +
-          "&folderName=" +
-          this.builderData.dialogAddData.folderName +
+      let param;
+      if(isInit){
+        param =
+          "parentId=0" +
+          "&tableName=SysUser" +
+          "&cNName=用户" +
+          "&nameSpace=KARL.Core.SysUser" +
+          "&folderName=SysUser" +
           "&isTreeLoad=false";
+      }else{
+        param =
+                  "parentId=" +
+                  this.builderData.dialogAddData.RefID +
+                  "&tableName=" +
+                  this.builderData.dialogAddData.tableName +
+                  "&cNName=" +
+                  this.builderData.dialogAddData.cNName +
+                  "&nameSpace=" +
+                  this.builderData.dialogAddData.namespace +
+                  "&folderName=" +
+                  this.builderData.dialogAddData.folderName +
+                  "&isTreeLoad=false";
+      }
+      
 
       request({
         url: '/Builder/'+_const.initTableInfo+"?"+param,
@@ -497,21 +510,54 @@ export default {
         if (data.success) {
           this.$message({
             type: "success",
-            message: "查询数据成功!"
+            message: "获取表格配置成功!"
           });
           
           console.log(data.data);
+          this.builderData.form.data=data.data;
+          this.tableData=data.data.TableColumns;
+
 
           //合计
           //this.getSummaries(data);
         }
       })
       .catch();
-    }
+    },
+    saveTableColumns() {
+      // if (!this.layOutOptins.fileds.tableName)
+      //   return this.$Message.error("请选模块");
+
+      var param=this.tableData; 
+
+      request({
+        url: '/Builder/'+_const.saveTableColumns,
+        method: "post",
+        data:param
+      })
+      .then(data => {
+        //this.loading = false;
+        debugger
+        if (data.success) {
+          this.$message({
+            type: "success",
+            message: data.msg
+          });
+          
+        }
+      })
+      .catch();
+    },
+
+    createModel(){
+
+    },
   },
   //生命周期钩子 start
   beforeCreate() {},
-  created() {},
+  created() {
+    this.initTableInfo(true);
+  },
   beforeMount() {},
   mounted() {},
   //生命周期钩子 activated：在使用了keep-alive后有actived钩子：触发顺序在mounted钩子后
