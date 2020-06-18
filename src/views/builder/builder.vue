@@ -96,6 +96,7 @@
                   :columnsOptions="builderData.tableColumns"
                   :maxHeight="400"
                   :showCheckbox="false"
+                  :defaultSort="{prop:'OrderNo',order:'descending'}"
           ></kt-table>
         </div>
       </div>
@@ -109,7 +110,8 @@ import request from '@/utils/request';
 //静态 数据
   let _const={
     initTableInfo:"LoadTableInfo",
-    saveTableColumns:"saveTableColumns"
+    saveTableColumns:"saveTableColumns",
+    createModel:"CreateModel"
   };
 
   let columnType = [
@@ -550,7 +552,25 @@ export default {
     },
 
     createModel(){
-
+      var param=this.builderData.form.data;
+      param.TableColumns=this.tableData;
+      request({
+        url: '/Builder/'+_const.createModel,
+        method: "post",
+        data:param
+      })
+      .then(data => {
+        //this.loading = false;
+        debugger
+        if (data.success) {
+          this.$message({
+            type: "success",
+            message: data.msg
+          });
+          
+        }
+      })
+      .catch();
     },
   },
   //生命周期钩子 start

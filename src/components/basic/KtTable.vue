@@ -18,6 +18,8 @@
        :summary-method="getSummaries"
 
        :row-class-name="tableRowClassName"
+
+       :default-sort = "defaultSort"
        >
        <!-- 多选框 -->
        <el-table-column v-if="showCheckbox" type="selection" width="55" align="center" ></el-table-column>
@@ -298,6 +300,14 @@ export default {
           //summaryFun:(columns,data){return [];}//自定义合计方法
           }
         }
+    },
+    defaultSort:{
+      type:Object,
+      default:function(){
+        return{
+          prop: 'CreateTime', order: 'descending'
+        }
+      }
     }
   },
   data(){
