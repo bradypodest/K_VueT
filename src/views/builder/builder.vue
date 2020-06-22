@@ -59,6 +59,8 @@
           <div class="btn-group">
             <el-button type="primary" icon="el-icon-message" @click="dialogAddModel=!dialogAddModel" size="small">新建</el-button>
             <el-button type="primary" icon="el-icon-message" @click="createModel" size="small">生成Model</el-button>
+            <el-button type="primary" icon="el-icon-message" @click="createBusiness" size="small">生成业务层</el-button>
+            <el-button type="primary" icon="el-icon-message" @click="createVuePage" size="small">生成vue页面</el-button>
           </div>
           <!-- 操作按钮 end -->
         </div>
@@ -111,7 +113,9 @@ import request from '@/utils/request';
   let _const={
     initTableInfo:"LoadTableInfo",
     saveTableColumns:"saveTableColumns",
-    createModel:"CreateModel"
+    createModel:"CreateModel",
+    createBusiness:"CreateBusiness",
+    createVuePage:"CreateVuePage",
   };
 
   let columnType = [
@@ -229,7 +233,7 @@ export default {
               },
               {
                 title: "命名空间",
-                placeholder: "项目命令空间(类库名)",
+                placeholder: "项目命令空间(类库名),最好不要包含表名",
                 field: "Namespace",
                 type: "string",
                 required: true
@@ -479,12 +483,19 @@ export default {
       //var param=this.builderData.dialogAddData;
       let param;
       if(isInit){
+        // param =
+        //   "parentId=0" +
+        //   "&tableName=SysUser" +
+        //   "&cNName=用户" +
+        //   "&nameSpace=KARL.Core.SysUser" +
+        //   "&folderName=SysUser" +
+        //   "&isTreeLoad=false";
         param =
           "parentId=0" +
-          "&tableName=SysUser" +
-          "&cNName=用户" +
-          "&nameSpace=KARL.Core.SysUser" +
-          "&folderName=SysUser" +
+          "&tableName=TestSysUser" +
+          "&cNName=测试用户" +
+          "&nameSpace=KARL.Core.Test" +
+          "&folderName=TestSysUser" +
           "&isTreeLoad=false";
       }else{
         param =
@@ -572,6 +583,50 @@ export default {
       })
       .catch();
     },
+    createBusiness(){
+
+      var param=this.builderData.form.data;
+      param.TableColumns=this.tableData;
+      request({
+        url: '/Builder/'+_const.createBusiness,
+        method: "post",
+        data:param
+      })
+      .then(data => {
+        //this.loading = false;
+        debugger
+        if (data.success) {
+          this.$message({
+            type: "success",
+            message: data.msg
+          });
+          
+        }
+      })
+      .catch();
+    },
+    createVuePage(){
+
+      var param=this.builderData.form.data;
+      param.TableColumns=this.tableData;
+      request({
+        url: '/Builder/'+_const.createVuePage,
+        method: "post",
+        data:param
+      })
+      .then(data => {
+        //this.loading = false;
+        debugger
+        if (data.success) {
+          this.$message({
+            type: "success",
+            message: data.msg
+          });
+          
+        }
+      })
+      .catch();
+    }
   },
   //生命周期钩子 start
   beforeCreate() {},
