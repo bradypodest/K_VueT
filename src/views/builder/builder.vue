@@ -336,6 +336,7 @@ export default {
             title: "主键",
             width: 90,
             align: "center",
+            edit: { type: "switch" }//这个就可以table 显示时候是 “是” 还是“否”
           },
           // {
           //   field: "isImage",
