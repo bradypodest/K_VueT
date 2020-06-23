@@ -90,7 +90,7 @@ let extension = {
               }],
       detail: //新建、编辑弹出框明细表table表按钮
             [
-                {
+                /*{
                     tableName:"TestOrderDetail",
                     btns:[ //ViewGrid查询界面按钮
                         {
@@ -106,6 +106,7 @@ let extension = {
                         }
                     ]
                 }, 
+                */
                 
             ]
   },//扩展的按钮

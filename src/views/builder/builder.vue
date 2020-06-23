@@ -29,7 +29,7 @@
        <div slot="footer">
             <el-button
               type="primary"
-              @click="initTableInfo"
+              @click="initTableInfo(false)"
               >
               确认
             </el-button>
@@ -58,6 +58,7 @@
           <!-- 操作按钮 start -->
           <div class="btn-group">
             <el-button type="primary" icon="el-icon-message" @click="dialogAddModel=!dialogAddModel" size="small">新建</el-button>
+            <el-button type="primary" icon="el-icon-message" @click="saveInfoAndColumns" size="small">保存</el-button>
             <el-button type="primary" icon="el-icon-message" @click="createModel" size="small">生成Model</el-button>
             <el-button type="primary" icon="el-icon-message" @click="createBusiness" size="small">生成业务层</el-button>
             <el-button type="primary" icon="el-icon-message" @click="createVuePage" size="small">生成vue页面</el-button>
@@ -116,6 +117,7 @@ import request from '@/utils/request';
     createModel:"CreateModel",
     createBusiness:"CreateBusiness",
     createVuePage:"CreateVuePage",
+    saveTableInfoAndColumns:"SaveTableInfoAndColumns"
   };
 
   let columnType = [
@@ -482,6 +484,7 @@ export default {
       //初始化tableInfo  //新建
       //var param=this.builderData.dialogAddData;
       let param;
+      debugger;
       if(isInit){
         // param =
         //   "parentId=0" +
@@ -626,12 +629,36 @@ export default {
         }
       })
       .catch();
+    },
+    saveInfoAndColumns()
+    {
+      var param=this.builderData.form.data;
+      param.TableColumns=this.tableData;
+      request({
+        url: '/Builder/'+_const.saveTableInfoAndColumns,
+        method: "post",
+        data:param
+      })
+      .then(data => {
+        //this.loading = false;
+        debugger
+        if (data.success) {
+          this.$message({
+            type: "success",
+            message: data.msg
+          });
+          
+        }
+      })
+      .catch();
+
     }
   },
   //生命周期钩子 start
   beforeCreate() {},
   created() {
-    this.initTableInfo(true);
+    
+    //this.initTableInfo(true);
   },
   beforeMount() {},
   mounted() {},

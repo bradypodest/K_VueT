@@ -182,9 +182,9 @@
         </div>
         <!-- 备注 -->
         <div class="remarks">
-          <a class="text" :title="extend.text">{{extend.text}}</a>
+          <a class="text" :title="extend.text?extend.text:''">{{extend.text?extend.text:''}}</a>
         </div>
-        <!--快速查询字段 (一个字段))-->
+        <!--快速查询字段 (一个字段))  废弃，现起到隔板的作用-->
         <div class="search-line"></div>
         <!-- 操作按钮 start -->
         <div class="btn-group">
@@ -1719,7 +1719,7 @@ debugger
     resetUpdateFormAfter() { //重置编辑表单后的内容
         return true;
     },
-    modelmodelOpenBefore(row) { //点击编辑/新建按钮弹出框前，可以在此处写逻辑，如，从后台获取数据
+    modelOpenBefore(row) { //点击编辑/新建按钮弹出框前，可以在此处写逻辑，如，从后台获取数据
 
     },
     modelOpenAfter(row) {  //点击编辑/新建按钮弹出框后，可以在此处写逻辑，如，从后台获取数据

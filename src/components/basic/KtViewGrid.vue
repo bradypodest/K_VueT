@@ -1031,7 +1031,7 @@ var vueParam= {
       if (rows.length == 0) {
         return this.$message.error("请选择要编辑的行!");
       }
-debugger
+
       this.currentAction = _const.EDIT;
       //记录当前编辑的行
       this.currentRow = rows[0];
@@ -1567,7 +1567,7 @@ debugger
     resetUpdateFormAfter() { //重置编辑表单后的内容
         return true;
     },
-    modelmodelOpenBefore(row) { //点击编辑/新建按钮弹出框前，可以在此处写逻辑，如，从后台获取数据
+    modelOpenBefore(row){ //点击编辑/新建按钮弹出框前，可以在此处写逻辑，如，从后台获取数据
 
     },
     modelOpenAfter(row) {  //点击编辑/新建按钮弹出框后，可以在此处写逻辑，如，从后台获取数据
