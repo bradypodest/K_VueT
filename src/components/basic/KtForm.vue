@@ -204,7 +204,7 @@ export default {
     },
     ///表单的一些设置参数
     //如 [
-        //[{"dataKey":"ordertype",  //是否自动绑定select/checkboxt等标签的数据源   字典编号
+        //[{"dataKey":"ordertype",  //是否自动绑定select/checkboxt等标签的数据源   字典编号   //只有在data空,remote 为false
         //"data":[{ key: 0, value: "冬瓜" }, { key: 1, value: "西瓜" }],  //数据源，可以手动绑定格式[{key:1,value:'是'}],也可以自动绑定,自定绑定需要设置属性loadKey='true'
         //"title":"订单类型",//lable上显示的文字 
         //"readonly":true, // 是否只读 
@@ -314,8 +314,7 @@ export default {
     },
     /// 绑定数据 start   不懂哦 ，待重构
     initSource() {
-      let keys = [],
-        binds = [];
+      let keys = [], binds = [];
       //初始化字典数据源
       this.formOptions.forEach(item => {
         item.forEach(x => {
@@ -335,7 +334,7 @@ export default {
       //待抽离 待修改
       this.http.post("/api/Sys_Dictionary/GetVueDictionary", keys).then(dic => {
         this.bindOptions(dic, binds);
-      });
+      });//待
     },
     bindOptions(dic, binds) {
       dic.forEach(d => {

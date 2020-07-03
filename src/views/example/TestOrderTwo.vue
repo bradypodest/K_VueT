@@ -51,7 +51,10 @@ var vueParam = {
       editFormOptions:[[{"title":"订单号","required":true,"field":"OrderNo","type":"string","valueUrl":"/TestOrder/GetOneOrderNo"},
                         {"title":"订单数量","required":true,"field":"Qty",type:'number'},
                         ],
-                        [{"title":"订单描述","required":true,"field":"OrderDescribe","type":"string"},{"title":"状态","field":"Status",type:'switch'}],
+                        [{"title":"订单描述","required":true,"field":"OrderDescribe","type":"string"}
+                        //,{"title":"状态","field":"Status",type:'switch'}
+                        ,{"title":"状态","field":"Status",type:''}
+                        ],
                       [{"title":"备注","field":"Remakes", "colSize":8,"type":"textarea"}],
                       [{"title":"创建人","field":"Creator","disabled":true},
                         {"title":"创建时间","field":"CreateTime","disabled":true,type:"datetime"}],//是时间类型的要填写，否则按普通的处理
