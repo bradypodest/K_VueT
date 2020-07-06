@@ -285,9 +285,10 @@ export default {
   methods: {
     //初始化表单参数 （基本上就是绑定数据源）
     initFormOptions(init) {
-      if (this.loadKey) {
+      //if (this.loadKey) {
+        debugger;
         this.initSource();
-      }
+      //}
       //  this.ruleValidate={};
       this.formOptions.forEach((row, xIndex) => {
         if (row.length > this.span) this.span = row.length;
@@ -314,6 +315,7 @@ export default {
     },
     /// 绑定数据 start   不懂哦 ，待重构
     initSource() {
+      debugger;
       let keys = [], binds = [];
       //初始化字典数据源
       this.formOptions.forEach(item => {
@@ -332,13 +334,34 @@ export default {
       if (keys.length == 0) return;
 
       //待抽离 待修改
-      this.http.post("/api/Sys_Dictionary/GetVueDictionary", keys).then(dic => {
-        this.bindOptions(dic, binds);
-      });//待
+      // this.http.post("/api/Sys_Dictionary/GetVueDictionary", keys).then(dic => {
+      //   this.bindOptions(dic, binds);
+      // });
+debugger;
+      request({
+              url:"/SysDictionary/GetDictionary",
+              method:"post",
+              data: keys//加入时间随机参数
+            }).then(res=>{
+              debugger;
+
+              console.log("字典"+res.data);
+              if (res.success) {
+                // this.$message({
+                //   type: "success",
+                //   message: "删除成功!"
+                // });
+
+               
+                this.bindOptions(res.data, binds);
+              }
+            }).catch();
+
     },
     bindOptions(dic, binds) {
       dic.forEach(d => {
         binds.forEach(x => {
+          debugger;
           if (x.key != d.dicNo) return true;
           //如果有数据的则不查询
           if (x.data.length > 0) return true;
@@ -357,6 +380,8 @@ export default {
           }
         });
       });
+      debugger;
+      console.log("绑定"+binds)
     },
     /// 绑定数据 end 
     //待了解
@@ -609,6 +634,7 @@ export default {
         item.type == "selectList" ||
         item.type == "drop"
       ) {
+        debugger;
         let _rule = {
           required: true,
           message: "请选择" + item.title,

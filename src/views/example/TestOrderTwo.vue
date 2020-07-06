@@ -53,7 +53,7 @@ var vueParam = {
                         ],
                         [{"title":"订单描述","required":true,"field":"OrderDescribe","type":"string"}
                         //,{"title":"状态","field":"Status",type:'switch'}
-                        ,{"title":"状态","field":"Status",type:''}
+                        ,{"title":"状态","field":"Status",type:'select',dataKey:"YesOrNo"}
                         ],
                       [{"title":"备注","field":"Remakes", "colSize":8,"type":"textarea"}],
                       [{"title":"创建人","field":"Creator","disabled":true},
