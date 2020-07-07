@@ -42,7 +42,7 @@ var vueParam = {
                 {field:'OrderDescribe',title:'订单描述',type:'string',width:90,require:true,align:'center',sortable:true,hidden:false},
                 {field:'Qty',title:'订单数量',type:'number',link:true,width:150,require:true,hidden:false},
                 {field:'Remakes',title:'备注',type:'string',width:200,require:true,align:'left',hidden:false},
-                {field:'Status',title:'状态',type:'string',width:90,require:true,hidden:false},//switch 还不能使用，等待字典
+                {field:'Status',title:'状态',type:'string',width:90,require:true,hidden:false,bind:{ key:'YesOrNo',data:[]}},//switch 还不能使用，等待字典
                 {field:'Creator',title:'创建者',type:'int',width:90,readonly:true,require:true,align:'left',click:(row,column,event)=>{console.log(row);console.log(column);console.log(event);this.$message.success(column)},hidden:false},
                 {field:'CreateTime',title:'创建时间',type:'datetime',readonly:true,width:100,require:true,align:'left',hidden:false},
                 {field:'Modifier',title:'修改者',type:'string',width:120,align:'left',sortable:true,hidden:false},

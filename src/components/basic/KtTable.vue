@@ -897,7 +897,55 @@ debugger
     this.isShowEditButton = this.columnsOptions.some(x => {
       return x.hasOwnProperty("edit");
     });
+    //获取字典数据
+    let keys=[];
+    let columnBind=[];
+    this.columnsOptions.forEach((x,_index)=>{
+      if (x.bind && x.bind.key && (!x.bind.data || x.bind.data.length == 0)) {
+        if (!x.bind.data) x.bind.data = [];
+        if (x.bind.remote) {
+          this.remoteColumns.push(x);
+        } 
+        //else if (this.loadKey) {
+          keys.push(x.bind.key);
+          //x.bind.valueTyoe = x.type;
+          columnBind.push(x.bind);
+        //}
+      }
+    });
+    debugger;
+    if(keys.length>0){
+      request({
+              url:"/SysDictionary/GetDictionary",
+              method:"post",
+              data: keys//加入时间随机参数
+            }).then(res=>{
+              debugger;
+
+              console.log("字典"+res.data);
+              if (res.success) {
+                this.$message({
+                  type: "success",
+                  message: "获取字典成功!"
+                });
+
+               res.data.forEach(x=>{
+                 columnBind.forEach(y=>{
+                   
+                   if(y.key==x.dicNo) y.data.push(...x.data);
+                 })
+               });
+
+                this.$forceUpdate();//这行代码可以解决 element select 接口回显导致页面render 不刷新问题
+              }
+            }).catch();
+
+    }
+    
+
     this.defaultLoadPage && this.load(null,false);//加载列表数据
+
+
   },
 }
 </script>

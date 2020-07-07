@@ -188,7 +188,7 @@ export default {
   comments:{},
   props:{
     ///是否加载formOptions字段配置的数据源
-    loadKey: {
+    loadKey: {   //现阶段屏蔽了
       type: Boolean,
       default: false
     },
@@ -315,7 +315,6 @@ export default {
     },
     /// 绑定数据 start   不懂哦 ，待重构
     initSource() {
-      debugger;
       let keys = [], binds = [];
       //初始化字典数据源
       this.formOptions.forEach(item => {
@@ -354,6 +353,8 @@ debugger;
 
                
                 this.bindOptions(res.data, binds);
+
+                this.$forceUpdate();//这行代码可以解决 element select 接口回显导致页面render 不刷新问题
               }
             }).catch();
 
@@ -380,8 +381,6 @@ debugger;
           }
         });
       });
-      debugger;
-      console.log("绑定"+binds)
     },
     /// 绑定数据 end 
     //待了解
@@ -859,8 +858,12 @@ debugger;
       return item.data;
     },
     onChange(item, value) {
+      console.log("更新");
+      this.$forceUpdate()
+
       //是方法就执行change方法
       if (item.onChange && typeof item.onChange == "function") {
+        debugger
         item.onChange(value, item);
       }
     },
