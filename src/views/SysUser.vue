@@ -3,7 +3,7 @@
  *
  *describe: SysUser  vue主页面 | 代码由框架生成 | 业务请在@/extension/User/SysUser.js此处编写
  *builder:  string
- *build datetime: 2020-07-07 14:59:18
+ *build datetime: 2020-07-07 17:54:42
  -->
     <template>
         <div>
@@ -43,14 +43,14 @@
                                  {field:'ID',title:'ID',type:'string',width:120,hidden:true,readonly:true,align:'center',},
                                  {field:'UserName',title:'用户名',type:'string',width:120,hidden:false,align:'center',},
                                  {field:'UserPwd',title:'用户密码',type:'string',width:180,hidden:false,align:'center',},
-                                 {field:'RoleId',title:'角色ID',type:'string',width:120,hidden:false,align:'center',},//这里没有使用生成页面的代码
+                                 {field:'RoleId',title:'角色ID',type:'string',bind:{ key:'AllRole',data:[]},width:120,hidden:false,align:'center',},
                                  {field:'RoleName',title:'角色名称',type:'string',width:180,hidden:false,align:'center',},
                                  {field:'LastLoginDate',title:'LastLoginDate',type:'datetime',width:90,hidden:true,align:'center',},
                                  {field:'LastModifyPwdDate',title:'LastModifyPwdDate',type:'datetime',width:90,hidden:true,align:'center',},
                                  {field:'ErrorCount',title:'ErrorCount',type:'int',width:90,hidden:true,align:'center',},
                                  {field:'LastLoginFailDate',title:'LastLoginFailDate',type:'datetime',width:90,hidden:true,align:'center',},
                                  {field:'HeadPicUrl',title:'头像',type:'string',width:180,hidden:false,align:'center',},
-                                 {field:'Sex',title:'性别',type:'string',width:120,hidden:true,bind:{key:'Gender',data:[]} ,align:'center',},
+                                 {field:'Sex',title:'性别',type:'string',bind:{ key:'Gender',data:[]},width:120,hidden:false,align:'center',},
                                  {field:'Age',title:'年龄',type:'int',width:90,hidden:true,align:'center',},
                                  {field:'Birth',title:'出生日期',type:'datetime',width:90,hidden:false,align:'center',},
                                  {field:'Address',title:'地址',type:'string',width:220,hidden:false,align:'center',},
@@ -68,40 +68,10 @@
                                  {field:'Deleter',title:'Deleter',type:'string',width:180,hidden:true,align:'center',},
                                  {field:'DeleterID',title:'DeleterID',type:'string',width:120,hidden:true,align:'center',},
                                  ],//主table列
-                editFormOptions: [
-                    [
-                        {"title":"用户名","field":"UserName","required":true,"type":"text","disabled":false,"colSize":12,"range":false}
-                    ],[
-                        {"title":"用户密码","field":"UserPwd","required":true,"type":"text","disabled":false,"colSize":12,"range":false}
-                    ],[
-                        {"title":"角色ID","field":"RoleId","required":false,"type":"select","disabled":false,"colSize":12,"range":false,dataKey:"AllRole"}
-                    ],[
-                        {"title":"头像","field":"HeadPicUrl","required":false,"type":"text","disabled":false,"colSize":12,"range":false}
-                    ],[
-                        {"title":"性别","field":"Sex","required":false,"type":"select",dataKey:"Gender", "disabled":false,"colSize":12,"range":false}
-                    ],[
-                        {"title":"年龄","field":"Age","required":false,"type":"text","disabled":false,"colSize":12,"range":false}
-                    ],[
-                        {"title":"出生日期","field":"Birth","required":false,"type":"datetime","disabled":false,"colSize":12,"range":false}
-                    ],[
-                        {"title":"地址","field":"Address","required":false,"type":"textarea","disabled":false,"colSize":12,"range":false}
-                    ],[
-                        {"title":"电话","field":"Mobile","required":false,"type":"phone","disabled":false,"colSize":12,"range":false}
-                    ],[
-                        {"title":"邮箱","field":"Email","required":false,"type":"mail","disabled":false,"colSize":12,"range":false}
-                    ],[
-                        {"title":"备注","field":"Remark","required":false,"type":"textarea","disabled":false,"colSize":12,"range":false}
-                    ]],//编辑弹框参数
-                editFormData: {"UserName":"","UserPwd":"","RoleId":"","RoleName":"","HeadPicUrl":"","Sex":"","Age":"","Birth":"","Address":"","Mobile":"","Email":"","Remark":""},//编辑弹框数据
-                searchFormOptions: [
-                    [
-                        {"title":"用户名","field":"UserName","required":false,"type":"text","disabled":false,"colSize":12,"range":false},
-                        {"title":"性别","field":"Sex","required":false,"type":"select","disabled":false,"colSize":12,"range":false,dataKey:"Gender"},
-                        {"title":"电话","field":"Mobile","required":false,"type":"like","disabled":false,"colSize":12,"range":false}
-                    ],[
-                        {"title":"出生日期","field":"Birth","required":false,"type":"datetime","disabled":false,"colSize":4,"range":true}
-                    ]],//查询form表单的参数
-                searchFormData: {"UserName":"","Sex":"","Mobile":"","Birth":""},//查询form表单的数据
+                editFormOptions: [[{"title":"用户名","field":"UserName","required":true,"type":"text","disabled":false,"colSize":12,"dataKey":"","range":false}],[{"title":"用户密码","field":"UserPwd","required":true,"type":"text","disabled":false,"colSize":12,"dataKey":"","range":false}],[{"title":"角色ID","field":"RoleId","required":false,"type":"select","disabled":false,"colSize":12,"dataKey":"AllRole","range":false}],[{"title":"头像","field":"HeadPicUrl","required":false,"type":"text","disabled":false,"colSize":12,"dataKey":"","range":false}],[{"title":"性别","field":"Sex","required":false,"type":"select","disabled":false,"colSize":12,"dataKey":"Gender","range":false}],[{"title":"年龄","field":"Age","required":false,"type":"text","disabled":false,"colSize":12,"dataKey":"","range":false}],[{"title":"出生日期","field":"Birth","required":false,"type":"datetime","disabled":false,"colSize":12,"dataKey":"","range":false}],[{"title":"地址","field":"Address","required":false,"type":"textarea","disabled":false,"colSize":12,"dataKey":"","range":false}],[{"title":"电话","field":"Mobile","required":false,"type":"phone","disabled":false,"colSize":12,"dataKey":"","range":false}],[{"title":"邮箱","field":"Email","required":false,"type":"mail","disabled":false,"colSize":12,"dataKey":"","range":false}],[{"title":"备注","field":"Remark","required":false,"type":"textarea","disabled":false,"colSize":12,"dataKey":"","range":false}]],//编辑弹框参数
+                editFormData: {"UserName":"","UserPwd":"","RoleId":"","HeadPicUrl":"","Sex":"","Age":"","Birth":"","Address":"","Mobile":"","Email":"","Remark":""},//编辑弹框数据
+                searchFormOptions: [[{"title":"用户名","field":"UserName","required":false,"type":"text","disabled":false,"colSize":12,"dataKey":"","range":false},{"title":"性别","field":"Sex","required":false,"type":"select","disabled":false,"colSize":12,"dataKey":"Gender","range":false},{"title":"电话","field":"Mobile","required":false,"type":"phone","disabled":false,"colSize":12,"dataKey":"","range":false}],[{"title":"出生日期","field":"Birth","required":false,"type":"datetime","disabled":false,"colSize":12,"dataKey":"","range":true},{"title":"角色ID","field":"RoleId","required":false,"type":"select","disabled":false,"colSize":12,"dataKey":"AllRole","range":false}]],//查询form表单的参数
+                searchFormData: {"UserName":"","Sex":"","Mobile":"","RoleId":"","Birth":""},//查询form表单的数据
                 details: [],//子表
             };
         },

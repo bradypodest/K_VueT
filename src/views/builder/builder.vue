@@ -399,14 +399,14 @@ export default {
             edit: { type: "text" }
           },
 
-          // {
-          //   field: "dropNo",
-          //   title: "数据源",
-          //   width: 120,
-          //   align: "center",
-          //   bind: { data: [] },
-          //   edit: { type: "select", data: [] }
-          // },
+          {
+            field: "DicKey",
+            title: "字典数据",
+            width: 120,
+            align: "center",
+            bind: {key:'AllDic' ,data: [] },
+            edit: { type: "select", data: [] }
+          },
           {
             field: "OrderNo",
             title: "列显示排序",
