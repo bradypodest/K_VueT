@@ -41,7 +41,7 @@
                 //注意：hidden:true必须要有，不然表结构 改变选择时容易出现bug
                 columnsOptions: [
                                  {field:'ID',title:'',type:'string',width:180,hidden:true,readonly:true,align:'center',},
-                                 {field:'DicNo',title:'编号',type:'string',width:180,hidden:false,align:'center',},
+                                 {field:'DicNo',title:'编号',type:'string',width:180,hidden:false,align:'center',link:true},
                                  {field:'DicName',title:'名称',type:'string',width:180,hidden:false,align:'center',},
                                  {field:'Enable',title:'是否启动',type:'int',width:90,hidden:false,align:'center',},
                                  {field:'OrderNo',title:'排序',type:'int',width:90,hidden:false,align:'center',},

@@ -269,7 +269,6 @@ export default {
               },
               {
                 title: "排序字段",
-                placeholder: "现阶段会默认为createTime",
                 field: "SortName",
                 placeholder: "默认是 CreateTime"
               }
@@ -278,6 +277,7 @@ export default {
               //     { "title": "开启用户权限数据", "field": "enable", bind: { data: [{ key: 1, value: '是', key: 0, value: '否' }] }, type: 'switch', colSize: 2 },
               //     { "title": "提示", "required": true, "field": "userPermissionDesc", colSize: 10, "placeholder": "非自增主键需要输入排序字段",readonly:true }
               // ],
+              
               {
                 title: "Vue视图路径",
                 field: "VuePath",
@@ -414,6 +414,13 @@ export default {
             align: "center",
             bind: {key:'AllRole' ,data: [] },
             edit: { type: "select", data: [] }
+          },
+          {
+            field:"IsExpressField",
+            title:"是否快捷字段",
+            width: 120,
+            align: "center",
+            edit: { type: "switch" }
           },
           {
             field: "OrderNo",

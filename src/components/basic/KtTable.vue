@@ -107,7 +107,23 @@
         <div v-else
            @click.native="customClick(scope.row,column)"
         >
-          <div v-if="column.type=='img'">
+          <!-- <a
+                href="javascript:void(0)"
+                @click="link(scope.row,column)"
+                v-if="column.link"
+               
+                v-text="localFormatter(scope.row,column,true)"
+              ></a> -->
+
+          <el-link   
+            v-if="column.link" 
+            type="primary" 
+            :underline="false" 
+            href="javascript:void(0)" 
+            @click.native="link(scope.row,column)" >
+          {{localFormatter(scope.row,column,true)}}
+          </el-link>
+          <div v-else-if="column.type=='img'">
             <el-image 
               class="table-img"
               v-for="(fileUrl,vIndex ) in  getFilePath(scope.row[column.field])"
@@ -197,6 +213,13 @@ export default {
     single: {
       type: Boolean, //是否单选
       default: false
+    },
+
+    linkView: {
+      type: Function,
+      default: function() {
+        return 1;
+      }
     },
 
     //表字段参数
@@ -895,6 +918,10 @@ debugger
           return 'new-row';
         }
         return '';
+    },
+
+    link(row, column) {//链接到哪里
+      this.$props.linkView(row, column);
     },
   },
   created(){

@@ -2,8 +2,8 @@
  *Creater：Karl
  *
  *describe: SysUser  vue主页面 | 代码由框架生成 | 业务请在@/extension/User/SysUser.js此处编写
- *builder:  string
- *build datetime: 2020-07-07 17:54:42
+ *builder:  admin
+ *build datetime: 2020-07-08 16:48:26
  -->
     <template>
         <div>
@@ -41,7 +41,7 @@
                 //注意：hidden:true必须要有，不然表结构 改变选择时容易出现bug
                 columnsOptions: [
                                  {field:'ID',title:'ID',type:'string',width:120,hidden:true,readonly:true,align:'center',},
-                                 {field:'UserName',title:'用户名',type:'string',width:120,hidden:false,align:'center',},
+                                 {field:'UserName',title:'用户名',type:'string',width:120,hidden:false,lookRole:'Admin',link:true,align:'center',},
                                  {field:'UserPwd',title:'用户密码',type:'string',width:180,hidden:false,align:'center',},
                                  {field:'RoleId',title:'角色ID',type:'string',bind:{ key:'AllRole',data:[]},width:120,hidden:false,align:'center',},
                                  {field:'RoleName',title:'角色名称',type:'string',width:180,hidden:false,align:'center',},

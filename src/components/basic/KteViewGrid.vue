@@ -269,9 +269,9 @@
           :url="url"
           :defaultLoadPage="defaultLoadPage"
           
+          :linkView="linkData"
           :summaryData="summaryData"
          >
-         <!--  :linkView="linkData"  未处理 -->
         </kt-table>
       </div>
       <!-- table 表格 end -->
@@ -752,7 +752,6 @@ var vueParam= {
 
   //一些基础方法 ，如查询 ，新增，编辑，保存 查看表结构  Start
     search(isNoResetPage){// 主表 查询
-    debugger;
         this.$refs.table.load(null, !isNoResetPage?true:false);//调用ref为 table的主kttable组件的load方法 
     },
     openViewColumns() {//查看表结构
@@ -1197,7 +1196,7 @@ var vueParam= {
         //   this.$message.warning(this.detail.cnName+"还在编辑中，无法保存!")
         //   return;
         // }
-debugger
+
         formData.DetailDatas=[];
         this.detailsOptions.forEach(detail => {
           formData.DetailDatas.push({
@@ -1223,7 +1222,7 @@ debugger
         if (!this.updateBefore(formData)) return;
       }
       let url = this.getUrl(this.currentAction);
-debugger;
+
       //待修改 : data 数据需要修改
       var that=this;
       if(that.currentAction == _const.ADD || that.currentAction == _const.EDIT){
@@ -1354,7 +1353,7 @@ debugger;
         }
       });
       if(!isGo) return;
-debugger
+
 
       let isEdit = this.currentAction != _const.ADD;
       let objKey = {};
@@ -1516,7 +1515,7 @@ debugger
          this.detailsOptions.filter(x=>{return x.tableName==detail.tableName})[0].buttons=this.detailButtonsDefault;
       }
       
-debugger
+
       //判断筛选出权限按钮
 
 
@@ -1654,6 +1653,26 @@ debugger
       this.rowChange(row);
     },
     rowChange(row) {//选中行事件
+    },
+
+    linkData(row, column) {   //点击table单元格快捷链接 显示编辑数据
+      this.currentAction = _const.EDIT;
+      this.currentRow = row;
+      //初始化弹出框
+      this.initDialog();
+      if(this.hasDetail){
+         this.activeDetailName=this.detailsOptions[0].tableName;
+          //重置表单 子表
+         this.resetDetailTable();//从表方法 (清空，且加载数据)  
+      }
+
+      //设置当前的数据到表单上
+      this.setEditForm(row);
+
+      //设置远程查询表单的默认key/value
+      //this.getRemoteFormDefaultKeyValue();
+      //点击编辑按钮弹出框后，可以在此处写逻辑，如，从后台获取数据
+      this.modelOpenProcess(row);
     },
   //主table 相关 end
 
