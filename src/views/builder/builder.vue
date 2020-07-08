@@ -438,7 +438,7 @@ export default {
           },
           {
             field: "ColumnType",
-            title: "数据类型",
+            title: "数据类型（table）",
             width: 120,
             align: "center",
             edit: { type: "text" }
