@@ -219,9 +219,10 @@ export default {
       //   title: "数据类型",
       //   width: 120,
       //   hidden:false,
-      //   edit: { type: "text", status: false, data: [], key: "" }
+      //   edit: { type: "text", status: false, data: []},//编辑
+      //   bind:{ key:'YesOrNo',data:[]} //table显示
       // }] //列的的数据格式edit格式： type类型(text,date,datetime,select,switch),status是否默认为编辑状态
-      //data如果是select这里data应该有数据源，如果没有数据请设置key字典编号
+      //data如果是select这里data应该有数据源，如果没有数据请设置 key字典编号(bind{dataKey:**,data:[]})
     },
     height: {
       type: Number,
@@ -492,7 +493,8 @@ export default {
 
       for (let index = 0; index < this.columns.length; index++) {
         let column = this.columns[index];
-        if (!column.hidden && (column.required || column.require)) {
+        //if (!column.hidden && (column.required || column.require)) {
+        if (!column.hidden && (column.required || column.require)) {  
           if (!this.validateColum(column, scope.row)) return;
         }
       }

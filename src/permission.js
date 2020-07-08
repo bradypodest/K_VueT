@@ -22,17 +22,23 @@ router.beforeEach(async (to, from, next) => {
   // determine whether the user has logged in
   const hasToken = getToken()
 
+  debugger;
   if (hasToken) {
     if (to.path === '/login') {
       // if is logged in, redirect to the home page
+      //await store.dispatch('sysUser/getInfo')
+
       next({ path: '/' })
       NProgress.done()
     } else {
       //获取当前用户名
+      debugger;
       const hasGetUserInfo = store.getters.name
-      if (hasGetUserInfo) {
+      if (hasGetUserInfo) {//单页面 当前路由地址变化
+        //await store.dispatch('sysUser/getInfo')
+
         next()
-      } else {
+      } else {//刷新时，没有vuex内容了
         try {
           // get user info   用于 页面显示用户信息
           await store.dispatch('sysUser/getInfo')
@@ -40,7 +46,6 @@ router.beforeEach(async (to, from, next) => {
           //通过token来获取对应的路由设置 ：执行 store/modules中的方法
           const accessRoutes = await store.dispatch('sysMenu/getUserMenu', hasToken)
 
-          debugger
           console.log(accessRoutes);
           router.addRoutes(accessRoutes);//动态添加路由
 

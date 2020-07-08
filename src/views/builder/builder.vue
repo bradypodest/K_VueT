@@ -408,6 +408,14 @@ export default {
             edit: { type: "select", data: [] }
           },
           {
+            field:"LookRole",
+            title:"指定哪个角色看(默认所有)",
+            width: 120,
+            align: "center",
+            bind: {key:'AllRole' ,data: [] },
+            edit: { type: "select", data: [] }
+          },
+          {
             field: "OrderNo",
             title: "列显示排序",
             width: 120,

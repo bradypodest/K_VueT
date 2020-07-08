@@ -11,7 +11,8 @@ import { resetRouter } from '@/router'
 const state = {
     token: getToken(),
     name: '',
-    avatar: ''//头像
+    avatar: '',//头像
+    roleId: ''//角色
 }
 
 
@@ -25,6 +26,10 @@ const mutations = {
     },
     SET_avatar: (state, avatar) => {
         state.avatar = avatar
+    },
+
+    SET_RoleId: (state, roleId) => {
+        state.roleId = roleId
     }
 }
 
@@ -48,17 +53,24 @@ const actions = {
     // get user info
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
-      getInfo(state.token).then(response => {
+    
+      var cookieToken=getToken();  
+      if(!cookieToken) reject('Verification failed, please Login again.')
+      
+      //getInfo(state.token).then(response => {
+       getInfo(cookieToken).then(response => {
         const { data } = response
-
+        console.log("获取用户信息:")
+        console.log(response);
         if (!data) {
           reject('Verification failed, please Login again.')
         }
 
-        const { UserName, HeadPicUrl } = data
+        const { UserName, HeadPicUrl,RoleId } = data
 
         commit('SET_NAME', UserName)
         commit('SET_avatar', HeadPicUrl)
+        commit('SET_RoleId', RoleId)
         resolve(data)
       }).catch(error => {
         reject(error)
@@ -92,6 +104,9 @@ const actions = {
       removeToken()
       resetRouter()
       resolve()
+
+      //重置store sysUser里面的name,  就可以在permission.js中当前路由地址变化还是刷新页面了
+      //commit('SET_NAME', '')
     })
   }
 }

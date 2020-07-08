@@ -87,7 +87,7 @@ export default {
     return {
       loginForm: {
         username: "admin",
-        password: "111111"
+        password: "123456"
       },
       loginRules: {
         username: [
@@ -144,11 +144,14 @@ export default {
 
           this.loading = true
           this.$store.dispatch('sysUser/login', this.loginForm).then(() => {
-             this.$router.push({ path: this.redirect || '/' })
-             this.loading = false
+              this.$store.dispatch('sysUser/getInfo')
+
+              this.$router.push({ path: this.redirect || '/' })
+              this.loading = false
            }).catch(() => {
              this.loading = false
            })
+           
         } else {
           console.log("error submit!!");
           return false;

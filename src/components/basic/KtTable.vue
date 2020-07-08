@@ -375,8 +375,20 @@ export default {
         // }else{
         //   return true;//默认是显示的
         // }
+        if(x.lookRole)
+        {
+          debugger;
+          console.log("lookrole")
+          console.log(x.lookRole)
+          console.log(
+          ((!x.hidden)&&(!x.lookRole))
+            || ((!x.hidden)&&(x.lookRole)&&(this.$store.getters.roleId==x.lookRole))
+          );
+        }
 
-        return !x.hidden;
+        //return !x.hidden;
+        return ((!x.hidden)&&(!x.lookRole))
+            || ((!x.hidden)&&(x.lookRole)&&(this.$store.getters.roleId==x.lookRole));
       });
     },
     //本组件的格式化
