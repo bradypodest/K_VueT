@@ -41,7 +41,7 @@
                 //注意：hidden:true必须要有，不然表结构 改变选择时容易出现bug
                 columnsOptions: [
                                  {field:'ID',title:'ID',type:'string',width:120,hidden:true,readonly:true,align:'center',},
-                                 {field:'UserName',title:'用户名',type:'string',width:120,hidden:false,align:'center',lookRole:'Admin'},
+                                 {field:'UserName',title:'用户名',type:'string',width:120,hidden:false,align:'center'},
                                 //  {field:'UserPwd',title:'用户密码',type:'string',width:180,hidden:false,align:'center',},
                                  {field:'RoleId',title:'角色ID',type:'string',width:120,hidden:false,align:'center',},//这里没有使用生成页面的代码
                                  {field:'RoleName',title:'角色名称',type:'string',width:180,hidden:false,align:'center',},
@@ -50,8 +50,8 @@
                                  {field:'ErrorCount',title:'ErrorCount',type:'int',width:90,hidden:true,align:'center',},
                                  {field:'LastLoginFailDate',title:'LastLoginFailDate',type:'datetime',width:90,hidden:true,align:'center',},
                                  {field:'HeadPicUrl',title:'头像',type:'string',width:180,hidden:false,align:'center',},
-                                 {field:'Sex',title:'性别',type:'string',width:120,hidden:true,bind:{key:'Gender',data:[]} ,align:'center',},
-                                 {field:'Age',title:'年龄',type:'int',width:90,hidden:true,align:'center',},
+                                 {field:'Sex',title:'性别',type:'string',width:120,hidden:true,bind:{key:'Gender',data:[]} ,align:'center',lookRole:'Admin'},
+                                 {field:'Age',title:'年龄',type:'int',width:90,hidden:true,align:'center',lookRole:'Admin'},
                                  {field:'Birth',title:'出生日期',type:'datetime',width:90,hidden:false,align:'center',},
                                  {field:'Address',title:'地址',type:'string',width:220,hidden:false,align:'center',},
                                  {field:'Mobile',title:'电话',type:'string',width:120,hidden:false,align:'center',},

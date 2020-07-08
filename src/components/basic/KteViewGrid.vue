@@ -778,22 +778,25 @@ var vueParam= {
                 //    console.log(value);
                 // }
               },
-            { title: "绑定数据源", field: "bind" }
+            { title: "绑定数据源", field: "bind" },
+            { title: "指定角色", field: "lookRole" }
           ]
         );
         debugger
         that.columnsOptions.forEach(x => {
-          that.dataStructData.push({
-            "title": x.title,
-            field: x.field,
-            type: x.type,
-            //hidden: x.hidden ? "否" : "是",
-            hidden: x.hidden,
-            bind: x.bind ? x.bind.dicNo : "--",
-            // cellClassName: {
-            //   title: "table-info-cell-title"
-            // }
-          });
+          //if((!x.lookRole)||this.$store.getters.roleId==x.lookRole)
+            that.dataStructData.push({
+              "title": x.title,
+              field: x.field,
+              type: x.type,
+              //hidden: x.hidden ? "否" : "是",
+              hidden: x.hidden,
+              bind: x.bind ? x.bind.key : "--",
+              lookRole:x.lookRole?x.lookRole:"--"
+              // cellClassName: {
+              //   title: "table-info-cell-title"
+              // }
+            });
         });
       }
       that.dataStructDialog = true;
