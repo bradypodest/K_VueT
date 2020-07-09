@@ -2,8 +2,8 @@
  *Creater：Karl
  *
  *describe: TestOrderTwo  vue主页面 | 代码由框架生成 | 业务请在@/extension/Test/TestOrderTwo.js此处编写
- *builder:  admin
- *build datetime: 2020-07-08 18:44:21
+ *builder:  TestRole
+ *build datetime: 2020-07-09 11:17:17
  -->
     <template>
   <div>
@@ -78,7 +78,7 @@ var vueParam = {
         },
         {
           field: "Remakes",
-          title: "Remakes",
+          title: "备注",
           type: "string",
           width: 220,
           hidden: false,
@@ -98,6 +98,7 @@ var vueParam = {
           type: "string",
           width: 130,
           hidden: false,
+          readonly: true,
           align: "center"
         },
         {
@@ -106,6 +107,7 @@ var vueParam = {
           type: "datetime",
           width: 90,
           hidden: false,
+          readonly: true,
           align: "center"
         },
         {
@@ -118,10 +120,11 @@ var vueParam = {
         },
         {
           field: "Modifier",
-          title: "Modifier",
+          title: "修改人",
           type: "string",
           width: 130,
           hidden: false,
+          readonly: true,
           align: "center"
         },
         {
@@ -130,6 +133,7 @@ var vueParam = {
           type: "datetime",
           width: 90,
           hidden: false,
+          readonly: true,
           align: "center"
         },
         {
@@ -187,9 +191,84 @@ var vueParam = {
             dataKey: "",
             range: false
           }
+        ],
+        [
+          {
+            title: "订单描述",
+            field: "OrderDescribe",
+            required: false,
+            type: "textarea",
+            disabled: false,
+            colSize: 6,
+            dataKey: "",
+            range: false
+          },
+          {
+            title: "备注",
+            field: "Remakes",
+            required: false,
+            type: "textarea",
+            disabled: false,
+            colSize: 6,
+            dataKey: "",
+            range: false
+          }
+        ],
+        [
+          {
+            title: "创建人",
+            field: "Creator",
+            required: false,
+            type: "text",
+            disabled: true,
+            colSize: 6,
+            dataKey: "",
+            range: false
+          },
+          {
+            title: "创建时间",
+            field: "CreateTime",
+            required: false,
+            type: "datetime",
+            disabled: true,
+            colSize: 6,
+            dataKey: "",
+            range: false
+          }
+        ],
+        [
+          {
+            title: "修改人",
+            field: "Modifier",
+            required: false,
+            type: "text",
+            disabled: true,
+            colSize: 6,
+            dataKey: "",
+            range: false
+          },
+          {
+            title: "修改时间",
+            field: "ModifyTime",
+            required: false,
+            type: "datetime",
+            disabled: true,
+            colSize: 6,
+            dataKey: "",
+            range: false
+          }
         ]
       ], //编辑弹框参数
-      editFormData: { OrderNo: "", Qty: "", OrderDescribe: "" }, //编辑弹框数据
+      editFormData: {
+        OrderNo: "",
+        Qty: "",
+        OrderDescribe: "",
+        Remakes: "",
+        Creator: "",
+        CreateTime: "",
+        Modifier: "",
+        ModifyTime: ""
+      }, //编辑弹框数据
       searchFormOptions: [
         [
           {
@@ -208,7 +287,7 @@ var vueParam = {
             required: false,
             type: "datetime",
             disabled: false,
-            colSize: 0,
+            colSize: 6,
             dataKey: "",
             range: true
           }
@@ -222,6 +301,56 @@ var vueParam = {
           sortName: "CreateTime",
           columnsOptions: [
             {
+              field: "ID",
+              title: "ID",
+              type: "string",
+              width: "120",
+              hidden: true,
+              require: true,
+              align: "center"
+            },
+            {
+              field: "RefID",
+              title: "关联父ID",
+              type: "string",
+              width: "90",
+              hidden: true,
+              require: true,
+              align: "center"
+            },
+            {
+              field: "GoodsName",
+              title: "产品名称",
+              type: "string",
+              width: "90",
+              hidden: false,
+              edit: { type: "text" },
+              require: true,
+              align: "center"
+            },
+            {
+              field: "GoodsBatch",
+              title: "产品批号",
+              type: "string",
+              width: "90",
+              hidden: false,
+              edit: { type: "select" },
+              require: true,
+              bind: { key: "AllDic", data: [] },
+              align: "center"
+            },
+            {
+              field: "Qty",
+              title: "数量",
+              type: "int",
+              width: "90",
+              hidden: false,
+              edit: { type: "number" },
+              require: true,
+              lookRole: "Admin",
+              align: "center"
+            },
+            {
               field: "Weight",
               title: "重量",
               type: "float",
@@ -232,20 +361,20 @@ var vueParam = {
               align: "center"
             },
             {
-              field: "ID",
-              title: "ID",
+              field: "Remarks",
+              title: "备注",
               type: "string",
-              width: "120",
-              hidden: true,
-              require: true,
+              width: "220",
+              hidden: false,
+              edit: { type: "textarea" },
               align: "center"
             },
             {
-              field: "CreateTime",
-              title: "创建时间",
-              type: "DateTime",
-              width: "90",
-              hidden: false,
+              field: "CreateID",
+              title: "",
+              type: "string",
+              width: "80",
+              hidden: true,
               require: true,
               align: "center"
             },
@@ -259,56 +388,12 @@ var vueParam = {
               align: "center"
             },
             {
-              field: "Status",
-              title: "",
-              type: "int",
-              width: "90",
-              hidden: false,
-              require: true,
-              align: "center"
-            },
-            {
-              field: "Qty",
-              title: "",
-              type: "int",
-              width: "90",
-              hidden: false,
-              require: true,
-              align: "center"
-            },
-            {
-              field: "Modifier",
-              title: "修改人",
-              type: "string",
-              width: "130",
-              hidden: false,
-              align: "center"
-            },
-            {
-              field: "GoodsName",
-              title: "产品名称",
-              type: "string",
-              width: "90",
-              hidden: false,
-              edit: { type: "text" },
-              require: true,
-              lookRole: "Admin",
-              align: "center"
-            },
-            {
-              field: "Deleter",
-              title: "",
-              type: "string",
-              width: "180",
-              hidden: false,
-              align: "center"
-            },
-            {
-              field: "DeleteTime",
-              title: "",
+              field: "CreateTime",
+              title: "创建时间",
               type: "DateTime",
               width: "90",
               hidden: false,
+              require: true,
               align: "center"
             },
             {
@@ -320,12 +405,11 @@ var vueParam = {
               align: "center"
             },
             {
-              field: "RefID",
-              title: "关联父ID",
+              field: "Modifier",
+              title: "修改人",
               type: "string",
-              width: "90",
+              width: "130",
               hidden: false,
-              require: true,
               align: "center"
             },
             {
@@ -337,40 +421,36 @@ var vueParam = {
               align: "center"
             },
             {
-              field: "DeleterID",
+              field: "Status",
               title: "",
-              type: "string",
-              width: "120",
-              hidden: false,
-              align: "center"
-            },
-            {
-              field: "CreateID",
-              title: "",
-              type: "string",
-              width: "80",
+              type: "int",
+              width: "90",
               hidden: true,
               require: true,
               align: "center"
             },
             {
-              field: "GoodsBatch",
-              title: "产品批号",
-              type: "string",
+              field: "DeleteTime",
+              title: "",
+              type: "DateTime",
               width: "90",
-              hidden: false,
-              edit: { type: "text" },
-              require: true,
-              bind: { key: "AllDic", data: [] },
+              hidden: true,
               align: "center"
             },
             {
-              field: "Remarks",
-              title: "备注",
+              field: "Deleter",
+              title: "",
               type: "string",
-              width: "220",
-              hidden: false,
-              edit: { type: "textarea" },
+              width: "180",
+              hidden: true,
+              align: "center"
+            },
+            {
+              field: "DeleterID",
+              title: "",
+              type: "string",
+              width: "120",
+              hidden: true,
               align: "center"
             }
           ],
@@ -381,6 +461,34 @@ var vueParam = {
           cnName: "测试详情Two",
           sortName: "CreateTime",
           columnsOptions: [
+            {
+              field: "ID",
+              title: "",
+              type: "string",
+              width: "120",
+              hidden: true,
+              require: true,
+              align: "center"
+            },
+            {
+              field: "RefID",
+              title: "关联父ID",
+              type: "string",
+              width: "90",
+              hidden: true,
+              require: true,
+              align: "center"
+            },
+            {
+              field: "GoodsName",
+              title: "产品名称",
+              type: "string",
+              width: "90",
+              hidden: false,
+              edit: { type: "text" },
+              require: true,
+              align: "center"
+            },
             {
               field: "GoodsCode",
               title: "产品编码",
@@ -393,50 +501,6 @@ var vueParam = {
               align: "center"
             },
             {
-              field: "DeleteTime",
-              title: "",
-              type: "DateTime",
-              width: "90",
-              hidden: true,
-              align: "center"
-            },
-            {
-              field: "GoodsName",
-              title: "产品名称",
-              type: "string",
-              width: "90",
-              hidden: false,
-              edit: { type: "text" },
-              require: true,
-              lookRole: "TestJeez",
-              align: "center"
-            },
-            {
-              field: "CreateID",
-              title: "",
-              type: "string",
-              width: "80",
-              hidden: true,
-              require: true,
-              align: "center"
-            },
-            {
-              field: "ModifyID",
-              title: "",
-              type: "string",
-              width: "80",
-              hidden: true,
-              align: "center"
-            },
-            {
-              field: "DeleterID",
-              title: "",
-              type: "string",
-              width: "120",
-              hidden: true,
-              align: "center"
-            },
-            {
               field: "GoodsBatch",
               title: "产品批号",
               type: "string",
@@ -448,29 +512,23 @@ var vueParam = {
               align: "center"
             },
             {
-              field: "RefID",
-              title: "关联父ID",
-              type: "string",
-              width: "90",
-              hidden: false,
-              require: true,
-              align: "center"
-            },
-            {
-              field: "Status",
-              title: "",
+              field: "Qty",
+              title: "数量",
               type: "int",
               width: "90",
               hidden: false,
+              edit: { type: "number" },
               require: true,
+              lookRole: "TestJeez",
               align: "center"
             },
             {
-              field: "Creator",
-              title: "创建人",
-              type: "string",
-              width: "130",
+              field: "Weight",
+              title: "重量",
+              type: "float",
+              width: "90",
               hidden: false,
+              edit: { type: "decimal" },
               require: true,
               align: "center"
             },
@@ -484,45 +542,20 @@ var vueParam = {
               align: "center"
             },
             {
-              field: "Modifier",
+              field: "CreateID",
               title: "",
               type: "string",
-              width: "130",
-              hidden: false,
-              align: "center"
-            },
-            {
-              field: "Qty",
-              title: "数量",
-              type: "int",
-              width: "90",
-              hidden: false,
-              edit: { type: "number" },
+              width: "80",
+              hidden: true,
               require: true,
               align: "center"
             },
             {
-              field: "Deleter",
-              title: "",
+              field: "Creator",
+              title: "创建人",
               type: "string",
-              width: "180",
-              hidden: true,
-              align: "center"
-            },
-            {
-              field: "ModifyTime",
-              title: "修改时间",
-              type: "DateTime",
-              width: "90",
+              width: "130",
               hidden: false,
-              align: "center"
-            },
-            {
-              field: "ID",
-              title: "",
-              type: "string",
-              width: "120",
-              hidden: true,
               require: true,
               align: "center"
             },
@@ -536,13 +569,60 @@ var vueParam = {
               align: "center"
             },
             {
-              field: "Weight",
-              title: "重量",
-              type: "float",
+              field: "ModifyID",
+              title: "",
+              type: "string",
+              width: "80",
+              hidden: true,
+              align: "center"
+            },
+            {
+              field: "Modifier",
+              title: "修改人",
+              type: "string",
+              width: "130",
+              hidden: false,
+              align: "center"
+            },
+            {
+              field: "ModifyTime",
+              title: "修改时间",
+              type: "DateTime",
               width: "90",
               hidden: false,
-              edit: { type: "decimal" },
+              align: "center"
+            },
+            {
+              field: "Status",
+              title: "",
+              type: "int",
+              width: "90",
+              hidden: true,
               require: true,
+              align: "center"
+            },
+            {
+              field: "DeleteTime",
+              title: "",
+              type: "DateTime",
+              width: "90",
+              hidden: true,
+              align: "center"
+            },
+            {
+              field: "Deleter",
+              title: "",
+              type: "string",
+              width: "180",
+              hidden: true,
+              align: "center"
+            },
+            {
+              field: "DeleterID",
+              title: "",
+              type: "string",
+              width: "120",
+              hidden: true,
               align: "center"
             }
           ],
