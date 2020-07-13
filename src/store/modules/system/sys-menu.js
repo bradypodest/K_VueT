@@ -26,7 +26,9 @@ export function filterRouterTwo(state,route){
                         {
                             path: 'index',
                             name:route.MenuId,
-                            component: _import(`${route.PathUrl}`),
+                            // component: _import(`${route.PathUrl}`),
+                            component: (resolve)=>require([`@/views${route.PathUrl}`],resolve),//遇见版本bug :Cannot find module '@/views/system/SysUserNew.vue'     at webpackEmptyContext
+                    //解决：https://gitee.com/y_project/RuoYi-Vue/issues/I1F3Z9   //如果你的  route.PathUrl 是    /system/sysUser.vue   这种格式的，就是这么拼接
                             meta:{ title: route.Name, icon: route.Icon }
                         }
                     ]
@@ -48,7 +50,9 @@ export function filterRouterTwo(state,route){
             routeItem= {
                     path: route.Url,
                     name: route.MenuId,
-                    component: _import(`${route.PathUrl}`),
+                    // component: _import(`${route.PathUrl}`),
+                    component: (resolve)=>require([`@/views${route.PathUrl}`],resolve),//遇见版本bug :Cannot find module '@/views/system/SysUserNew.vue'     at webpackEmptyContext
+                    //解决：https://gitee.com/y_project/RuoYi-Vue/issues/I1F3Z9   //如果你的  route.PathUrl 是    /system/sysUser.vue   这种格式的，就是这么拼接
                     meta: { title: route.Name, icon: route.Icon },
                     children: [],
                 };
