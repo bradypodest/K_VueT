@@ -25,6 +25,11 @@
         <el-form-item label="条形码高度">
           <el-input-number v-model="currentComponent.props.bodyHeight" class="w-100" :min="1" :max="100" label="描述文字" size="small" @change="debounceUpdate"></el-input-number>
         </el-form-item>
+
+        <el-form-item label="边框宽">
+          <el-input-number v-model="currentComponent.default.width" class="w-100" :min="1" :max="100" label="描述文字" size="small" @change="handleUpdateComWidth"></el-input-number>
+        </el-form-item>
+
       </el-tab-pane>
     </el-tabs>
   </el-form>
@@ -121,6 +126,19 @@
       handleUpdateBarcode() {
         this.$store.dispatch('print/updateBarcode');
       },
+      handleUpdateComWidth(){
+        const update = {
+          id: this.activeComponent.id,
+          update: {
+            default: {
+              height:12,
+              width:this.currentComponent.default.width,
+            },
+          },
+        };
+
+        this.$store.dispatch('print/updateComponentWidth', update);
+      }
     },
   };
 </script>

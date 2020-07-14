@@ -1,7 +1,7 @@
 <template>
   <div :class="resizeClass" class="resize-area" :style="resizeStyle">
-    <i v-if="!isLine" class="iconfont icontuozhuaidaxiao" :style="iconStyle" @click.stop @mousedown.native="handleResizeDown" />
-    <div v-else class="resize-bar" :style="barStyle" @click.stop @mousedown.native="handleResizeDown" />
+    <i v-if="!isLine" class="el-icon-rank icontuozhuaidaxiao" :style="iconStyle" @click.stop @mousedown="handleResizeDown" />
+    <div v-else class="resize-bar" :style="barStyle" @click.stop @mousedown="handleResizeDown" />
   </div>
 </template>
 

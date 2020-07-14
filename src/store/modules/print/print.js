@@ -2,6 +2,9 @@ import barcode from 'jsbarcode';
 // @ts-ignore
 // import _ from 'lodash';
 import { Notification } from 'element-ui';
+// const generaidteId = () => {
+//   return Number(Math.random().toString().substr(3, length) + Date.now()).toString(36);
+// };
 const generateId = () => {
   return Number(Math.random().toString().substr(3, length) + Date.now()).toString(36);
 };
@@ -203,7 +206,7 @@ const print = {
         },
       },
     },
-    componentList: [
+    componentList: [//左侧栏 组件
       {
         title: '地址信息',
         list: [
@@ -284,7 +287,7 @@ const print = {
         ],
       },
     ],
-    storeList: [],
+    storeList: [],//画布中的组件
     templateList: [
       {
         name: '快递标签',
@@ -296,7 +299,7 @@ const print = {
     updateStoreList({ commit }, payload) {
       commit('UPDATE_STORE_LIST', payload);
     },
-    addComponent({ commit, state }, payload) {
+    addComponent({ commit, state }, payload) {//新增组件
       const id = generateId();
       const entity = state.componentMap[payload.componentId];
       if (!entity) {

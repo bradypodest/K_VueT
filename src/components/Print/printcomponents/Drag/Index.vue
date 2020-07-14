@@ -87,6 +87,7 @@
       activeClass() {
         const result = [];
         const {id = ''} = this.activeComponent;
+        debugger
         if (id === this.componentObject.id) {
           result.push('is-active');
         }
@@ -155,6 +156,7 @@
       handleMouseDown(e) {
         const $drag = e.path.find((item) => item.className.includes('drag-warp'));
         const { top, left } = $drag.getBoundingClientRect();
+        debugger
         this.downX = e.clientX - left;
         this.downY = e.clientY - top;
         on(document, 'mousemove', this.handleMouseMove);

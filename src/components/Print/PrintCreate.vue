@@ -36,10 +36,10 @@ export default {
     },
     methods: {
       init() {
-        this.$store.dispatch('components/clearStoreList');//清空画布
+        this.$store.dispatch('print/clearStoreList');//清空画布
       },
       handleCancelCurrent() {
-        this.$store.dispatch('components/setActive', '');
+        this.$store.dispatch('print/setActive', '');
       },
     },
 }

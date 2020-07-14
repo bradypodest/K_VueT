@@ -62,6 +62,9 @@
         const xArea = clientX < this.right && clientX > this.left;
         const yArea = clientY < this.bottom && clientX > this.top;
         if (xArea && yArea) {
+
+          console.log("componentId是")
+          console.log(componentId)
           this.$store.dispatch('print/addComponent', { componentId, props });
         }
       },
