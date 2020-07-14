@@ -17,6 +17,11 @@ import '@/permission' // permission control
 
 import './public.js';
 
+// import directive from '@/directive';
+import components from '@/components/Print/printcomponents/map.js';
+// directive.map((item) => Vue.use(item));
+components.map((item) => Vue.component(item.id, item.component));
+
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api

@@ -13,5 +13,13 @@ const getters = {
 
   visitedViews: state => state.tagsView.visitedViews,
   cachedViews: state => state.tagsView.cachedViews,
+
+
+  //print
+  componentList: state => state.print.componentList,
+  storeList: state => state.print.storeList,
+  activeComponent: state => state.print.activeComponent,
+  templateList: state => state.print.templateList,
+
 }
 export default getters

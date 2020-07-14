@@ -53,16 +53,19 @@
           </div>
         </kv-dialog>
       </div>
-    </div>    
+    </div>   
+
+    <print-create></print-create>
   </div>
 </template>
 
 <script>
 import UploadExcel from "@/components/basic/UploadExcel.vue"; //上传excel
 import KvDialog from "@/components/basic/KvDialog.vue";
+import PrintCreate from "@/components/Print/PrintCreate.vue";
 export default {
   name: "Popup",
-  components: { UploadExcel, KvDialog },
+  components: { UploadExcel, KvDialog ,PrintCreate},
   data() {
     return {
       ///上传execl start

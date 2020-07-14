@@ -19,6 +19,7 @@
     custom-class="dialog-custom-class"
     @close="closeDialog"
     top="4vh"
+    :fullscreen="isFullscreen"
   >
     <!-- 这里的插槽会替换title显示的内容 -->
     <div slot="title" class="header-title">
@@ -74,6 +75,10 @@ export default {
     paddingtb: {//中心内容边距  上下
       type: Number,
       default: 5
+    },
+    isFullscreen:{//是否全屏（默认不全屏）
+      type: Boolean,
+      default: false
     },
   },
   data() {

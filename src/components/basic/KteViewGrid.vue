@@ -41,6 +41,7 @@
       :height="dialogOptions.height"
       :paddinglr="16"
       :paddingtb="5"
+      :isFullscreen="isFullscreen"
       >
         <div class="iview-com" slot="content">
           <!-- 明细头部自定义组件  -->
@@ -628,6 +629,8 @@ var vueParam= {
       },
 
       keyValueType: { _dinit: false },
+    
+      isFullscreen:false,
     //新增 ，编辑 弹出框 end
 
     //弹出框 的 子表 start
