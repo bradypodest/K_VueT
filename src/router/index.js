@@ -174,6 +174,12 @@ export const constantRoutes = [
     ]
   },
 
+  {
+    path:'/form_design',
+    component:() => import('@/views/form/designform'),
+    name:'FormDesign'
+  },
+
   //系统路由
   // {
   //   path: '/system',
