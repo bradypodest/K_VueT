@@ -2,9 +2,9 @@ import Vue from 'vue'
 
 import 'normalize.css/normalize.css' // A modern alternative to CSS resets
 
-import Antd from 'ant-design-vue'
-import 'ant-design-vue/dist/antd.css'
-Vue.use(Antd) //必须放在element 的前面 
+// import Antd from 'ant-design-vue'
+// import 'ant-design-vue/dist/antd.css'
+// Vue.use(Antd) //必须放在element 的前面 
 
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
@@ -21,10 +21,18 @@ import '@/permission' // permission control
 
 import './public.js';//引入的公有文件,其中是公用方法，全局变量，公用枚举
 
-import KFormDesign from 'k-form-design'
-//import KFormDesign from 'k-form-design/lib/k-form-design-mini.umd.min'
-import 'k-form-design/lib/k-form-design.css'
-Vue.use(KFormDesign) 
+// import KFormDesign from 'k-form-design'
+// //import KFormDesign from 'k-form-design/lib/k-form-design-mini.umd.min'
+// import 'k-form-design/lib/k-form-design.css'
+// Vue.use(KFormDesign) 
+
+import DialogBox from '@/plug/dialog/dialog_box.js'
+Vue.use(DialogBox)
+
+import FormMaking from 'form-making'
+import 'form-making/dist/FormMaking.css'
+
+Vue.use(FormMaking)
 
 /**
  * If you don't want to use mock-server

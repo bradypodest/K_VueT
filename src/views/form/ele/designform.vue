@@ -1,21 +1,23 @@
 <!--
-  designform.vue
-  采用组件 ：k-form-design （不兼容，废弃）
-  源码地址： https://github.com/Kchengz/k-form-design
+  designform.vue 
+  采用组件 ： vue-form-making 
+  源码地址：https://github.com/GavinZhuLei/vue-form-making
   设计表单界面-可拖拽生成表单
 -->
 <template>
-  <div>
-    <k-form-design 
-    ref="kfd"
-      :title="formDesignName+' -- by Karl'" 
-      :toolbars="['save', 'preview', 'reset','close' ]"
-      showToolbarsText
-      toolbarsTop
-      @save="handleSave"
-      @close="closeWindow"
-    />
-  </div>
+  <fm-making-form 
+    ref="makingform" 
+    style="height: 500px;" 
+    preview 
+    generate-code 
+    generate-json
+    clearable
+  >
+    <template slot="action">
+      <!-- 自定义操作区域插槽 -->
+      <el-button type="text" icon="el-icon-upload" @click="handleSave">保存</el-button>
+    </template>
+  </fm-making-form>
 </template>
 
 <script>
@@ -35,15 +37,16 @@ export default {
   },
   
   methods:{
-    handleSave(values) {
+    handleSave() {
       var that=this;
       alert("触发保存方法");
-      console.log(values);
+      
 debugger;
       //this.$refs.kfd.handleSave();//这行代码会触发Save 事件
       //保存json ,html到对应的表单设计
 
-      that.formDesignData.JsonContent=values;
+      that.formDesignData.JsonContent=JSON.stringify(that.$refs.makingform.getJSON());
+      that.formDesignData.HtmlContent=that.$refs.makingform.getHtml();
       updateOne(that.formDesignData)
             .then(res => {
               if (res.success) {
@@ -54,10 +57,6 @@ debugger;
               }
             })
             .catch();
-    },
-    closeWindow(){
-      alert("触发关闭方法");
-      //提示用户是否关闭
     }
   },
 
@@ -88,8 +87,8 @@ debugger;
             that.formDesignData = res.data;
             console.log(that.formDesignData)
 
-            if(that.formDesignData.JsonContent)
-              that.$refs.kfd.handleSetData(JSON.parse(that.formDesignData.JsonContent));
+            if(that.formDesignData&&that.formDesignData.JsonContent)
+              that.$refs.makingform.setJSON(JSON.parse(that.formDesignData.JsonContent));
           }
         })
         .catch();
@@ -101,9 +100,7 @@ debugger;
     //that.$refs.kfd.handleReset(true);
     
     if(that.formDesignData&&that.formDesignData.JsonContent){
-      
-      that.$refs.kfd.handleSetData(
-JSON.parse(that.formDesignData.JsonContent));
+        that.$refs.makingform.setJSON(JSON.parse(that.formDesignData.JsonContent));
     }
   },
 }

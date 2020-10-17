@@ -19,6 +19,7 @@
     "axios": "0.18.1",
     "clipboard": "^2.0.4",
     "element-ui": "2.13.0",
+    "form-making": "^1.2.9",
     "js-cookie": "2.2.0",
     "k-form-design": "^3.6.1",
     "less": "^3.11.1",
