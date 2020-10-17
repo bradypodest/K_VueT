@@ -19,6 +19,7 @@
     "axios": "0.18.1",
     "clipboard": "^2.0.4",
     "element-ui": "2.13.0",
+    "f-render": "^4.10.1",
     "form-making": "^1.2.9",
     "js-cookie": "2.2.0",
     "k-form-design": "^3.6.1",
@@ -28,6 +29,7 @@
     "path-to-regexp": "2.4.0",
     "screenfull": "4.2.0",
     "vue": "2.6.10",
+    "vue-ele-form": "^0.8.50",
     "vue-router": "3.0.6",
     "vuex": "3.1.0",
     "webpack-dev-server": "3.3.1"

@@ -54,7 +54,7 @@
                                  {field:'RefID',title:'父Id',type:'string',width:220,hidden:true,align:'center',},
                                  {field:'CreateID',title:'CreateID',type:'string',width:80,hidden:true,align:'center',},
                                  {field:'Creator',title:'创建人',type:'string',width:130,hidden:false,readonly:true,align:'center',},
-                                 {field:'CreateTime',title:'创建时间',type:'datetime',width:90,hidden:false,readonly:true,align:'center',},
+                                 {field:'CreateTime',title:'创建时间',type:'datetime',width:150,hidden:false,readonly:true,align:'center',},
                                  {field:'ModifyID',title:'ModifyID',type:'string',width:80,hidden:true,readonly:true,align:'center',},
                                  {field:'Modifier',title:'修改人',type:'string',width:130,hidden:true,readonly:true,align:'center',},
                                  {field:'ModifyTime',title:'修改时间',type:'datetime',width:90,hidden:true,readonly:true,align:'center',},

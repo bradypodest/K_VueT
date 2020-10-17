@@ -8,9 +8,14 @@
     :before-close="close"
     :title="title"
   >
+  <!-- 这里的插槽会替换title显示的内容 -->
+    <div slot="title" class="header-title">
+      <i :class="titleIcon"></i>
+      <span>{{title}}</span>
+    </div>
     <div
       ref="component"
-      class="height-full padding-left-5 padding-right-5 background-6F9"
+      class="height-full padding-left-5 padding-right-5 background-6F9  dialog-content"
     ></div>
     <span v-if="isShowFoorter" slot="footer" class="dialog-footer">
       <el-button @click="cancel('cancel')">取消</el-button>
@@ -32,7 +37,7 @@ export default {
     //弹窗样式
     customClass: {
       type: String,
-      default: "dialog-medium", //默认样式
+      default: "dialog-medium  dialog-custom-class", //默认样式
     },
     //弹窗标题
     title: {
@@ -40,6 +45,10 @@ export default {
       default() {
         return "对话框";
       },
+    },
+    titleIcon: {//title的图标
+      type: String,
+      default: "el-icon-info"
     },
     //是否显示底部按钮
     isShowFoorter: {
@@ -167,13 +176,49 @@ export default {
 };
 </script>
 
-<style>
-  .dialog .el-dialog__headerbtn {
-    top: auto;
+<style lang="less">
+.dialog-custom-class {
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+    .el-dialog__close{
+      color: white;
+    }
+  /* 顶部 */
+  .el-dialog__header {
+    //border-bottom: 1px solid #ccc;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    padding: 18px 15px;
+    background-image: linear-gradient(
+      135deg,
+      rgb(12, 141, 215) 10%,
+      #57c5f7 100%
+    );
   }
-
-  .dialog .el-dialog__title {
-    line-height: 16px;
-    font-size: 16px
+  .header-title{
+    color: white;
   }
+  .el-dialog__body {
+    padding: 3px 0px;
+  }
+  
+  .dialog-content {
+    min-height: 180px;
+    margin-top: 20px;
+  }
+  .srcoll-content {
+    height: 100%;
+    word-break: break-all;
+    // padding-top: 5px;
+    // padding-bottom: 5px;
+    //  padding: 16px;
+  }
+  .el-scrollbar__wrap{overflow-x:hidden;}
+  .el-dialog__footer {
+    border-top: 1px solid #ccc;
+    padding: 8px 15px;
+  }
+}
 </style>
