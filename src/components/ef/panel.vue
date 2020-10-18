@@ -170,6 +170,10 @@ export default {
       type:Object,
       default:null
     },
+    saveFlowInfoData: {
+        type: Function,
+        default: null
+    }
   },
 
   data() {
@@ -674,7 +678,9 @@ export default {
     //---------------扩展：保存流程节点配置到数据库
     SaveFlowInfo(){
       this.$message.success("保存流程信息到数据库");
-      
+      if(this.saveFlowInfoData){
+        this.saveFlowInfoData(this.data);
+      }
     }
   },
 };

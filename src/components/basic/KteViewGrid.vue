@@ -1222,7 +1222,7 @@ var vueParam= {
         if (!this.updateBefore(formData)) return;
       }
       let url = this.getUrl(this.currentAction);
-
+debugger
       //待修改 : data 数据需要修改
       var that=this;
       if(that.currentAction == _const.ADD || that.currentAction == _const.EDIT){
@@ -1233,7 +1233,7 @@ var vueParam= {
           //data: editFormData
             data: formData
         }).then(res=>{
-          debugger
+          
           if(res.success){
             that.$message({
               type: "success",
