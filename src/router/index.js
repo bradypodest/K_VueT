@@ -190,6 +190,12 @@ export const constantRoutes = [
     name:'FormDesignRender'
   },
 
+  {
+    path:'/flow_design',
+    component:() => import('@/views/flow/FlowDesign'),
+    name:'FlowDesign'
+  },
+
   //系统路由
   // {
   //   path: '/system',

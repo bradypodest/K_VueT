@@ -20,7 +20,19 @@ let extension = {
     },
     text:"ccccccc",
     buttons: {
-            view: [],
+            view: [
+              {
+                name: "设计表单render",
+                icon: "",
+                value: "Edit",
+                class: '',
+                type: "info",
+                index: 1,
+                onClick: function () {
+                  this.OpenDesignFlowPage();
+                }
+              },
+          ],
             box:[],
             detail:[
                 /*  多子表
@@ -45,7 +57,28 @@ let extension = {
               ]
     },//扩展的按钮
     methods: {//事件扩展  一些插口方法都可以重写
-       
+      OpenDesignFlowPage() {
+        let rows = this.$refs.table.getSelected();
+        if (rows.length == 0) {
+          return this.$message.error("请选择要设计的流程!");
+        }
+        if (rows.length > 1) {
+          this.$message.warning("已选择多个，将默认第一个!");
+        }
+        debugger;
+        this.$message.error("跳转到设计流程页面");
+        let routeData = this.$router.resolve({
+          name: "FlowDesign",
+          query: {
+            ID: rows[0].ID
+          }
+        });
+        //window.open(routeData.href, '_blank');
+        this.PUBLICTOOL.OpenWindowBlank(routeData.href, res => {
+          //this.$refs.table.
+          this.search();
+        });
+      },
        onInit() {
         
        }

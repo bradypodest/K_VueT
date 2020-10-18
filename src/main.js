@@ -39,6 +39,8 @@ import FRender from "f-render";
 Vue.use(EleForm);
 Vue.component("f-render", FRender);
 
+import '@/components/ef/index.css'
+
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api
