@@ -398,7 +398,13 @@ export default {
             align: "center",
             edit: { type: "text" }
           },
-
+          {
+            field: "IsEditHide",
+            title: "编辑时是否隐藏",
+            width: 90,
+            align: "center",
+            edit: { type: "switch" }
+          },
           {
             field: "DicKey",
             title: "字典数据",
