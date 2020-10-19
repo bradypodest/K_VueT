@@ -196,6 +196,12 @@ export const constantRoutes = [
     name:'FlowDesign'
   },
 
+  {
+    path:'/new_flow_instance',
+    component:() => import('@/views/flow/NewFlowInstance'),
+    name:'NewFlowInstance'
+  },
+
   //系统路由
   // {
   //   path: '/system',

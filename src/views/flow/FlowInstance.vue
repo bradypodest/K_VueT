@@ -15,7 +15,9 @@
                 :editFormOptions="editFormOptions"
                 :searchFormData="searchFormData"
                 :searchFormOptions="searchFormOptions"
-                :details=details>
+                :details=details
+                :ignoreButtons="ignoreButtons"
+                >
             </kte-view-grid>
         </div>
     </template>
@@ -47,7 +49,7 @@
                                  {field:'ActivityId',title:'当前节点ID',type:'string',width:120,hidden:true,align:'center',},
                                  {field:'ActivityType',title:'当前节点类型（0会签节点）',type:'int',width:90,hidden:true,align:'center',},
                                  {field:'ActivityName',title:'当前节点名称',type:'string',width:220,hidden:false,align:'center',},
-                                 {field:'PreviousId',title:'前一个节点ID',type:'string',width:120,hidden:false,align:'center',},
+                                 {field:'PreviousId',title:'前一个节点ID',type:'string',width:120,hidden:true,align:'center',},
                                  {field:'SchemeId',title:'流程设计ID',type:'string',width:120,hidden:true,align:'center',},
                                  {field:'SchemeContent',title:'流程设计模板内容',type:'string',width:90,hidden:true,align:'center',},
                                  {field:'SchemeType',title:'流程类型',type:'int',width:90,hidden:true,align:'center',},
@@ -72,11 +74,17 @@
                                  {field:'Deleter',title:'Deleter',type:'string',width:180,hidden:true,align:'center',},
                                  {field:'DeleterID',title:'DeleterID',type:'string',width:120,hidden:true,align:'center',},
                                  ],//主table列
+                
+                //原始编辑 弹窗 打算不使用  Start
                 editFormOptions: [[{"title":"实例编号","field":"Code","required":true,"type":"text","disabled":false,"colSize":6,"dataKey":"","range":false},{"title":"名称","field":"Name","required":true,"type":"text","disabled":false,"colSize":6,"dataKey":"","range":false}],[{"title":"等级","field":"FlowLevel","required":false,"type":"number","disabled":false,"colSize":6,"dataKey":"","range":false},{"title":"备注/描述","field":"Remark","required":false,"type":"textarea","disabled":false,"colSize":6,"dataKey":"","range":false}]],//编辑弹框参数
                 editFormData: {"ActivityId":"","Code":"","Name":"","FlowLevel":"","Remark":""},//编辑弹框数据
+                //原始编辑 弹窗 打算不使用  End                
+                
                 searchFormOptions: [[{"title":"实例编号","field":"Code","required":false,"type":"like","disabled":false,"colSize":6,"dataKey":"","range":false},{"title":"名称","field":"Name","required":false,"type":"like","disabled":false,"colSize":6,"dataKey":"","range":false},{"title":"等级","field":"FlowLevel","required":false,"type":"number","disabled":false,"colSize":6,"dataKey":"","range":false}],[{"title":"当前节点名称","field":"ActivityName","required":false,"type":"text","disabled":false,"colSize":0,"dataKey":"","range":false},{"title":"是否完成","field":"IsFinish","required":false,"type":"select","disabled":false,"colSize":0,"dataKey":"YesOrNo","range":false}]],//查询form表单的参数
                 searchFormData: {"Code":"","Name":"","FlowLevel":"","ActivityName":"","IsFinish":""},//查询form表单的数据
                 details: [],//子表
+
+                ignoreButtons:["Add","Update","Delete"],
             };
         },
     };

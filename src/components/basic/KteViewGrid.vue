@@ -452,6 +452,13 @@ var vueParam= {
         return [];
       }
     },
+  
+    ignoreButtons:{//忽略的主 按钮 
+      type: Array,
+      default: () => {
+        return [];
+      }
+    }
   },
   data(){
     return {
@@ -474,6 +481,7 @@ var vueParam= {
             name: "刷 新",
             icon: 'el-icon-refresh',
             class: '',
+            value: "Refresh",
             type: 'success',
             onClick: function () {
                 this.refresh();
@@ -541,7 +549,7 @@ var vueParam= {
             name: "数据结构",
             icon: 'ios-cog',
             class: '',
-            value: '',
+            value: 'DataStructure',
             onClick: function () {
                 this.openViewColumns();
             }
@@ -1456,7 +1464,17 @@ debugger
       return  this.table.url + action;
       //return "/SysRole/" + "Add"
     },
-    initButtons(){//初始化主按钮    
+    initButtons(){//初始化主按钮   
+      var that=this; 
+      debugger;
+      //忽略 一些 主按钮
+      if(this.ignoreButtons && this.ignoreButtons instanceof Array &&this.ignoreButtons.length>0){
+
+        this.buttonsDefault=this.buttonsDefault.filter((x)=>{
+          return  that.ignoreButtons.indexOf(x.value)==-1;
+        });
+      }
+
       //获取角色权限配置下的 对应页面的按钮(查询,新增,修改,删除,以及扩展下的按钮))
       if (this.extend.buttons.view) {
         this.buttons=this.extendBtn(this.buttonsDefault,this.extend.buttons.view);

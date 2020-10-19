@@ -19,7 +19,19 @@ let extension = {
     },
     text:"ccccccc",
     buttons: {
-            view: [],
+            view: [
+              {
+                name: "新的申请",
+                icon: "",
+                value: "NewFlowInstance",
+                class: '',
+                type: "success",
+                index: 1,
+                onClick: function () {
+                  this.OpenNewFlowPage();
+                }
+              },
+            ],
             box:[],
             detail:[
                 /*  多子表
@@ -44,7 +56,19 @@ let extension = {
               ]
     },//扩展的按钮
     methods: {//事件扩展  一些插口方法都可以重写
-       
+      OpenNewFlowPage() {
+        this.$message.error("跳转到新增流程页面");
+        let routeData = this.$router.resolve({
+          name: "NewFlowInstance",
+          query: {
+          }
+        });
+        //window.open(routeData.href, '_blank');
+        this.PUBLICTOOL.OpenWindowBlank(routeData.href, res => {
+          //this.$refs.table.
+          this.search();
+        });
+      },
        onInit() {
         
        }
