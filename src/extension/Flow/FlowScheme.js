@@ -63,7 +63,7 @@ let extension = {
           return this.$message.error("请选择要设计的流程!");
         }
         if (rows.length > 1) {
-          this.$message.warning("已选择多个，将默认第一个!");
+          this.$message.warning("已选择多个，将默认选择第一个勾选的!");
         }
         debugger;
         this.$message.error("跳转到设计流程页面");

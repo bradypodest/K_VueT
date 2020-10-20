@@ -1100,7 +1100,7 @@ var vueParam= {
 
       //
       if (rows.length > 1) {
-        this.$message.warning("已选择多个，将默认第一个!");
+        this.$message.warning("已选择多个，将默认选择第一个勾选的!");
       }
 
       //设置当前的数据到表单上

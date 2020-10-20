@@ -48,7 +48,7 @@ let extension = {
             return this.$message.error("请选择要预览的表单!");
           }
           if (rows.length > 1) {
-            this.$message.warning("已选择多个，将默认第一个!");
+            this.$message.warning("已选择多个，将默认选择第一个勾选的!");
           }
 debugger
           this.$ASC.Show({
@@ -87,7 +87,7 @@ debugger
             return this.$message.error("请选择要预览的表单!");
           }
           if (rows.length > 1) {
-            this.$message.warning("已选择多个，将默认第一个!");
+            this.$message.warning("已选择多个，将默认选择第一个勾选的!");
           }
 debugger
           this.$ASC.Show({
@@ -136,7 +136,7 @@ debugger
             return this.$message.error("请选择要预览的表单!");
           }
           if (rows.length > 1) {
-            this.$message.warning("已选择多个，将默认第一个!");
+            this.$message.warning("已选择多个，将默认选择第一个勾选的!");
           }
 debugger
           this.$ASC.Show({
@@ -185,7 +185,7 @@ debugger
             return this.$message.error("请选择要预览的表单!");
           }
           if (rows.length > 1) {
-            this.$message.warning("已选择多个，将默认第一个!");
+            this.$message.warning("已选择多个，将默认选择第一个勾选的!");
           }
 debugger
           this.$ASC.Show({
@@ -240,7 +240,7 @@ debugger
         return this.$message.error("请选择要设计的表单!");
       }
       if (rows.length > 1) {
-        this.$message.warning("已选择多个，将默认第一个!");
+        this.$message.warning("已选择多个，将默认选择第一个勾选的!");
       }
       debugger;
       this.$message.error("跳转到设计表单页面");
@@ -263,7 +263,7 @@ debugger
         return this.$message.error("请选择要设计的表单!");
       }
       if (rows.length > 1) {
-        this.$message.warning("已选择多个，将默认第一个!");
+        this.$message.warning("已选择多个，将默认选择第一个勾选的!");
       }
       debugger;
       this.$message.error("跳转到设计表单页面");
@@ -286,7 +286,7 @@ debugger
         return this.$message.error("请选择要设计的表单!");
       }
       if (rows.length > 1) {
-        this.$message.warning("已选择多个，将默认第一个!");
+        this.$message.warning("已选择多个，将默认选择第一个勾选的!");
       }
       debugger;
       this.$message.error("跳转到设计表单页面");

@@ -1044,7 +1044,7 @@ var vueParam= {
       if (rows.length > 1) {
         this.$nextTick(() => {
           //this.modelOpenAfter(row);
-           this.$message.warning("已选择多个，将默认第一个!");
+           this.$message.warning("已选择多个，将默认选择第一个勾选的!");
         })
       }
 
