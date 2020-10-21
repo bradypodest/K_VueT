@@ -20,13 +20,32 @@
 
 
 <template>
+<div>
   <!-- <easyflow :flowName="flowSchemeData.SchemeName" :flowData="flowSchemeData.SchemeContent?JSON.parse(flowSchemeData.SchemeContent):null" :saveFlowInfoData="saveFlowInfoData"> -->
+  <!-- <easyflow
+    :flowName="flowSchemeDataP?flowSchemeDataP.SchemeName:flowSchemeData.SchemeName"
+    :flowData="flowSchemeDataP?JSON.parse(flowSchemeDataP.SchemeContent): JSON.parse(flowSchemeData.SchemeContent)"
+    :saveFlowInfoData="saveFlowInfoData"
+    ref="easyFlow"
+  > -->
   <easyflow
-    :flowName="flowSchemeData.SchemeName"
     :flowData="JSON.parse(flowSchemeData.SchemeContent)"
     :saveFlowInfoData="saveFlowInfoData"
+    v-if="ID&&flowSchemeData.SchemeContent"
+    ref="easyFlow"
   >
   </easyflow>
+  <easyflow
+    :flowData="JSON.parse(flowSchemeDataP.SchemeContent)"
+    :saveFlowInfoData="saveFlowInfoData"
+    :IsShowTool="false"
+    :IsShowLeft="false"
+    :IsShowRight="false"
+    v-if="flowSchemeDataP"
+    ref="easyFlowP"
+  >
+  </easyflow>
+</div>
 </template>
 
 <script>
@@ -40,15 +59,15 @@ export default {
     easyflow,
   },
   props:{
-    flowSchemeID:{
-      type:String,
+    flowSchemeDataP:{//另一种方法进来的，通过组件props传参
+      type:Object,
       default:null
     }
   },
   data() {
     return {
-      ID: "",
-      flowSchemeData: "",
+      ID: null,
+      flowSchemeData: "",//一种方法进来的，通过路由传入ID,将表单数据保存在这里
       // flowData:"",
       // flowName:"空白流程"
 
@@ -64,8 +83,13 @@ export default {
   methods: {
     saveFlowInfoData(flowInfoData) {
       var that = this;
-      that.flowSchemeData.SchemeContent = JSON.stringify(flowInfoData);
-      updateOne(that.flowSchemeData)
+      if(that.flowSchemeDataP){
+        that.flowSchemeDataP.SchemeContent = JSON.stringify(flowInfoData);
+      }else{
+        that.flowSchemeData.SchemeContent = JSON.stringify(flowInfoData);
+      }
+      
+      updateOne(that.flowSchemeDataP?that.flowSchemeDataP:that.flowSchemeData)
         .then((res) => {
           if (res.success) {
             that.$message({
@@ -102,13 +126,8 @@ export default {
         .catch();
     },
 
-    reload(value) {
-      var that = this;
-      that.ID = value;
-      this.getFlowSchemeInfo();
-    },
   },
-  created() {
+  created() {//一种方法进来的，通过路由传入ID
     var that = this;
     if (this.$route.query.hasOwnProperty("ID")) {
       this.ID = this.$route.query.ID == undefined ? "" : this.$route.query.ID;
@@ -121,10 +140,12 @@ export default {
   },
   mounted() {
     var that=this;
-    if(!that.ID){
-      that.ID=that.flowSchemeID;
-      this.getFlowSchemeInfo();
-    }
+    
   },
+  watch:{
+    flowSchemeDataP:function (){
+      this.$refs.easyFlowP.dataReload(JSON.parse(this.flowSchemeDataP.SchemeContent));
+    }
+  }
 };
 </script>

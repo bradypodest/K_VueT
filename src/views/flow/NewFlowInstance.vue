@@ -49,7 +49,7 @@
                   ></el-input>
                 </el-form-item>
 
-                <FormBuild :formDesignId="formDesignId" ref="formBuild">
+                <FormBuild :formDesignId="basicFormData.FormDesignId" ref="formBuild" v-if="basicFormData.FormDesignId">
                 </FormBuild>
               </div>
               <!-- 表单 end -->
@@ -57,8 +57,8 @@
             <!-- 选择模板  End  -->
 
             <!-- 流程设计 start -->
-            <div class="flow_design">
-              <FlowDesign :flowSchemeID="flowSchemeData.ID" ref="flowDesign">
+            <div class="flow_design" v-if="active == 1">
+              <FlowDesign :flowSchemeDataP="flowSchemeData" ref="flowDesign" v-if="flowSchemeData">
               </FlowDesign>
             </div>
             <!-- 流程设计 end -->
@@ -136,16 +136,19 @@ export default {
   data() {
     return {
       active: 1,
-      dictionaryData: [],
-      flowSchemeData: {},
-      formDesignId: "",
-      formDesignData: {},
+      dicKeys:["FlowScheme"],
+      dictionaryData: {},
+      flowSchemeData: null,
+      formDesignData: null,
+
 
       basicFormData: {
         Code: undefined,
         Name: undefined,
         FlowLevel: 0,
         Remark: undefined,
+        FormDesignId:null,
+        SchemeId:null,
       },
       basicRules: {
         SchemeId: [
@@ -176,9 +179,17 @@ export default {
   },
   methods: {
     Next() {
+      var that=this;
       //判断是否已经选择了 流程模板
-
-      this.active += 1;
+      if(!that.basicFormData.SchemeId){
+        this.$message.error("请先选择流程模板！");
+      }else if(!that.basicFormData.FormDesignId){
+        this.$message.error("选择的流程模板没有对应的表单,请先去配置！");
+      }else if(!that.flowSchemeData){
+        this.$message.error("选择的流程模板没有对应流程图，请先去配置！");
+      }else{
+        this.active += 1;
+      }
     },
     PreStep() {
       this.active -= 1;
@@ -189,10 +200,11 @@ export default {
       this.$message.success("提交成功");
     },
 
+    //获取字典数据
     GetDictionaryInfo() {
       var that = this;
-      var dicKeys = ["FlowScheme"];
-      GetDictionary(dicKeys)
+      //var dicKeys = ["FlowScheme"];
+      GetDictionary(that.dicKeys)
         .then((res) => {
           if (res.success) {
             that.$message({
@@ -207,6 +219,7 @@ export default {
         })
         .catch();
     },
+    //获取字典中 其中的一个
     GetOneDic(dickey) {
       var that = this;
 
@@ -219,6 +232,7 @@ export default {
         return [];
       }
     },
+    //获取流程设计配置信息
     GetFlowSchemeData(value) {
       var that = this;
       debugger;
@@ -234,30 +248,24 @@ export default {
             console.log(that.flowSchemeData);
 
             if (that.flowSchemeData && that.flowSchemeData.FormDesignId) {
-              // getOneFormDesign(that.flowSchemeData.FormDesignId)
-              //   .then((res) => {
-              //     that.$message({
-              //       type: "success",
-              //       message: "获取成功!",
-              //     });
-              //     that.formDesignData = res.data;
-              //     console.log(that.formDesignData);
-              //   })
-              //   .catch();
 
-              that.formDesignId = that.flowSchemeData.FormDesignId;
-              that.$refs.formBuild.reload(that.formDesignId);
-              that.$refs.flowDesign.reload(that.flowSchemeData.ID);
+              that.basicFormData.FormDesignId = that.flowSchemeData.FormDesignId;
+              //that.$refs.flowDesign.dataReload(that.flowSchemeData);
+              //that.$refs.formBuild.reload(that.formDesignId);
             }
           })
           .catch();
       }
     },
+
   },
   created() {},
   mounted() {
     //初始化获取一些字典数据
     this.GetDictionaryInfo();
+
+    //生成流程实例编号
+    
   },
 };
 </script>

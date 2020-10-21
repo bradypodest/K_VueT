@@ -8,21 +8,6 @@
           <el-divider direction="vertical"></el-divider>
           <el-button
             type="text"
-            icon="el-icon-delete"
-            size="large"
-            @click="deleteElement"
-            :disabled="!this.activeElement.type"
-          ></el-button>
-          <el-divider direction="vertical"></el-divider>
-          <el-button
-            type="text"
-            icon="el-icon-download"
-            size="large"
-            @click="downloadData"
-          ></el-button>
-          <el-divider direction="vertical"></el-divider>
-          <el-button
-            type="text"
             icon="el-icon-plus"
             size="large"
             @click="zoomAdd"
@@ -34,26 +19,43 @@
             size="large"
             @click="zoomSub"
           ></el-button>
-          <div style="float: right; margin-right: 5px">
+          <span v-if="IsShowTool">
+            <el-divider direction="vertical"></el-divider>
             <el-button
-              type="success"
-              plain
-              round
-              icon="el-icon-document"
-              @click="SaveFlowInfo"
-              size="mini"
-              >保存流程</el-button
-            >
+              type="text"
+              icon="el-icon-delete"
+              size="large"
+              @click="deleteElement"
+              :disabled="!this.activeElement.type"
+            ></el-button>
+
+            <el-divider direction="vertical"></el-divider>
             <el-button
-              type="info"
-              plain
-              round
-              icon="el-icon-document"
-              @click="dataInfo"
-              size="mini"
-              >流程信息</el-button
-            >
-            <!-- <el-button
+              type="text"
+              icon="el-icon-download"
+              size="large"
+              @click="downloadData"
+            ></el-button>
+            <div style="float: right; margin-right: 5px">
+              <el-button
+                type="success"
+                plain
+                round
+                icon="el-icon-document"
+                @click="SaveFlowInfo"
+                size="mini"
+                >保存流程</el-button
+              >
+              <el-button
+                type="info"
+                plain
+                round
+                icon="el-icon-document"
+                @click="dataInfo"
+                size="mini"
+                >流程信息</el-button
+              >
+              <!-- <el-button
               type="primary"
               plain
               round
@@ -89,21 +91,25 @@
               size="mini"
               >自定义样式</el-button
             > -->
-            <el-button
-              type="info"
-              plain
-              round
-              icon="el-icon-document"
-              @click="openHelp"
-              size="mini"
-              >帮助</el-button
-            >
-          </div>
+              <el-button
+                type="info"
+                plain
+                round
+                icon="el-icon-document"
+                @click="openHelp"
+                size="mini"
+                >帮助</el-button
+              >
+            </div>
+          </span>
         </div>
       </el-col>
     </el-row>
     <div style="display: flex; height: calc(100% - 47px)">
-      <div style="width: 230px; border-right: 1px solid #dce3e8">
+      <div
+        style="width: 230px; border-right: 1px solid #dce3e8"
+        v-if="IsShowLeft"
+      >
         <node-menu @addNode="addNode" ref="nodeMenu"></node-menu>
       </div>
       <div id="efContainer" ref="efContainer" class="container" v-flowDrag>
@@ -129,6 +135,7 @@
           border-left: 1px solid #dce3e8;
           background-color: #fbfbfb;
         "
+        v-if="IsShowRight"
       >
         <flow-node-form
           ref="nodeForm"
@@ -162,18 +169,30 @@ import { getDataD } from "./data_D";
 
 export default {
   props: {
-    flowName:{
-      type:String,
-      default:"空白流程"
-    },
+    // flowName:{
+    //   type:String,
+    //   default:"空白流程"
+    // },
     flowData: {
-      type:Object,
-      default:null
+      type: Object,
+      default: null,
     },
     saveFlowInfoData: {
-        type: Function,
-        default: null
-    }
+      type: Function,
+      default: null,
+    },
+    IsShowTool: {
+      type: Boolean,
+      default: true,
+    },
+    IsShowLeft: {
+      type: Boolean,
+      default: true,
+    },
+    IsShowRight: {
+      type: Boolean,
+      default: true,
+    },
   },
 
   data() {
@@ -199,7 +218,7 @@ export default {
         sourceId: undefined,
         targetId: undefined,
       },
-      zoom: 0.5,
+      zoom: 0.9,
     };
   },
   // 一些基础配置移动该文件中
@@ -250,15 +269,15 @@ export default {
     },
   },
   mounted() {
-    if(!this.flowData){
-      this.flowData={
-        name: this.flowName,
-        nodeList: [
-        ],
-        lineList: [
-        ]
-      }
-    }
+    // if(!this.flowData){
+    //   this.flowData={
+    //     name: this.flowName,
+    //     nodeList: [
+    //     ],
+    //     lineList: [
+    //     ]
+    //   }
+    // }
 
     this.jsPlumb = jsPlumb.getInstance();
     this.$nextTick(() => {
@@ -288,17 +307,16 @@ export default {
           this.activeElement.sourceId = conn.sourceId;
           this.activeElement.targetId = conn.targetId;
 
-
           // var lineData=this.lineList.filter((item)=>{
           //     if(item.from===conn.sourceId&&item.to===conn.targetId&&item.label===conn.getLabel()){
           //       return item;
           //     }
           //   });
 
-          this.$refs.nodeForm.lineInit(this.data,{
+          this.$refs.nodeForm.lineInit(this.data, {
             from: conn.sourceId,
             to: conn.targetId,
-            label: conn.getLabel()
+            label: conn.getLabel(),
           });
         });
         // 连线
@@ -392,7 +410,7 @@ export default {
       });
     },
     // 设置连线条件
-    setLineLabel(from, to, label,sourceLine) {
+    setLineLabel(from, to, label, sourceLine) {
       var conn = this.jsPlumb.getConnections({
         source: from,
         target: to,
@@ -406,15 +424,15 @@ export default {
       conn.setLabel({
         label: label,
       });
-//       this.data.lineList.forEach(function (line) {
-//         if (line.from == from && line.to == to) {
-//           line.label = label;
-// debugger;
-//           //扩展属性 start
-//           line.conditions= sourceLine.conditions;
-//           //扩展属性 end
-//         }
-//       });
+      //       this.data.lineList.forEach(function (line) {
+      //         if (line.from == from && line.to == to) {
+      //           line.label = label;
+      // debugger;
+      //           //扩展属性 start
+      //           line.conditions= sourceLine.conditions;
+      //           //扩展属性 end
+      //         }
+      //       });
     },
     // 删除激活的元素
     deleteElement() {
@@ -631,7 +649,7 @@ export default {
       this.dataReload(getDataD());
     },
     zoomAdd() {
-      if (this.zoom >= 1) {
+      if (this.zoom >= 0.9) {
         return;
       }
       this.zoom = this.zoom + 0.1;
@@ -639,7 +657,7 @@ export default {
       this.jsPlumb.setZoom(this.zoom);
     },
     zoomSub() {
-      if (this.zoom <= 0) {
+      if (this.zoom <= 0.1) {
         return;
       }
       this.zoom = this.zoom - 0.1;
@@ -674,14 +692,13 @@ export default {
       });
     },
 
-
     //---------------扩展：保存流程节点配置到数据库
-    SaveFlowInfo(){
+    SaveFlowInfo() {
       this.$message.success("保存流程信息到数据库");
-      if(this.saveFlowInfoData){
+      if (this.saveFlowInfoData) {
         this.saveFlowInfoData(this.data);
       }
-    }
+    },
   },
 };
 </script>

@@ -22,11 +22,11 @@ let extension = {
     buttons: {
             view: [
               {
-                name: "设计表单render",
+                name: "流程图",
                 icon: "",
                 value: "Edit",
                 class: '',
-                type: "info",
+                type: "success",
                 index: 1,
                 onClick: function () {
                   this.OpenDesignFlowPage();

@@ -5,7 +5,7 @@
 -->
 <template>
   <div>
-    <fm-generate-form :data="jsonData" ref="generateForm"> </fm-generate-form>
+    <fm-generate-form :data="jsonData" ref="generateForm" v-if="formDesignId&&jsonData"> </fm-generate-form>
   </div>
 </template>
 
@@ -15,6 +15,7 @@ export default {
   props: {
     formDesignId: {
       type: String,
+      default:null
     },
   },
   data() {
@@ -49,14 +50,19 @@ export default {
           .catch();
       }
     },
-    reload(value) {
-      var that = this;
-      that.formDesignId = value;
-      this.getFormDesignData();
-    },
+  
   },
   mounted() {
     this.getFormDesignData();
   },
+  // updated(){
+  //   debugger
+  //   this.getFormDesignData();
+  // },
+  watch:{
+    formDesignId:function (){
+      this.getFormDesignData();
+    }
+  }
 };
 </script>
