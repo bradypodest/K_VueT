@@ -1,3 +1,6 @@
+<!--
+  属性面板
+-->
 <template>
   <div>
     <div class="ef-node-form">
@@ -41,19 +44,28 @@
 
           <!-- 节点 扩展属性  Start-->
           <el-form-item label="第三方回调URL">
-            <el-input v-model="node.callbackURL"></el-input>
+            <el-input v-model="node.thirdPartyUrl"></el-input>
           </el-form-item>
           <el-form-item label="执行权限">
-            <el-input v-model="node.goPower"></el-input>
+            <el-input v-model="node.nodePowerType"></el-input>
           </el-form-item>
-          <el-form-item v-if="node.goPower == '1'" label="指定角色">
-            <el-input v-model="node.role"></el-input>
+          <el-form-item v-if="node.nodePowerType == '1'" label="指定角色">
+            <!-- <el-input v-model="node.nodePowerData.roles[0]"></el-input> -->
+            <el-checkbox-group v-model="node.nodePowerData.roles">
+              <el-checkbox label="admin"></el-checkbox>
+              <el-checkbox label="user"></el-checkbox>
+            </el-checkbox-group>
           </el-form-item>
-          <el-form-item v-if="node.goPower == '2'" label="指定用户">
-            <el-input v-model="node.user"></el-input>
+          <el-form-item v-if="node.nodePowerType == '2'" label="指定用户">
+            <!-- <el-input v-model="node.nodePowerData.users[0]"></el-input> -->
+            <!-- 暂时这样用 -->
+            <el-checkbox-group v-model="node.nodePowerData.users">
+              <el-checkbox label="admin"></el-checkbox>
+              <el-checkbox label="user"></el-checkbox>
+            </el-checkbox-group>
           </el-form-item>
           <el-form-item v-if="node.type == 'jointlyStart'" label="会签类型">
-            <el-input v-model="node.countersign"></el-input>
+            <el-input v-model="node.nodeCountersignType"></el-input>
           </el-form-item>
 
           <!-- 节点 扩展属性  End -->
@@ -72,7 +84,11 @@
           label-width="80px"
           v-show="type === 'line'"
         >
-          <el-form-item label="条件">
+          <el-form-item label="id">
+            <el-input v-model="line.id" disabled></el-input>
+          </el-form-item>
+
+          <el-form-item label="名称">
             <el-input v-model="line.label"></el-input>
           </el-form-item>
 
@@ -169,6 +185,7 @@ debugger;
           item.label = this.line.label;
 
           //扩展 Start
+          item.id=this.line.id;
           item.conditions = this.line.conditions;
           //扩展 end
 
@@ -194,11 +211,11 @@ debugger;
           node.state = this.node.state;
 
           //扩展 Start
-          node.callbackURL = this.node.callbackURL;
-          node.goPower = this.node.goPower;
-          node.role = this.node.role;
-          node.user = this.node.user;
-          node.countersign = this.node.countersign;
+          node.thirdPartyUrl = this.node.thirdPartyUrl;
+          node.nodePowerType = this.node.nodePowerType;
+          node.nodePowerData.roles = this.node.nodePowerData.roles;
+          node.nodePowerData.users = this.node.nodePowerData.users;
+          node.nodeCountersignType = this.node.nodeCountersignType;
           //扩展 end
 
           this.$emit("repaintEverything");

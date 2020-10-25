@@ -41,11 +41,22 @@ export default {
       var that=this;
       alert("触发保存方法");
       
-debugger;
       //this.$refs.kfd.handleSave();//这行代码会触发Save 事件
       //保存json ,html到对应的表单设计
 
-      that.formDesignData.JsonContent=JSON.stringify(that.$refs.makingform.getJSON());
+      var jsonContent=that.$refs.makingform.getJSON();
+      that.formDesignData.JsonContent=JSON.stringify(jsonContent);
+
+debugger
+      //获取数据  :这个组件不需要首先设置 编辑数据
+      // var ss=that.$refs.makingform.getData();
+      var formData={};
+      // jsonContent.list.forEach(item => {
+      //   formData[item.model]=item.defaultValue||""
+      // });
+      
+      that.formDesignData.ContentData=JSON.stringify(formData);
+
       that.formDesignData.HtmlContent=that.$refs.makingform.getHtml();
       updateOne(that.formDesignData)
             .then(res => {

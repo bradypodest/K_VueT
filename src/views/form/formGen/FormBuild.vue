@@ -1,5 +1,5 @@
 <!--
-  采用组件 ： form-gen-parser 
+  采用组件 ： form-gen-parser  （废弃）
   源码地址：https://github.com/JakHuang/form-generator
   设计表单界面-可拖拽生成表单
 -->

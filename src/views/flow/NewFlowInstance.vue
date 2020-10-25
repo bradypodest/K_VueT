@@ -65,7 +65,7 @@
 
             <!--  填写流程基本信息 表单 Start -->
             <div v-if="active == 2">
-              <el-form-item label="实例编号" prop="Code">
+              <!-- <el-form-item label="实例编号" prop="Code">
                 <el-input
                   v-model="basicFormData.Code"
                   placeholder="请输入实例编号"
@@ -73,12 +73,13 @@
                   :style="{ width: '100%' }"
                 >
                 </el-input>
-              </el-form-item>
+              </el-form-item> -->
               <el-form-item label="标题" prop="Name">
                 <el-input
                   v-model="basicFormData.Name"
                   placeholder="请输入标题"
                   clearable
+                  :disabled="true"
                   :style="{ width: '100%' }"
                 ></el-input>
               </el-form-item>
@@ -126,6 +127,8 @@ import { GetDictionary } from "@/api/system/sys-dictionary";
 import { getOneByID as getOneFlowScheme } from "@/api/flow/flow-scheme";
 import { getOneByID as getOneFormDesign } from "@/api/form/form-design";
 
+import dateUtil from '@/utils/date'
+
 import FormBuild from "@/views/form/ele/FormBuild.vue";
 import FlowDesign from "@/views/flow/FlowDesign.vue"
 
@@ -143,7 +146,7 @@ export default {
 
 
       basicFormData: {
-        Code: undefined,
+        // Code: undefined,
         Name: undefined,
         FlowLevel: 0,
         Remark: undefined,
@@ -235,7 +238,7 @@ export default {
     //获取流程设计配置信息
     GetFlowSchemeData(value) {
       var that = this;
-      debugger;
+      
       if (value) {
         getOneFlowScheme(value)
           .then((res) => {
@@ -253,6 +256,10 @@ export default {
               //that.$refs.flowDesign.dataReload(that.flowSchemeData);
               //that.$refs.formBuild.reload(that.formDesignId);
             }
+
+            //设置流程实例 名称
+            that.basicFormData.Name="["+this.$store.getters.name+"]["+ dateUtil.formatDate.format(new Date(), "yyyy-MM-dd hh:mm:ss") +"]" + that.flowSchemeData.SchemeName;
+            that.basicFormData.FlowLevel=0;
           })
           .catch();
       }

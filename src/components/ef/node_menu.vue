@@ -1,3 +1,6 @@
+<!--
+  节点（左侧）面板
+-->
 <template>
   <div class="flow-menu" ref="tool">
     <div v-for="menu in menuList" :key="menu.id">
@@ -81,7 +84,7 @@ export default {
             },
             {
               id: "13",
-              type: "task",
+              type: "node",
               name: "任务节点",
               ico: "el-icon-s-tools",
               // 自定义覆盖样式

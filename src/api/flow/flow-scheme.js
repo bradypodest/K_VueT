@@ -11,7 +11,6 @@ export const updateOne = (data) => {
 }
 
 export const getOneByID = (ID) => {
-  debugger;
   return request({
       url: apiUrl + '/GetOneByID',
       method: 'get',

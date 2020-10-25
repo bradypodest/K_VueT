@@ -1,5 +1,5 @@
 <!--
-  designform.vue 
+  designform.vue  （废弃）
   采用组件 ： f-render 
   源码地址：https://github.com/dream2023/f-render
   设计表单界面-可拖拽生成表单

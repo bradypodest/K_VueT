@@ -323,8 +323,12 @@ export default {
         this.jsPlumb.bind("connection", (evt) => {
           let from = evt.source.id;
           let to = evt.target.id;
+
+          //生成连线的ID
+          var lineId = this.getUUID();
+
           if (this.loadEasyFlowFinish) {
-            this.data.lineList.push({ from: from, to: to });
+            this.data.lineList.push({ from: from, to: to, id:lineId });
           }
         });
 
@@ -525,6 +529,12 @@ export default {
         }
         break;
       }
+
+      var defaultNodePowerType=2;
+      if(nodeMenu.type=="start"||nodeMenu.type=="end"){
+        defaultNodePowerType="";
+      }
+
       var node = {
         id: nodeId,
         name: nodeName,
@@ -533,6 +543,16 @@ export default {
         top: top + "px",
         ico: nodeMenu.ico,
         state: "success",
+
+        //扩展属性 s
+        thirdPartyUrl:"",
+        nodePowerType:defaultNodePowerType,
+        nodePowerData:{
+          users:["admin"],
+          roles:["admin"],
+        },
+        nodeCountersignType:"all"
+        //扩展属性 e
       };
       /**
        * 这里可以进行业务判断、是否能够添加该节点

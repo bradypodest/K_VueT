@@ -5,7 +5,10 @@
 -->
 <template>
   <div>
-    <fm-generate-form :data="jsonData" ref="generateForm" v-if="formDesignId&&jsonData"> </fm-generate-form>
+    <fm-generate-form :data="jsonData" ref="generateForm" 
+    :value="editData"
+    v-if="formDesignId&&jsonData"> </fm-generate-form>
+    <!-- <el-button type="primary" @click="handleSubmit">Submit</el-button> -->
   </div>
 </template>
 
@@ -17,6 +20,10 @@ export default {
       type: String,
       default:null
     },
+    editData:{
+      type:Object,
+      default:()=>{}
+    }
   },
   data() {
     return {
@@ -44,13 +51,22 @@ export default {
               console.log(that.formDesignData);
               debugger;
               if (that.formDesignData.JsonContent)
+              {
                 that.jsonData = JSON.parse(that.formDesignData.JsonContent);
+              }
             }
           })
           .catch();
       }
     },
-  
+    
+    handleSubmit () {
+      this.$refs.generateForm.getData().then(data => {
+        debugger;
+        alert(JSON.stringify(data))
+      }).catch(e => {
+      })
+    },
   },
   mounted() {
     this.getFormDesignData();

@@ -273,6 +273,7 @@ let publicTool = {
       window.close()
     }, 3000);
   },
+
 }
 
 export default publicTool;

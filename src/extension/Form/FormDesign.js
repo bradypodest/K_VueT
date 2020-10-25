@@ -10,6 +10,7 @@ import FormBuild from  '@/views/form/FormBuild.vue'
 import FormBuildEle from  '@/views/form/ele/FormBuild.vue'
 import FormBuildGen from  '@/views/form/formGen/FormBuild.vue'
 import FormBuildRender from  '@/views/form/render/FormBuild.vue'
+import FormBuildVueEle from  '@/views/form/vue-ele-form/FormBuild.vue'
 let extension = {
   components: {//动态扩充组件或组件路径
     //表单header、content、footer对应位置扩充的组件
@@ -24,6 +25,44 @@ let extension = {
   text: "ccccccc",
   buttons: {
     view: [
+      {
+        name: "预览表单vue-ele-form",
+        icon: "",
+        value: "Edit",
+        class: '',
+        type: "success",
+        index: 2,
+        onClick: function () {
+          let rows = this.$refs.table.getSelected();
+          if (rows.length == 0) {
+            return this.$message.error("请选择要预览的表单!");
+          }
+          if (rows.length > 1) {
+            this.$message.warning("已选择多个，将默认选择第一个勾选的!");
+          }
+debugger
+          this.$ASC.Show({
+            customClass: "dialog-large  dialog-custom-class",////弹窗样式,dialog-full 全屏弹窗 ,dialog-large 大弹窗,
+            title: "["+rows[0].FormName+"]--预览表单" ,// 标题
+            isShowFoorter: false,//是否需要底部按钮
+            closeOnClickModal: false,//是否点击空白背景关闭
+            templateType: "TEMPLATE",//组件类型:"URL"或"TEMPLATE"
+            template:FormBuildVueEle,
+            templateProps: {//模板参数:模板内使用props接收
+              formDesignId: rows[0].ID,
+              // pid: pId,
+              // flag: flag
+            }
+          })
+            .then(async (val) => {//点击确定后,//val 是组件返回的值
+              // ...
+              //this.$refs.datagrid.LoadData()
+            }).catch((val) => {//点击取消或关闭
+              //this.$refs.datagrid.LoadData()
+            });
+        }
+      },
+
       {
         name: "设计表单render",
         icon: "",
