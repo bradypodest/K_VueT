@@ -60,6 +60,10 @@ export default {
       }
     },
     
+    //获取表单数据
+    getFormData(){
+     return this.$refs.generateForm.getData();
+    },
     handleSubmit () {
       this.$refs.generateForm.getData().then(data => {
         debugger;
