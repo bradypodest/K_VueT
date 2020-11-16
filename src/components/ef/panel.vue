@@ -131,7 +131,7 @@
       <!-- 右侧表单 -->
       <div
         style="
-          width: 300px;
+          width: 330px;
           border-left: 1px solid #dce3e8;
           background-color: #fbfbfb;
         "
@@ -141,6 +141,7 @@
           ref="nodeForm"
           @setLineLabel="setLineLabel"
           @repaintEverything="repaintEverything"
+          :fieldNames="fieldNames"
         ></flow-node-form>
       </div>
     </div>
@@ -193,6 +194,13 @@ export default {
       type: Boolean,
       default: true,
     },
+
+    fieldNames:{
+      type:Array,
+      default:function() {
+        return [];
+      }
+    }
   },
 
   data() {
@@ -328,7 +336,12 @@ export default {
           var lineId = this.getUUID();
 
           if (this.loadEasyFlowFinish) {
-            this.data.lineList.push({ from: from, to: to, id:lineId });
+            this.data.lineList.push({
+              from: from,
+              to: to,
+              id: lineId,
+              conditions: [],
+            });
           }
         });
 
@@ -530,9 +543,9 @@ export default {
         break;
       }
 
-      var defaultNodePowerType=2;
-      if(nodeMenu.type=="start"||nodeMenu.type=="end"){
-        defaultNodePowerType="";
+      var defaultNodePowerType = 2;
+      if (nodeMenu.type == "start" || nodeMenu.type == "end") {
+        defaultNodePowerType = "";
       }
 
       var node = {
@@ -545,13 +558,13 @@ export default {
         state: "success",
 
         //扩展属性 s
-        thirdPartyUrl:"",
-        nodePowerType:defaultNodePowerType,
-        nodePowerData:{
-          users:["admin"],
-          roles:["admin"],
+        thirdPartyUrl: "",
+        nodePowerType: defaultNodePowerType,
+        nodePowerData: {
+          users: ["admin"],
+          roles: ["admin"],
         },
-        nodeCountersignType:"all"
+        nodeCountersignType: "all",
         //扩展属性 e
       };
       /**

@@ -33,6 +33,7 @@
     :saveFlowInfoData="saveFlowInfoData"
     v-if="ID&&flowSchemeData.SchemeContent"
     ref="easyFlow"
+    :fieldNames="[]"
   >
   </easyflow>
   <easyflow

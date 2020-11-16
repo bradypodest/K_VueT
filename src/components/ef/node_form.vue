@@ -93,8 +93,66 @@
           </el-form-item>
 
           <!-- 线 扩展属性  Start-->
-          <el-form-item label="表单字段条件">
-            <el-input v-model="line.conditions"></el-input>
+          <el-form-item label="字段条件">
+            <!-- <el-input v-model="line.conditions"></el-input> -->
+            <!-- <SelectCondition :v-for="(item,index) in line.conditions" :key="index" :compare="item">
+            </SelectCondition> -->
+            <el-button
+              type="primary"
+              icon="el-icon-plus"
+              circle
+              @click="AddConditions"
+            ></el-button>
+            <div v-if="line.conditions && line.conditions.length > 0">
+              <div v-for="(condition, index) in line.conditions" :key="index">
+                <el-row>
+                  <el-col :span="8">
+                    <el-select
+                      v-model="condition.fieldName"
+                      placeholder="请选择字段"
+                      v-if="fieldNames && fieldNames.length>0"
+                    >
+                      <el-option
+                        v-for="item in fieldNames"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                      ></el-option>
+                    </el-select>
+                    <el-input v-model="condition.fieldName" placeholder="请输入字段" v-else>
+                    </el-input>
+                  </el-col>
+                  <el-col :span="6">
+                    <el-select
+                      v-model="condition.operation"
+                      placeholder="请选择"
+                    >
+                      <el-option
+                        v-for="item in options"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                      ></el-option>
+                    </el-select>
+                  </el-col>
+                  <el-col :span="6">
+                    <el-input
+                      v-model="condition.value"
+                      placeholder="请输入"
+                    ></el-input>
+                  </el-col>
+                  <el-col :span="4">
+                    <!-- <el-button type="primary" icon="el-icon-plus" circle @click="Add" v-if="index==0"></el-button> -->
+                    <el-button
+                      type="danger"
+                      icon="el-icon-delete"
+                      circle
+                      @click="Del(index)"
+                    ></el-button>
+                  </el-col>
+                </el-row>
+              </div>
+            </div>
           </el-form-item>
 
           <!--线  扩展属性  End -->
@@ -116,6 +174,14 @@
 import { cloneDeep } from "lodash";
 
 export default {
+  props:{
+    fieldNames:{
+      type:Array,
+      default:function(){
+				return [];
+			}
+    }
+  },
   data() {
     return {
       visible: true,
@@ -142,6 +208,57 @@ export default {
           label: "运行中",
         },
       ],
+
+      //字段
+      fieldNameOptions: [
+        {
+          value: "选项1",
+          label: "黄金糕",
+        },
+        {
+          value: "选项2",
+          label: "双皮奶",
+        },
+        {
+          value: "选项3",
+          label: "蚵仔煎",
+        },
+        {
+          value: "选项4",
+          label: "龙须面",
+        },
+        {
+          value: "选项5",
+          label: "北京烤鸭",
+        },
+      ],
+      //条件选择 ，如 >, <
+      options: [
+        {
+          value: "1",
+          label: ">",
+        },
+        {
+          value: "2",
+          label: ">=",
+        },
+        {
+          value: "3",
+          label: "<",
+        },
+        {
+          value: "4",
+          label: "<=",
+        },
+        {
+          value: "5",
+          label: "=",
+        },
+        {
+          value: "6",
+          label: "!=",
+        },
+      ],
     };
   },
   methods: {
@@ -163,29 +280,22 @@ export default {
       this.type = "line";
       this.data = data;
       //this.line = jsPline;
-debugger;
-      data.lineList.filter((item)=>{
-        if (
-          item.from === jsPline.from &&
-          item.to === jsPline.to
-        ) {
-          debugger
+      data.lineList.filter((item) => {
+        if (item.from === jsPline.from && item.to === jsPline.to) {
           this.line = cloneDeep(item);
         }
       });
-
     },
     // 修改连线
     saveLine() {
       this.data.lineList.filter((item) => {
-        debugger;
         if (item.from === this.line.from && item.to === this.line.to) {
           //item.from = this.line.from;
           //item.to = this.line.to;
           item.label = this.line.label;
 
           //扩展 Start
-          item.id=this.line.id;
+          item.id = this.line.id;
           item.conditions = this.line.conditions;
           //扩展 end
 
@@ -222,6 +332,18 @@ debugger;
         }
       });
     },
+
+    AddConditions() {
+      this.line.conditions.push({
+        fieldName: "",
+        operation: "",
+        value: "",
+      });
+    },
+    //删除第几个字段条件
+    Del(index){
+      this.line.conditions.splice(index,1);
+    }
   },
 };
 </script>
