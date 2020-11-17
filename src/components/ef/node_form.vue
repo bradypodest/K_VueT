@@ -235,27 +235,27 @@ export default {
       //条件选择 ，如 >, <
       options: [
         {
-          value: "1",
+          value: ">",
           label: ">",
         },
         {
-          value: "2",
+          value: ">=",
           label: ">=",
         },
         {
-          value: "3",
+          value: "<",
           label: "<",
         },
         {
-          value: "4",
+          value: "<=",
           label: "<=",
         },
         {
-          value: "5",
+          value: "=",
           label: "=",
         },
         {
-          value: "6",
+          value: "!=",
           label: "!=",
         },
       ],

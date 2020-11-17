@@ -128,6 +128,7 @@
 import { GetDictionary } from "@/api/system/sys-dictionary";
 import { getOneByID as getOneFlowScheme } from "@/api/flow/flow-scheme";
 import { getOneByID as getOneFormDesign } from "@/api/form/form-design";
+import {AddInstance} from "@/api/flow/flow-instance"
 
 import dateUtil from "@/utils/date";
 
@@ -153,6 +154,7 @@ export default {
         Remark: undefined,
         FormDesignId: null,
         SchemeId: null,
+        FormData:null,
       },
       basicRules: {
         SchemeId: [
@@ -195,16 +197,25 @@ export default {
         this.$message.error("选择的流程模板没有对应流程图，请先去配置！");
         return false;
       }
-debugger;
       //判断 表单的数据 是否已经输入
       this.$refs.formBuild.getFormData().then(data => {
         debugger
         
-
+        that.basicFormData.FormData=JSON.stringify(data);
         console.log(that.basicFormData);
         
-        this.$message.success("提交成功");
-
+        //提交后台
+        AddInstance(that.basicFormData)
+        .then((res)=>{
+          if (res.success) {
+            that.$message({
+              type: "success",
+              message: "提交成功!",
+            });
+          }else{
+            this.$message.success("发起流程失败");
+          }
+          });
       }).catch(e => {
         this.$message.error(e);
       })

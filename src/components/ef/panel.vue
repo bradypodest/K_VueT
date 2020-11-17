@@ -547,6 +547,10 @@ export default {
       if (nodeMenu.type == "start" || nodeMenu.type == "end") {
         defaultNodePowerType = "";
       }
+      var defaultNodeCountersignType="";
+      if(nodeMenu.type=="jointlyStart"){//只有会签开始才赋默认值 all
+        defaultNodeCountersignType="all"
+      }
 
       var node = {
         id: nodeId,
@@ -564,7 +568,7 @@ export default {
           users: ["admin"],
           roles: ["admin"],
         },
-        nodeCountersignType: "all",
+        nodeCountersignType: defaultNodeCountersignType,
         //扩展属性 e
       };
       /**
