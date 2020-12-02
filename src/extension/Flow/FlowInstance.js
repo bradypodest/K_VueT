@@ -6,6 +6,7 @@
  *build datetime: 2020/10/18 19:50:52
 */
 //此处是对表单的方法，组件，权限操作按钮等进行任意扩展(方法扩展可参照 testOrderTwo.js)
+import FlowProcess from '@/views/flow/flowCom/FlowProcess.vue'
 let extension = {
     components: {//动态扩充组件或组件路径
         //表单header、content、footer对应位置扩充的组件
@@ -68,6 +69,27 @@ let extension = {
           //this.$refs.table.
           this.search();
         });
+      },
+      OpenLinkPage(row,column){
+          this.$ASC.Show({
+            customClass: "dialog-large  dialog-custom-class",////弹窗样式,dialog-full 全屏弹窗 ,dialog-large 大弹窗,
+            title: "["+row.Code+"--"+ row.Name+"]--流程进度" ,// 标题
+            isShowFoorter: false,//是否需要底部按钮
+            closeOnClickModal: false,//是否点击空白背景关闭
+            templateType: "TEMPLATE",//组件类型:"URL"或"TEMPLATE"
+            template:FlowProcess,
+            templateProps: {//模板参数:模板内使用props接收
+              //formDesignId: row.ID,
+              // pid: pId,
+              // flag: flag
+            }
+          })
+            .then(async (val) => {//点击确定后,//val 是组件返回的值
+              // ...
+              //this.$refs.datagrid.LoadData()
+            }).catch((val) => {//点击取消或关闭
+              //this.$refs.datagrid.LoadData()
+            });
       },
        onInit() {
         

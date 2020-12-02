@@ -1674,6 +1674,12 @@ debugger
     },
 
     linkData(row, column) {   //点击table单元格快捷链接 显示编辑数据
+      //扩展 ：当编辑按钮被忽略时，打开别的页面 
+      if(this.ignoreButtons.indexOf("Update")>0){
+        this.OpenLinkPage(row,column);
+        return;
+      }
+
       this.currentAction = _const.EDIT;
       this.currentRow = row;
       //初始化弹出框
@@ -1770,6 +1776,10 @@ debugger
     },
     reloadDicSource() { //重新加载字典绑定的数据源
         this.initDicKeys();
+    },
+
+    OpenLinkPage(row,column){//打开其他的链接页面
+
     },
   //插口方法 end
 
